@@ -1,0 +1,19 @@
+{
+  "navbar": {
+    "logo": "iChengHub (Hot Recommend Workshop)",
+    "home": "Home",
+    "tools": "Tools",
+    "links": "Links",
+    "about": "About",
+    "searchPlaceholder": "Start searching",
+    "submitTool": "Submit Tool"
+  },
+  "layout": {
+    "title": "AI Tool Card Portal",
+    "description": "A card-based navigation platform for discovering and using quality AI tools"
+  },
+  "language": {
+    "zh": "CN",
+    "en": "EN"
+  }
+}

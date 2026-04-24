@@ -1,14 +1,20 @@
 {
   "pages": {
-    "/page": [
+    "/[locale]/page": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/chunks/app/page.js"
+      "static/chunks/app/[locale]/page.js"
+    ],
+    "/[locale]/layout": [
+      "static/chunks/webpack.js",
+      "static/chunks/main-app.js",
+      "static/css/css-src_app_locale_globals_css-node_modules_next_font_google_target_css.css",
+      "static/chunks/app/[locale]/layout.js"
     ],
     "/layout": [
       "static/chunks/webpack.js",
       "static/chunks/main-app.js",
-      "static/css/css-src_app_globals_css-node_modules_next_font_google_target_css.css",
+      "static/css/css-node_modules_next_font_google_target_css.css",
       "static/chunks/app/layout.js"
     ],
     "/_not-found/page": [

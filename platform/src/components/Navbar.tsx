@@ -1,0 +1,85 @@
+'use client';
+
+import React from 'react';
+import { ChevronDown, Search, ArrowUpRight } from 'lucide-react';
+import { useTranslations } from 'next-intl';
+import { useRouter } from 'next/navigation';
+
+interface NavbarProps {
+  locale: string;
+}
+
+const Navbar: React.FC<NavbarProps> = ({ locale }) => {
+  const t = useTranslations('navbar');
+  const router = useRouter();
+
+  const switchLanguage = (newLocale: string) => {
+    router.push(`/${newLocale}`);
+  };
+
+  return (
+    <nav className="h-16 bg-background border-b border-border flex justify-between items-center px-8">
+      {/* 左侧 Logo */}
+      <div className="font-bold text-xl tracking-tight text-foreground">
+        {t('logo')}
+      </div>
+
+      {/* 中间菜单 */}
+      <div className="flex space-x-1">
+        <a 
+          href="#" 
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+        >
+          {t('home')}
+        </a>
+        <a 
+          href="#" 
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors flex items-center"
+        >
+          {t('tools')} <ChevronDown className="ml-1 h-3 w-3 text-muted-foreground" />
+        </a>
+        <a 
+          href="#" 
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors flex items-center"
+        >
+          {t('links')} <ChevronDown className="ml-1 h-3 w-3 text-muted-foreground" />
+        </a>
+        <a 
+          href="#" 
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+        >
+          {t('about')}
+        </a>
+      </div>
+
+      {/* 右侧区域 */}
+      <div className="flex items-center space-x-4">
+        {/* 语言切换按钮 */}
+        <button
+          onClick={() => switchLanguage(locale === 'zh' ? 'en' : 'zh')}
+          className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md transition-colors"
+        >
+          {locale === 'zh' ? 'EN' : 'CN'}
+        </button>
+
+        {/* 搜索框 */}
+        <div className="relative">
+          <input
+            type="text"
+            placeholder={t('searchPlaceholder')}
+            className="rounded-full bg-muted pl-10 pr-4 py-2 w-64 text-sm"
+          />
+          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
+        </div>
+
+        {/* 行动按钮 */}
+        <button className="bg-foreground text-background px-4 py-2 rounded-full flex items-center text-sm font-medium">
+          {t('submitTool')}
+          <ArrowUpRight className="ml-2 h-3 w-3 transform rotate-45" />
+        </button>
+      </div>
+    </nav>
+  );
+};
+
+export default Navbar;

@@ -8,5 +8,5 @@ export default createMiddleware({
 });
 
 export const config = {
-  matcher: ['/']
+  matcher: ['/', '/(zh|en)/:path*']
 };

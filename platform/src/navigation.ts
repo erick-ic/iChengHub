@@ -10,3 +10,7 @@ const routing = defineRouting({
 
 // 创建导航 API
 export const { Link, redirect, usePathname, useRouter } = createNavigation(routing);
+
+// 导出 locales 和 localePrefix 供 middleware 使用
+export const locales = routing.locales;
+export const localePrefix = routing.localePrefix;

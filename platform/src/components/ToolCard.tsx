@@ -1,61 +1,46 @@
-'use client';
-
-import React from 'react';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from './ui/card';
-import { cn } from '@/lib/utils';
-import { ArrowRight, Code, Image, FileText, Search, Settings, Zap } from 'lucide-react';
+"use client";
+import Image from 'next/image';
+import { useTranslations } from 'next-intl';
 
 interface ToolCardProps {
-  id: string;
-  name: string;
-  description: string;
-  iconUrl: string;
-  url: string;
-  category: string;
+  tool: {
+    id: string;
+    nameKey: string;
+    descKey: string;
+    coverImage: string;
+    category: string;
+    url: string;
+  };
 }
 
-const iconMap: Record<string, React.ComponentType<any>> = {
-  'json': Code,
-  'image': Image,
-  'text': FileText,
-  'search': Search,
-  'settings': Settings,
-  'zap': Zap
-};
+export default function ToolCard({ tool }: ToolCardProps) {
+  const t = useTranslations('HomePage');
 
-export function ToolCard({ name, description, iconUrl, url, category }: ToolCardProps) {
-  const IconComponent = iconMap[iconUrl] || Zap;
-  
   return (
-    <Card 
-      className={cn(
-        "group cursor-pointer transition-all duration-300",
-        "hover:-translate-y-1 hover:shadow-xl",
-        "border border-gray-200/60 bg-white/80 backdrop-blur-sm",
-        "rounded-xl overflow-hidden"
-      )}
-      onClick={() => window.open(url, '_blank')}
-    >
-      <CardHeader className="pb-3">
-        <div className="flex items-center justify-between">
-          <div className="flex items-center space-x-3">
-            <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-gradient-to-br from-blue-500 to-purple-600 text-white">
-              <IconComponent className="h-5 w-5" />
-            </div>
-            <div>
-              <CardTitle className="text-base font-semibold text-gray-900">
-                {name}
-              </CardTitle>
-            </div>
-          </div>
-          <ArrowRight className="h-4 w-4 text-gray-400 group-hover:text-blue-500 transition-colors" />
-        </div>
-      </CardHeader>
-      <CardContent>
-        <CardDescription className="text-sm text-gray-600 line-clamp-2">
-          {description}
-        </CardDescription>
-      </CardContent>
-    </Card>
+    <div className="group flex flex-col overflow-hidden rounded-2xl border border-zinc-100 bg-white transition-all hover:shadow-xl hover:-translate-y-1 cursor-pointer">
+      {/* 上方图片区域：固定比例 3:2 */}
+      <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-2xl">
+        <Image
+          src={tool.coverImage}
+          alt={t(tool.nameKey)}
+          fill
+          priority={tool.id === '1'} // 第一张图片添加优先级
+          className="object-cover transition-transform duration-500 group-hover:scale-105"
+          style={{ borderRadius: 'inherit' }}
+        />
+        {/* 图片蒙版效果 */}
+        <div className="absolute inset-0 bg-black/5 transition-opacity duration-300 group-hover:opacity-0 rounded-t-2xl" />
+      </div>
+
+      {/* 下方文字区域 */}
+      <div className="flex flex-col p-5">
+        <h3 className="text-xl font-bold text-zinc-900 group-hover:text-red-600 transition-colors">
+          {t(tool.nameKey)}
+        </h3>
+        <p className="mt-2 line-clamp-2 text-sm leading-relaxed text-zinc-500">
+          {t(tool.descKey)}
+        </p>
+      </div>
+    </div>
   );
 }

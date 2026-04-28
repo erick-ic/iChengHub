@@ -5,9 +5,12 @@ import Navbar from '@/components/Navbar';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
-const inter = Inter({ subsets: ['latin'] });
+const inter = Inter({ 
+  subsets: ['latin'],
+  display: 'swap'
+});
 
-export default async function RootLayout({
+export default async function LocaleLayout({
   children,
   params,
 }: {
@@ -17,13 +20,9 @@ export default async function RootLayout({
   const messages = await getMessages({ locale: params.locale });
   
   return (
-    <html lang={params.locale} suppressHydrationWarning>
-      <body className={inter.className}>
-        <NextIntlClientProvider messages={messages} locale={params.locale}>
-          <Navbar locale={params.locale} />
-          {children}
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages} locale={params.locale}>
+      <Navbar locale={params.locale} />
+      {children}
+    </NextIntlClientProvider>
   );
 }

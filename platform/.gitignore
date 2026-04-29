@@ -33,3 +33,7 @@ dist-ssr
 # Prisma
 prisma/migrations/
 prisma/generated/
+
+# Next.js
+.next/
+.next

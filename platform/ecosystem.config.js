@@ -1,16 +1,17 @@
 module.exports = {
   apps: [{
     name: 'ai-tool-portal',
-    // 1. 修改 script 路径
-    script: 'server.js', 
-    // 2. 这里的 args 不再需要 start，因为 server.js 就是入口
-    args: '', 
+    // 1. 修正启动路径，指向 standalone 的入口
+    script: './.next/standalone/server.js', 
+    args: '',
     cwd: '/home/ecs-user/ai-tool-portal',
     instances: 1,
     exec_mode: 'fork',
     env: {
       NODE_ENV: 'production',
-      PORT: 3000 // 3. 通过环境变量指定端口
+      PORT: 3000,
+      // 2. 修正为本地环回地址，提高连接稳定性和安全性
+      DATABASE_URL: 'postgresql://admin_user:Aichenghub1024.@127.0.0.1:5432/ichenghub'
     },
     error_file: './logs/err.log',
     out_file: './logs/out.log',

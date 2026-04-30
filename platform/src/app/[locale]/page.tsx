@@ -2,6 +2,8 @@ import { getTranslations } from 'next-intl/server';
 import ToolCard from '@/components/ToolCard';
 import prisma from '@/lib/prisma';
 
+export const dynamic = 'force-dynamic';
+
 interface Tool {
   id: string;
   name: string;
@@ -31,7 +33,7 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
     displayName: locale === 'en' && tool.nameEn ? tool.nameEn : tool.name,
     displayDesc: locale === 'en' && tool.descEn ? tool.descEn : tool.desc,
   }));
-  
+
   return (
     <section className="container mx-auto px-4 py-16">
       <div className="mb-12 text-center">
@@ -44,8 +46,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       </div>
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-8">
-        {displayTools.map((tool) => (
-          <ToolCard key={tool.id} tool={tool} />
+        {displayTools.map((tool, index) => (
+          <ToolCard key={tool.id} tool={tool} isFirst={index === 0} />
         ))}
       </div>
     </section>

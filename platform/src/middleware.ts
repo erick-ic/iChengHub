@@ -3,9 +3,9 @@ import type { NextRequest } from 'next/server';
 import createMiddleware from 'next-intl/middleware';
 
 const intlMiddleware = createMiddleware({
-  locales: ['zh', 'en'],
+  locales: ['en', 'zh'],
   defaultLocale: 'zh',
-  localePrefix: 'as-needed'
+  localePrefix: 'always'
 });
 
 export default function middleware(request: NextRequest) {
@@ -14,14 +14,12 @@ export default function middleware(request: NextRequest) {
   console.log('🚀 [中间件雷达] 捕捉路径:', pathname);
 
   if (pathname.startsWith('/ibackend') || pathname.startsWith('/ibackendlogin')) {
-
-    if (pathname.startsWith('/ibackend') && !pathname.startsWith('/ibackendlogin')) {
+    if (pathname === '/ibackend' && !pathname.startsWith('/ibackendlogin')) {
       if (!request.cookies.has('admin_session')) {
         console.log('❌ 权限不足，重定向至登录页');
         return NextResponse.redirect(new URL('/ibackendlogin', request.url));
       }
     }
-
     return NextResponse.next();
   }
 
@@ -30,4 +28,4 @@ export default function middleware(request: NextRequest) {
 
 export const config = {
   matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
-};
+}

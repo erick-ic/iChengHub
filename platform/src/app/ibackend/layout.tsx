@@ -72,13 +72,14 @@ export default function AdminLayout({
     <div className="flex min-h-screen">
       <aside className="fixed left-0 top-0 z-40 flex h-screen w-56 flex-col border-r bg-slate-900 text-slate-200">
         <div className="flex h-16 items-center px-6">
-          <div
-            className="flex items-baseline font-extrabold italic tracking-tighter"
+          <Link
+            href="/ibackend"
+            className="flex items-baseline font-extrabold italic tracking-tighter hover:opacity-80 transition-opacity"
             style={{ fontFamily: "'Exo 2', sans-serif" }}
           >
             <span className="text-2xl text-white">iCheng</span>
             <span className="text-2xl text-[#e52129]">Hub</span>
-          </div>
+          </Link>
         </div>
 
         <nav className="flex-1 overflow-auto p-4">

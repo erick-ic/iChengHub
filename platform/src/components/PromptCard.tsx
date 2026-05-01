@@ -3,9 +3,11 @@
 import Image from 'next/image';
 import { Copy, Check, Eye, Heart, MessageCircle } from 'lucide-react';
 import { useState } from 'react';
+import { useRouter } from '@/navigation';
 
 export interface PromptData {
   id: string;
+  toolId: string;
   imageUrl: string;
   title: string;
   category: string;
@@ -15,17 +17,30 @@ export interface PromptData {
   comments: number;
 }
 
-export default function PromptCard({ data }: { data: PromptData }) {
-  const [copied, setCopied] = useState(false);
+interface PromptCardProps {
+  data: PromptData;
+}
 
-  const handleCopy = () => {
+export default function PromptCard({ data }: PromptCardProps) {
+  const [copied, setCopied] = useState(false);
+  const router = useRouter();
+
+  const handleCopy = (e: React.MouseEvent) => {
+    e.stopPropagation();
     navigator.clipboard.writeText(data.promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
   };
 
+  const handleCardClick = () => {
+    router.push(`/prompts/${data.id}`);
+  };
+
   return (
-    <div className="flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
+    <div
+      className="flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
+      onClick={handleCardClick}
+    >
       <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-50 border-b border-gray-50">
         <Image
           src={data.imageUrl}
@@ -42,14 +57,14 @@ export default function PromptCard({ data }: { data: PromptData }) {
       </div>
 
       <div className="p-5 flex flex-col flex-grow gap-4">
-        <div className="flex justify-between items-center">
-          <div className="flex flex-col">
-            <h3 className="text-lg font-bold text-gray-900 truncate">{data.title}</h3>
-            <span className="text-xs text-gray-500 mt-0.5">{data.category}</span>
+        <div className="flex justify-between items-start">
+          <div className="flex-1 min-w-0">
+            <h3 className="text-lg font-bold text-gray-900 line-clamp-2 leading-snug">{data.title}</h3>
+            <span className="text-xs text-gray-500 mt-1 block">{data.category}</span>
           </div>
           <button
             onClick={handleCopy}
-            className={`p-2 rounded-full transition-colors flex-shrink-0 ${
+            className={`ml-2 p-2 rounded-full transition-colors flex-shrink-0 ${
               copied ? 'bg-green-50 text-green-600' : 'bg-gray-50 text-gray-600 hover:bg-gray-100'
             }`}
             title="一键复制提示词"

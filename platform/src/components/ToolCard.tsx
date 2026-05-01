@@ -24,12 +24,11 @@ export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
 
-  // 判断是否为提示词卡片（名称包含"提示词"）
   const isPromptCard = tool.name.includes('提示词') || tool.nameEn?.includes('Prompt');
 
   const handleClick = () => {
     if (isPromptCard) {
-      router.push(`/prompts/${tool.id}`);
+      router.push('/prompts');
     } else {
       setShowModal(true);
     }

@@ -35,12 +35,12 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
 
       {/* 中间菜单 */}
       <div className="flex space-x-1">
-        <a 
-          href="#" 
+        <Link 
+          href="/" 
           className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
         >
           {t('home')}
-        </a>
+        </Link>
         <a 
           href="#" 
           className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors flex items-center"

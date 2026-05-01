@@ -201,7 +201,7 @@ export default async function AdminDashboard() {
               <div className="flex items-center justify-between">
                 <CardTitle>最近添加的提示词</CardTitle>
                 <Button variant="ghost" size="sm" asChild>
-                  <Link href="/admin/prompts">
+                  <Link href="/ibackend/prompts">
                     查看全部
                     <ArrowUpRight className="ml-2 h-4 w-4" />
                   </Link>
@@ -257,13 +257,13 @@ export default async function AdminDashboard() {
             </CardHeader>
             <CardContent className="space-y-4">
               <Button className="w-full justify-start" asChild>
-                <Link href="/admin/tools">
+                <Link href="/ibackend/tools">
                   <Plus className="mr-2 h-4 w-4" />
                   添加新工具
                 </Link>
               </Button>
               <Button className="w-full justify-start" asChild variant="outline">
-                <Link href="/admin/prompts">
+                <Link href="/ibackend/prompts">
                   <Plus className="mr-2 h-4 w-4" />
                   发布提示词
                 </Link>

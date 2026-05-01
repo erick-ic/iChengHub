@@ -21,8 +21,10 @@ export default async function LocaleLayout({
   
   return (
     <NextIntlClientProvider messages={messages} locale={params.locale}>
-      <Navbar locale={params.locale} />
-      {children}
+      <div className="min-h-screen bg-background">
+        <Navbar locale={params.locale} />
+        {children}
+      </div>
     </NextIntlClientProvider>
   );
 }

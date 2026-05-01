@@ -71,34 +71,17 @@ interface PageProps {
 export default async function PromptsPage({ params }: PageProps) {
   const { toolId } = await params;
 
-  const tools = await prisma.toolCard.findMany({
-    orderBy: { createdAt: 'asc' },
-    select: { id: true },
+  // 获取工具信息
+  const tool = await prisma.toolCard.findUnique({
+    where: { id: toolId },
+    select: { name: true, logoUrl: true },
   });
-
-  const isFirstTool = tools.length > 0 && tools[0].id === toolId;
-
-  if (!isFirstTool) {
-    return (
-      <section className="container mx-auto px-4 py-16">
-        <div className="flex flex-col items-center justify-center min-h-[60vh]">
-          <div className="text-6xl mb-6">🚧</div>
-          <h1 className="text-3xl md:text-4xl font-extrabold tracking-tight text-zinc-900 mb-4">
-            敬请期待
-          </h1>
-          <p className="text-lg text-zinc-500 max-w-md text-center">
-            该工具的提示词内容正在加紧筹备中，请稍后再来探索
-          </p>
-        </div>
-      </section>
-    );
-  }
 
   return (
     <section className="container mx-auto px-4 py-16">
       <div className="mb-12 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
-          精选提示词库
+          {tool?.name || '精选'}提示词库
         </h1>
         <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
           探索精心策划的提示词，帮助你充分发挥 AI 工具的强大能力

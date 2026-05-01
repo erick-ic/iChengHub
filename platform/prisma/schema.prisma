@@ -17,5 +17,7 @@ model ToolCard {
   url       String
   logoUrl   String
   category  String
+  status    Int      @default(0)
+  sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 }

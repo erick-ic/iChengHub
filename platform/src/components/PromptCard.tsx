@@ -26,13 +26,18 @@ export default function PromptCard({ data }: { data: PromptData }) {
 
   return (
     <div className="flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1">
-      <div className="relative w-full aspect-video bg-gray-50 border-b border-gray-50">
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-50 border-b border-gray-50">
         <Image
           src={data.imageUrl}
           alt={data.title}
           fill
-          className="object-cover"
-          unoptimized
+          sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+          className="hover:scale-105 transition-transform duration-500"
+          style={{
+            objectFit: 'cover',
+            objectPosition: 'top center'
+          }}
+          unoptimized={data.imageUrl?.startsWith('http')}
         />
       </div>
 

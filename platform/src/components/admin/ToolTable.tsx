@@ -281,7 +281,7 @@ export function ToolTable({ tools }: ToolTableProps) {
               <TableHead className="w-24">状态</TableHead>
               <TableHead className="w-40">创建时间</TableHead>
               <TableHead className="w-12">排序</TableHead>
-              <TableHead className="w-24 text-right">操作</TableHead>
+              <TableHead className="w-24 text-center">操作</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -373,25 +373,27 @@ export function ToolTable({ tools }: ToolTableProps) {
                       <ChevronDown className="h-4 w-4" />
                     </Button>
                   </TableCell>
-                  <TableCell className="text-right whitespace-nowrap">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openEditDialog(tool)}
-                      className="transition-all duration-200 hover:text-blue-600 hover:bg-blue-50"
-                    >
-                      <Pencil className="mr-1 h-4 w-4" />
-                      编辑
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      onClick={() => openDeleteDialog(tool)}
-                      className="text-red-600 transition-all duration-200 hover:bg-red-50"
-                    >
-                      <Trash2 className="mr-1 h-4 w-4" />
-                      删除
-                    </Button>
+                  <TableCell className="text-center whitespace-nowrap">
+                    <div className="flex flex-row gap-2">
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openEditDialog(tool)}
+                        className="h-7 w-7 p-0 transition-all duration-200 hover:text-blue-600 hover:bg-blue-50"
+                        title="编辑"
+                      >
+                        <Pencil className="h-4 w-4" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="icon"
+                        onClick={() => openDeleteDialog(tool)}
+                        className="h-7 w-7 p-0 text-red-600 transition-all duration-200 hover:bg-red-50"
+                        title="删除"
+                      >
+                        <Trash2 className="h-4 w-4" />
+                      </Button>
+                    </div>
                   </TableCell>
                 </TableRow>
               ))

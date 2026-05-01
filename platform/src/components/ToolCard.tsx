@@ -43,14 +43,19 @@ export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
           isFirst ? 'hover:shadow-xl hover:-translate-y-1' : 'hover:shadow-md'
         }`}
       >
-        <div className="relative aspect-[3/2] w-full overflow-hidden rounded-t-2xl">
+        <div className="relative aspect-[4/3] w-full overflow-hidden rounded-t-2xl">
           <Image
             src={tool.logoUrl}
             alt={tool.displayName || tool.name}
             fill
             priority={tool.id === '1'}
-            className="object-cover transition-transform duration-500 group-hover:scale-105"
-            style={{ borderRadius: 'inherit' }}
+            sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+            className="transition-transform duration-500 group-hover:scale-105"
+            style={{
+              objectFit: 'cover',
+              objectPosition: 'top center'
+            }}
+            unoptimized={tool.logoUrl?.startsWith('http')}
           />
           <div className="absolute inset-0 bg-black/5 transition-opacity duration-300 group-hover:opacity-0 rounded-t-2xl" />
         </div>

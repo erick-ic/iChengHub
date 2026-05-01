@@ -21,3 +21,20 @@ model ToolCard {
   sortOrder Int      @default(0)
   createdAt DateTime @default(now())
 }
+
+model Prompt {
+  id         String   @id @default(cuid())
+  title      String
+  titleEn    String?
+  category   String
+  categoryEn String?
+  toolId     String
+  imageUrl   String
+  promptText String
+  views      Int      @default(0)
+  likes      Int      @default(0)
+  comments   Int      @default(0)
+  status     Int      @default(0)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+}

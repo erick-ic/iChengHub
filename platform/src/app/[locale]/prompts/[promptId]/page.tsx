@@ -1,12 +1,13 @@
 import PromptDetailCard, { PromptDetailData } from '@/components/PromptDetailCard';
 import ColorExtractedImage from '@/components/ColorExtractedImage';
-import LikeButton from '@/components/LikeButton';
+import LikeButton from '@/components/stats/LikeButton';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import Image from 'next/image';
 import { Eye, MessageCircle, Tag } from 'lucide-react';
 import { Link } from '@/navigation';
 import ViewsTracker from '@/components/ViewsTracker';
+import { cookies } from 'next/headers';
 
 export const revalidate = 0;
 
@@ -17,6 +18,9 @@ interface PageProps {
 export default async function PromptDetailPage({ params }: PageProps) {
   const { locale, promptId } = await params;
   const isEnglish = locale === 'en';
+
+  const cookieStore = await cookies();
+  const isLiked = cookieStore.has(`liked_${promptId}`);
 
   const prompt = await prisma.prompt.findUnique({
     where: { id: promptId },
@@ -95,17 +99,12 @@ export default async function PromptDetailPage({ params }: PageProps) {
                 </div>
               </div>
 
-              <div className="bg-white/80 backdrop-blur-md border border-white/40 rounded-xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                <div className="flex items-center gap-2">
-                  <div className="w-8 h-8 rounded-lg bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center">
-                    <span className="text-pink-500 text-xs font-bold">♥</span>
-                  </div>
-                  <span className="text-zinc-500 text-xs font-medium">{isEnglish ? 'Likes' : '点赞'}</span>
-                </div>
-                <div className="text-xl font-bold text-zinc-900 mt-1">
-                  {prompt.likes.toLocaleString()}
-                </div>
-              </div>
+              <LikeButton 
+                promptId={promptId}
+                initialLiked={isLiked}
+                initialCount={prompt.likes}
+                isEnglish={isEnglish}
+              />
             </div>
 
             <div className="bg-white/80 backdrop-blur-md border border-white/40 rounded-xl p-4 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
@@ -180,7 +179,12 @@ export default async function PromptDetailPage({ params }: PageProps) {
                   </div>
                 </div>
 
-                <LikeButton initialLikes={prompt.likes} isEnglish={isEnglish} />
+                <LikeButton 
+                  promptId={promptId}
+                  initialLiked={isLiked}
+                  initialCount={prompt.likes}
+                  isEnglish={isEnglish}
+                />
               </div>
 
               <div className="bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl p-5 shadow-sm flex flex-col max-h-[600px]">

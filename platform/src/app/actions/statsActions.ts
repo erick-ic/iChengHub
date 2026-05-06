@@ -4,6 +4,48 @@ import { cookies } from 'next/headers';
 import prisma from '@/lib/prisma';
 import { redirect } from 'next/navigation';
 
+export async function toggleLike(promptId: string) {
+  if (!promptId) return { success: false, message: '缺少参数' };
+
+  const cookieStore = await cookies();
+  const cookieName = `liked_${promptId}`;
+
+  const hasLock = cookieStore.has(cookieName);
+
+  try {
+    const result = await prisma.prompt.update({
+      where: { id: promptId },
+      data: {
+        likes: hasLock ? { decrement: 1 } : { increment: 1 }
+      },
+      select: { likes: true }
+    });
+
+    if (hasLock) {
+      cookieStore.delete(cookieName, { path: '/' });
+      console.log(`❤️ [点赞系统] ID: ${promptId} 取消点赞，当前点赞数: ${result.likes}`);
+    } else {
+      cookieStore.set(cookieName, '1', {
+        maxAge: 60 * 60 * 24 * 365,
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+      });
+      console.log(`❤️ [点赞系统] ID: ${promptId} 点赞成功，当前点赞数: ${result.likes}`);
+    }
+
+    return {
+      success: true,
+      likesCount: result.likes,
+      isLiked: !hasLock
+    };
+  } catch (error) {
+    console.error('点赞更新失败:', error);
+    return { success: false, message: '操作失败' };
+  }
+}
+
 export async function incrementViews(promptId: string) {
   if (!promptId) return;
 

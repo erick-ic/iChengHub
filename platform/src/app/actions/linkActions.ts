@@ -11,6 +11,7 @@ export async function createLink(prevState: any, formData: FormData) {
   const url = formData.get('url') as string
   const iconUrl = formData.get('iconUrl') as string
   const category = formData.get('category') as string
+  const categoryEn = formData.get('categoryEn') as string
 
   const maxSortOrder = await prisma.navLink.aggregate({
     _max: { sortOrder: true },
@@ -29,6 +30,7 @@ export async function createLink(prevState: any, formData: FormData) {
       url,
       iconUrl: iconUrl || null,
       category,
+      categoryEn: categoryEn || null,
       sortOrder: newSortOrder,
       status: 0,
     },
@@ -47,6 +49,7 @@ export async function updateLink(prevState: any, formData: FormData) {
   const url = formData.get('url') as string
   const iconUrl = formData.get('iconUrl') as string
   const category = formData.get('category') as string
+  const categoryEn = formData.get('categoryEn') as string
 
   await prisma.navLink.update({
     where: { id },
@@ -58,6 +61,7 @@ export async function updateLink(prevState: any, formData: FormData) {
       url,
       iconUrl: iconUrl || null,
       category,
+      categoryEn: categoryEn || null,
     },
   })
 

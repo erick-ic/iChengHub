@@ -2,6 +2,7 @@ import { PackageOpen } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import { SidebarNav } from '@/components/SidebarNav';
 import { ToolCard } from '@/components/navigation/ToolCard';
+import { getTranslations } from 'next-intl/server';
 
 export const dynamic = 'force-dynamic';
 
@@ -57,13 +58,13 @@ async function getTools(): Promise<ExternalTool[]> {
     url: tool.url,
     iconUrl: tool.iconUrl || undefined,
     category: tool.category,
-    categoryEn: null,
+    categoryEn: tool.categoryEn,
     status: tool.status,
     sortOrder: tool.sortOrder,
   }));
 }
 
-function EmptyState({ isEnglish }: { isEnglish: boolean }) {
+function EmptyState({ t }: { t: (key: string) => string }) {
   return (
     <div className="flex flex-col items-center justify-center py-24">
       <div className="relative mb-6">
@@ -77,20 +78,19 @@ function EmptyState({ isEnglish }: { isEnglish: boolean }) {
         </div>
       </div>
       <h3 className="text-lg font-semibold text-gray-900 mb-2">
-        {isEnglish ? 'No tools available' : '暂无可用工具'}
+        {t('noTools')}
       </h3>
       <p className="text-gray-500 text-center max-w-md">
-        {isEnglish 
-          ? 'We are working on adding new tools. Please check back later.' 
-          : '我们正在努力添加新的工具资源，请稍后再试。'
-        }
+        {t('noToolsDesc')}
       </p>
     </div>
   );
 }
 
-export default async function LinksPage() {
-  const isEnglish = false;
+export default async function LinksPage({ params }: { params: Promise<{ locale: string }> }) {
+  const { locale } = await params;
+  const t = await getTranslations({ locale, namespace: 'LinksPage' });
+  const isEnglish = locale === 'en';
   const tools = await getTools();
 
   const categories = [...new Set(tools.map(tool => isEnglish && tool.categoryEn ? tool.categoryEn : tool.category))];
@@ -110,15 +110,15 @@ export default async function LinksPage() {
         <main className="flex-1 min-w-0">
           <div className="mb-6">
             <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {isEnglish ? 'Productivity Tools' : '效率导航'}
+              {t('title')}
             </h1>
             <p className="text-gray-500">
-              {isEnglish ? 'Discover high-quality AI tools and resources' : '发现优质的 AI 工具和资源'}
+              {t('description')}
             </p>
           </div>
 
           {tools.length === 0 ? (
-            <EmptyState isEnglish={isEnglish} />
+            <EmptyState t={t} />
           ) : (
             <div className="space-y-12">
               {groupedTools.map((section) => (

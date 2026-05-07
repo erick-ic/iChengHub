@@ -35,6 +35,7 @@ interface Link {
   url: string
   iconUrl: string | null
   category: string
+  categoryEn: string | null
   status: number
   sortOrder: number
   createdAt: Date
@@ -230,9 +231,15 @@ export function LinkTable({ links }: LinkTableProps) {
                 <Label htmlFor="iconUrl">自定义图标 URL（可选）</Label>
                 <Input id="iconUrl" name="iconUrl" placeholder="手动指定图标地址，用于修复无法自动获取图标的网站" />
               </div>
-              <div className="space-y-2">
-                <Label htmlFor="category">分类</Label>
-                <Input id="category" name="category" placeholder="例如: AI 对话" required />
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="category">分类 (中文)</Label>
+                  <Input id="category" name="category" placeholder="例如: AI 对话" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="categoryEn">分类 (English)</Label>
+                  <Input id="categoryEn" name="categoryEn" placeholder="e.g.: AI Chat" />
+                </div>
               </div>
               <Button type="submit" className="w-full">保存链接</Button>
             </form>
@@ -282,9 +289,15 @@ export function LinkTable({ links }: LinkTableProps) {
                   <Label htmlFor="edit-iconUrl">自定义图标 URL（可选）</Label>
                   <Input id="edit-iconUrl" name="iconUrl" defaultValue={editingLink.iconUrl || ''} placeholder="手动指定图标地址" />
                 </div>
-                <div className="space-y-2">
-                  <Label htmlFor="edit-category">分类</Label>
-                  <Input id="edit-category" name="category" defaultValue={editingLink.category} required />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-category">分类 (中文)</Label>
+                    <Input id="edit-category" name="category" defaultValue={editingLink.category} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-categoryEn">分类 (English)</Label>
+                    <Input id="edit-categoryEn" name="categoryEn" defaultValue={editingLink.categoryEn || ''} />
+                  </div>
                 </div>
                 <Button type="submit" className="w-full">更新链接</Button>
               </form>

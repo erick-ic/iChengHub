@@ -26,7 +26,18 @@
     "documentConverter": "Document Converter",
     "documentConverterDesc": "Fast conversion tool for document formats like PDF, Word, and Excel",
     "aiTextAssistant": "AI Text Assistant",
-    "aiTextAssistantDesc": "Intelligent text processing and generation tool supporting translation, summarization, and rewriting"
+    "aiTextAssistantDesc": "Intelligent text processing and generation tool supporting translation, summarization, and rewriting",
+    "noTools": "No tools available",
+    "noToolsDesc": "Stay tuned for more AI tools coming soon",
+    "comingSoon": "Coming Soon",
+    "comingSoonDesc": "Content for {name} is under development. Please check back later.",
+    "iKnow": "Got it"
+  },
+  "LinksPage": {
+    "title": "Productivity Tools",
+    "description": "Discover high-quality AI tools and resources",
+    "noTools": "No tools available",
+    "noToolsDesc": "We are working on adding new tools. Please check back later."
   },
   "language": {
     "zh": "CN",

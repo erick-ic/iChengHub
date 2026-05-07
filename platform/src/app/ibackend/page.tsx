@@ -22,6 +22,7 @@ import {
   Lightbulb,
   Eye,
   Heart,
+  Link2,
   Plus,
   ArrowUpRight
 } from "lucide-react"
@@ -36,16 +37,19 @@ export default async function AdminDashboard() {
   const [
     toolCount,
     promptCount,
+    linkCount,
     totalViews,
     totalLikes,
     recentPrompts,
     toolCountLastMonth,
     promptCountLastMonth,
+    linkCountLastMonth,
     viewsLastMonth,
     likesLastMonth,
   ] = await Promise.all([
     prisma.toolCard.count(),
     prisma.prompt.count(),
+    prisma.navLink.count(),
     prisma.prompt.aggregate({ _sum: { views: true } }),
     prisma.prompt.aggregate({ _sum: { likes: true } }),
     prisma.prompt.findMany({
@@ -69,6 +73,14 @@ export default async function AdminDashboard() {
       },
     }),
     prisma.prompt.count({
+      where: {
+        createdAt: {
+          gte: lastMonthStart,
+          lte: lastMonthEnd,
+        },
+      },
+    }),
+    prisma.navLink.count({
       where: {
         createdAt: {
           gte: lastMonthStart,
@@ -104,6 +116,7 @@ export default async function AdminDashboard() {
   // 计算环比变化
   const toolChange = toolCount - toolCountLastMonth
   const promptChange = promptCount - promptCountLastMonth
+  const linkChange = linkCount - linkCountLastMonth
   const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : '0'
   const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : '0'
 
@@ -138,58 +151,89 @@ export default async function AdminDashboard() {
       </div>
 
       {/* 统计卡片 */}
-      <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-4">
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">总工具数</CardTitle>
-            <Wrench className="h-4 w-4 text-slate-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{toolCount}</div>
-            <p className={`text-xs mt-1 ${toolChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatChange(toolChange)}
-            </p>
-          </CardContent>
-        </Card>
+      <div className="space-y-6">
+        {/* 内容数据 */}
+        <div>
+          <h3 className="text-sm font-semibold text-slate-600 mb-3 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#e52129' }}></span>
+            内容数据
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">总工具数</CardTitle>
+                <Wrench className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{toolCount}</div>
+                <p className={`text-[10px] mt-1 ${toolChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(toolChange)}
+                </p>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">提示词总数</CardTitle>
-            <Lightbulb className="h-4 w-4 text-slate-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{promptCount}</div>
-            <p className={`text-xs mt-1 ${promptChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatChange(promptChange)}
-            </p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">导航总数</CardTitle>
+                <Link2 className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{linkCount}</div>
+                <p className={`text-[10px] mt-1 ${linkChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(linkChange)}
+                </p>
+              </CardContent>
+            </Card>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">总浏览量</CardTitle>
-            <Eye className="h-4 w-4 text-slate-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{formatNumber(views)}</div>
-            <p className={`text-xs mt-1 ${parseFloat(viewsChangePercent) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatChange(viewsChangePercent, true)}
-            </p>
-          </CardContent>
-        </Card>
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">提示词总数</CardTitle>
+                <Lightbulb className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{promptCount}</div>
+                <p className={`text-[10px] mt-1 ${promptChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(promptChange)}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
 
-        <Card>
-          <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-            <CardTitle className="text-sm font-medium">点赞数</CardTitle>
-            <Heart className="h-4 w-4 text-slate-500" />
-          </CardHeader>
-          <CardContent>
-            <div className="text-3xl font-bold">{formatNumber(likes)}</div>
-            <p className={`text-xs mt-1 ${parseFloat(likesChangePercent) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-              {formatChange(likesChangePercent, true)}
-            </p>
-          </CardContent>
-        </Card>
+        {/* 互动数据 */}
+        <div>
+          <h3 className="text-sm font-semibold text-slate-600 mb-3 flex items-center gap-2">
+            <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#e52129' }}></span>
+            互动数据
+          </h3>
+          <div className="grid gap-4 md:grid-cols-2">
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">总浏览量</CardTitle>
+                <Eye className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{formatNumber(views)}</div>
+                <p className={`text-[10px] mt-1 ${parseFloat(viewsChangePercent) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(viewsChangePercent, true)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">点赞数</CardTitle>
+                <Heart className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{formatNumber(likes)}</div>
+                <p className={`text-[10px] mt-1 ${parseFloat(likesChangePercent) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(likesChangePercent, true)}
+                </p>
+              </CardContent>
+            </Card>
+          </div>
+        </div>
       </div>
 
       {/* 内容区域 */}

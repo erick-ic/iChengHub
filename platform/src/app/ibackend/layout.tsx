@@ -105,16 +105,14 @@ export default function AdminLayout({
 
         <div className="p-4">
           <Separator className="mb-4 bg-slate-700" />
-          <form action={logout}>
-            <Button
-              type="submit"
-              variant="ghost"
-              className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-200"
-            >
-              <LogOut className="mr-2 h-4 w-4" />
-              退出
-            </Button>
-          </form>
+          <Button
+            variant="ghost"
+            className="w-full justify-start text-slate-400 hover:bg-slate-800 hover:text-slate-200"
+            onClick={() => setIsConfirmOpen(true)}
+          >
+            <LogOut className="mr-2 h-4 w-4" />
+            退出
+          </Button>
         </div>
       </aside>
 
@@ -134,22 +132,22 @@ export default function AdminLayout({
               确定要退出后台管理系统吗？退出后将返回网站首页。
             </DialogDescription>
           </DialogHeader>
-          <div className="flex gap-3 mt-4">
+          <form id="logout-form" action={logout} className="flex gap-4 mt-6">
             <Button
               variant="outline"
-              className="flex-1"
+              type="button"
               onClick={() => setIsConfirmOpen(false)}
+              className="flex-1 px-6 py-2.5 text-sm font-medium border-slate-300 text-slate-700 hover:bg-slate-50"
             >
               取消
             </Button>
             <Button
               type="submit"
-              form="logout-form"
-              className="flex-1 bg-red-500 hover:bg-red-600"
+              className="flex-1 px-6 py-2.5 text-sm font-medium bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all shadow-sm hover:shadow"
             >
-              确认退出
+              确认
             </Button>
-          </div>
+          </form>
         </DialogContent>
       </Dialog>
     </div>

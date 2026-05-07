@@ -11,7 +11,7 @@ export const metadata: Metadata = {
   title: 'iChengHub',
   description: 'AI Tool Card Portal',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/favicon.svg',
   },
 };
 

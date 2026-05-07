@@ -56,8 +56,8 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 13V6a2 2 0 00-2-2H6a2 2 0 00-2 2v7m16 0v5a2 2 0 01-2 2H6a2 2 0 01-2-2v-5m16 0h-2.586a1 1 0 00-.707.293l-2.414 2.414a1 1 0 01-.707.293h-3.172a1 1 0 01-.707-.293l-2.414-2.414A1 1 0 006.586 13H4" />
               </svg>
             </div>
-            <h3 className="text-lg font-medium text-slate-900 mb-1">暂无工具</h3>
-            <p className="text-slate-500">敬请期待更多 AI 工具即将上线</p>
+            <h3 className="text-lg font-medium text-slate-900 mb-1">{t('noTools')}</h3>
+            <p className="text-slate-500">{t('noToolsDesc')}</p>
           </div>
         ) : (
           displayTools.map((tool, index) => (

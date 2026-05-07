@@ -26,7 +26,18 @@
     "documentConverter": "文档转换器",
     "documentConverterDesc": "PDF、Word、Excel 等文档格式的快速转换工具",
     "aiTextAssistant": "AI 文字助手",
-    "aiTextAssistantDesc": "智能文字处理和生成工具，支持翻译、摘要、改写等功能"
+    "aiTextAssistantDesc": "智能文字处理和生成工具，支持翻译、摘要、改写等功能",
+    "noTools": "暂无工具",
+    "noToolsDesc": "敬请期待更多 AI 工具即将上线",
+    "comingSoon": "敬请期待",
+    "comingSoonDesc": "{name} 的内容正在加紧筹备中，请稍后再来探索",
+    "iKnow": "我知道了"
+  },
+  "LinksPage": {
+    "title": "效率导航",
+    "description": "发现优质的 AI 工具和资源",
+    "noTools": "暂无可用工具",
+    "noToolsDesc": "我们正在努力添加新的工具资源，请稍后再试。"
   },
   "language": {
     "zh": "CN",

@@ -3,6 +3,7 @@ import Image from 'next/image';
 import { useRouter } from '@/navigation';
 import { useState } from 'react';
 import { X } from 'lucide-react';
+import { useTranslations } from 'next-intl';
 
 interface ToolCardProps {
   tool: {
@@ -20,11 +21,16 @@ interface ToolCardProps {
   isFirst?: boolean;
 }
 
+const PROMPT_CATEGORIES = ['提示词', 'Prompts', 'prompt', '提示词工程'];
+
 export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
   const router = useRouter();
   const [showModal, setShowModal] = useState(false);
+  const t = useTranslations('HomePage');
 
-  const isPromptCard = tool.name.includes('提示词') || tool.nameEn?.includes('Prompt');
+  const isPromptCard = PROMPT_CATEGORIES.some(cat => 
+    tool.category.includes(cat) || tool.category.toLowerCase().includes(cat.toLowerCase())
+  );
 
   const handleClick = () => {
     if (isPromptCard) {
@@ -74,18 +80,17 @@ export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
           <div className="bg-white rounded-3xl p-10 max-w-md mx-4 text-center shadow-2xl transform animate-in zoom-in-95 duration-300">
             <div className="text-7xl mb-6">🚧</div>
             <h3 className="text-2xl font-bold text-zinc-900 mb-3">
-              敬请期待
+              {t('comingSoon')}
             </h3>
             <p className="text-zinc-500 mb-6 leading-relaxed">
-              {tool.displayName || tool.name} 的内容正在加紧筹备中，<br />
-              请稍后再来探索
+              {t('comingSoonDesc', { name: tool.displayName || tool.name })}
             </p>
             <button
               onClick={() => setShowModal(false)}
               className="inline-flex items-center gap-2 px-6 py-3 bg-zinc-900 text-white rounded-full font-medium hover:bg-zinc-800 transition-colors"
             >
               <X size={18} />
-              我知道了
+              {t('iKnow')}
             </button>
           </div>
         </div>

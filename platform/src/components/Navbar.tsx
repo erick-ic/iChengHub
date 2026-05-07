@@ -64,9 +64,9 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
         <Link
           href={pathname}
           locale={nextLocale}
-          className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md transition-colors"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground px-3 py-1.5 rounded-md transition-colors uppercase tracking-wider"
         >
-          {nextLocale === 'en' ? 'English' : '中文'}
+          {nextLocale === 'en' ? 'EN' : 'ZH'}
         </Link>
 
         {/* 搜索框 */}

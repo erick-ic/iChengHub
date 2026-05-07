@@ -25,5 +25,6 @@ export default function middleware(request: NextRequest) {
 }
 
 export const config = {
-  matcher: ['/((?!api|_next|_vercel|.*\\..*).*)']
-}
+  // 显式排除 .ttf 结尾的文件
+  matcher: ['/((?!api|_next|_vercel|favicon\\.svg|.*\\.ttf$|.*\\..*).*)']
+};

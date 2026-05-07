@@ -10,6 +10,16 @@ const inter = Inter({
   display: 'swap'
 });
 
+export const metadata: Metadata = {
+  icons: {
+    // 明确指定使用 svg 格式
+    icon: [
+      { url: '/favicon.svg', type: 'image/svg+xml' }
+    ],
+    apple: '/favicon.svg',
+  },
+};
+
 export default async function LocaleLayout({
   children,
   params,

@@ -12,7 +12,7 @@ interface Tool {
   descEn: string | null;
   logoUrl: string;
   category: string;
-  url: string;
+  url: string | null;
 }
 
 async function fetchTools(): Promise<Tool[]> {

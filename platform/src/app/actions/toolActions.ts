@@ -8,7 +8,7 @@ export async function createTool(prevState: any, formData: FormData) {
   const nameEn = formData.get('nameEn') as string
   const desc = formData.get('desc') as string
   const descEn = formData.get('descEn') as string
-  const url = formData.get('url') as string
+  const url = formData.get('url') as string | null
   const logoUrl = formData.get('logoUrl') as string
   const category = formData.get('category') as string
 
@@ -28,7 +28,7 @@ export async function createTool(prevState: any, formData: FormData) {
       nameEn: nameEn || null,
       desc,
       descEn: descEn || null,
-      url,
+      url: url || null,
       logoUrl,
       category,
       sortOrder: newSortOrder,
@@ -45,7 +45,7 @@ export async function updateTool(prevState: any, formData: FormData) {
   const nameEn = formData.get('nameEn') as string
   const desc = formData.get('desc') as string
   const descEn = formData.get('descEn') as string
-  const url = formData.get('url') as string
+  const url = formData.get('url') as string | null
   const logoUrl = formData.get('logoUrl') as string
   const category = formData.get('category') as string
 
@@ -56,7 +56,7 @@ export async function updateTool(prevState: any, formData: FormData) {
       nameEn: nameEn || null,
       desc,
       descEn: descEn || null,
-      url,
+      url: url || null,
       logoUrl,
       category,
     },

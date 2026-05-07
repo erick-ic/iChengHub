@@ -87,13 +87,12 @@ export function ToolForm({ action, defaultValues }: ToolFormProps) {
 
       <div className="grid grid-cols-2 gap-4">
         <div className="space-y-2">
-          <Label htmlFor="url">访问链接</Label>
+          <Label htmlFor="url">访问链接 <span className="text-gray-400 text-xs">(可选)</span></Label>
           <Input
             id="url"
             name="url"
             defaultValue={defaultValues?.url}
             placeholder="https://..."
-            required
           />
         </div>
         <div className="space-y-2">

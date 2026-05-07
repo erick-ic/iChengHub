@@ -99,24 +99,21 @@ export function ToolIcon({ url, title, iconUrl }: ToolIconProps) {
     setHasError(false);
   };
 
-  const containerClass = `relative w-12 h-12 flex items-center justify-center rounded-xl overflow-hidden transition-all duration-300 ${
-    isImageLoaded 
-      ? 'border border-zinc-200/50 bg-white shadow-sm' 
-      : `border ${palette.border} bg-gradient-to-br ${palette.from} ${palette.to}`
-  }`;
+  const containerClass = 'relative w-12 h-12 flex items-center justify-center rounded-xl overflow-hidden transition-all duration-300 ' + (isImageLoaded ? 'border border-zinc-200/50 bg-white shadow-sm' : 'border ' + palette.border + ' bg-gradient-to-br ' + palette.from + ' ' + palette.to);
 
   return (
     <div className={containerClass}>
       {!isImageLoaded && (
-        <span className={`font-bold text-lg ${palette.text} transition-opacity duration-300 ${isImageLoaded ? 'opacity-0' : 'opacity-100'}`}>
+        <span className={'font-bold text-lg ' + palette.text + ' transition-opacity duration-300 ' + (isImageLoaded ? 'opacity-0' : 'opacity-100')}>
           {initial}
         </span>
       )}
       {currentIconUrl && !hasError && (
+        /* eslint-disable-next-line @next/next/no-img-element */
         <img
           src={currentIconUrl}
           alt={title}
-          className={`absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-contain transition-opacity duration-300 ${isImageLoaded ? 'opacity-100' : 'opacity-0'}`}
+          className={'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-contain transition-opacity duration-300 ' + (isImageLoaded ? 'opacity-100' : 'opacity-0')}
           loading="lazy"
           onLoad={handleImageLoad}
           onError={handleImageError}

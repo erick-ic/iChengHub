@@ -21,14 +21,16 @@ export default function ColorExtractedImage({ src, alt, className = '', unoptimi
         onClick={() => setIsPreviewOpen(true)}
       >
         <div className="absolute inset-0 w-full h-full">
-          <img
+          <Image
             src={src}
             alt=""
-            className="absolute inset-0 w-full h-full object-cover cursor-pointer"
+            fill
+            className="object-cover cursor-pointer"
             style={{
               filter: 'blur(10px) brightness(0.85)',
               transform: 'scale(1.1)'
             }}
+            unoptimized={unoptimized}
           />
         </div>
         

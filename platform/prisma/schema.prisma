@@ -14,7 +14,7 @@ model ToolCard {
   nameEn    String?
   desc      String
   descEn    String?
-  url       String
+  url       String?
   logoUrl   String
   category  String
   status    Int      @default(0)

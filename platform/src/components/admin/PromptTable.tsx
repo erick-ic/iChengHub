@@ -2,6 +2,7 @@
 
 import { useState } from 'react'
 import { usePathname, useRouter } from 'next/navigation'
+import Image from 'next/image'
 import { Search, Plus, Pencil, Trash2, ChevronUp, ChevronDown, ArrowUpToLine, Eye, Heart, MessageSquare } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from '@/components/ui/table'
@@ -272,10 +273,12 @@ export function PromptTable({ prompts }: PromptTableProps) {
                       className="relative h-8 w-8 rounded-lg overflow-hidden cursor-pointer hover:opacity-80 transition-opacity"
                       onClick={() => setPreviewImage(prompt.imageUrl)}
                     >
-                      <img 
+                      <Image 
                         src={prompt.imageUrl} 
                         alt={prompt.title}
-                        className="h-full w-full object-cover"
+                        fill
+                        className="object-cover"
+                        unoptimized={prompt.imageUrl?.startsWith('http')}
                       />
                     </div>
                   </TableCell>
@@ -390,6 +393,7 @@ export function PromptTable({ prompts }: PromptTableProps) {
         <Dialog open={!!previewImage} onOpenChange={() => setPreviewImage(null)}>
           <DialogContent className="sm:max-w-4xl p-4">
             <div className="flex justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={previewImage} 
                 alt="Preview"

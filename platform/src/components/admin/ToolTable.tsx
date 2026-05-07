@@ -2,6 +2,7 @@
 
 import { useState } from "react"
 import { useRouter, usePathname, useSearchParams } from "next/navigation"
+import Image from 'next/image'
 import { useDebouncedCallback } from "use-debounce"
 import { Input } from "@/components/ui/input"
 import { Button } from "@/components/ui/button"
@@ -32,7 +33,7 @@ interface Tool {
   desc: string
   descEn: string | null
   logoUrl: string
-  url: string
+  url: string | null
   category: string
   status: number
   sortOrder: number
@@ -221,7 +222,7 @@ export function ToolTable({ tools }: ToolTableProps) {
                   nameEn: editingTool.nameEn || undefined,
                   desc: editingTool.desc,
                   descEn: editingTool.descEn || undefined,
-                  url: editingTool.url,
+                  url: editingTool.url || undefined,
                   logoUrl: editingTool.logoUrl,
                   category: editingTool.category,
                 }}
@@ -259,6 +260,7 @@ export function ToolTable({ tools }: ToolTableProps) {
         <Dialog open={isLogoPreviewOpen} onOpenChange={setIsLogoPreviewOpen}>
           <DialogContent className="sm:max-w-lg p-4">
             <div className="flex justify-center">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
               <img 
                 src={previewLogoUrl} 
                 alt="Logo预览" 
@@ -302,13 +304,15 @@ export function ToolTable({ tools }: ToolTableProps) {
                         setIsLogoPreviewOpen(true)
                       }}
                     >
-                      <img
+                      <Image
                         src={tool.logoUrl}
                         alt={tool.name}
-                        className="object-cover w-full h-full"
+                        fill
+                        className="object-cover"
                         style={{
                           clipPath: 'polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%)'
                         }}
+                        unoptimized={tool.logoUrl?.startsWith('http')}
                       />
                     </div>
                   </TableCell>

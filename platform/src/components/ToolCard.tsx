@@ -14,7 +14,7 @@ interface ToolCardProps {
     descEn: string | null;
     logoUrl: string;
     category: string;
-    url: string;
+    url: string | null;
     displayName?: string;
     displayDesc?: string;
   };

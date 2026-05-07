@@ -23,7 +23,6 @@ async function fetchTools(): Promise<Tool[]> {
       { createdAt: 'desc' },
     ]
   });
-  console.log('Fetched cards from database:', tools.length);
   return tools;
 }
 

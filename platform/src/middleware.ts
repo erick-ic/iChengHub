@@ -11,12 +11,10 @@ const intlMiddleware = createMiddleware({
 export default function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
-  console.log('🚀 [中间件雷达] 捕捉路径:', pathname);
 
   if (pathname.startsWith('/ibackend') || pathname.startsWith('/ibackendlogin')) {
     if (pathname === '/ibackend' && !pathname.startsWith('/ibackendlogin')) {
       if (!request.cookies.has('admin_session')) {
-        console.log('❌ 权限不足，重定向至登录页');
         return NextResponse.redirect(new URL('/ibackendlogin', request.url));
       }
     }

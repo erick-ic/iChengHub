@@ -21,42 +21,41 @@ import {
   DialogTitle,
   DialogTrigger,
 } from "@/components/ui/dialog"
+import { Label } from "@/components/ui/label"
+import { ToolIcon } from "@/components/ui/ToolIcon"
 import { Plus, Search, Pencil, Trash2, ChevronUp, ChevronDown, ArrowUpToLine } from "lucide-react"
-import { ToolForm } from "./ToolForm"
-import { createTool, updateTool, deleteTool, toggleToolStatus, moveToolUp, moveToolDown, moveToolToTop } from "@/app/actions/toolActions"
+import { createLink, updateLink, deleteLink, toggleLinkStatus, moveLinkUp, moveLinkDown, moveLinkToTop } from "@/app/actions/linkActions"
 
-interface Tool {
+interface Link {
   id: string
   name: string
   nameEn: string | null
   desc: string
   descEn: string | null
-  logoUrl: string
   url: string
+  iconUrl: string | null
   category: string
   status: number
   sortOrder: number
   createdAt: Date
 }
 
-interface ToolTableProps {
-  tools: Tool[]
+interface LinkTableProps {
+  links: Link[]
 }
 
-export function ToolTable({ tools }: ToolTableProps) {
+export function LinkTable({ links }: LinkTableProps) {
   const router = useRouter()
   const pathname = usePathname()
   const searchParams = useSearchParams()
   const [isDialogOpen, setIsDialogOpen] = useState(false)
   const [isEditDialogOpen, setIsEditDialogOpen] = useState(false)
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false)
-  const [editingTool, setEditingTool] = useState<Tool | null>(null)
-  const [deletingTool, setDeletingTool] = useState<Tool | null>(null)
+  const [editingLink, setEditingLink] = useState<Link | null>(null)
+  const [deletingLink, setDeletingLink] = useState<Link | null>(null)
   const [showToast, setShowToast] = useState(false)
   const [toastMessage, setToastMessage] = useState('')
   const [loadingId, setLoadingId] = useState<string | null>(null)
-  const [isLogoPreviewOpen, setIsLogoPreviewOpen] = useState(false)
-  const [previewLogoUrl, setPreviewLogoUrl] = useState('')
 
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams)
@@ -68,87 +67,87 @@ export function ToolTable({ tools }: ToolTableProps) {
     router.replace(`${pathname}?${params.toString()}`)
   }, 300)
 
-  const handleCreateTool = async (prevState: any, formData: FormData) => {
-    await createTool(prevState, formData)
+  const handleCreateLink = async (prevState: any, formData: FormData) => {
+    await createLink(prevState, formData)
     setIsDialogOpen(false)
-    setToastMessage('工具添加成功！')
+    setToastMessage('链接添加成功！')
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
     return { message: '添加成功', success: true }
   }
 
-  const handleEditTool = async (prevState: any, formData: FormData) => {
-    await updateTool(prevState, formData)
+  const handleEditLink = async (prevState: any, formData: FormData) => {
+    await updateLink(prevState, formData)
     router.refresh()
     setIsEditDialogOpen(false)
-    setEditingTool(null)
-    setToastMessage('工具更新成功！')
+    setEditingLink(null)
+    setToastMessage('链接更新成功！')
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
     return { message: '更新成功', success: true }
   }
 
-  const openEditDialog = (tool: Tool) => {
-    setEditingTool(tool)
+  const openEditDialog = (link: Link) => {
+    setEditingLink(link)
     setIsEditDialogOpen(true)
   }
 
-  const handleDeleteTool = async () => {
-    if (deletingTool) {
-      await deleteTool(deletingTool.id)
+  const handleDeleteLink = async () => {
+    if (deletingLink) {
+      await deleteLink(deletingLink.id)
       router.refresh()
       setIsDeleteDialogOpen(false)
-      setDeletingTool(null)
-      setToastMessage('工具删除成功！')
+      setDeletingLink(null)
+      setToastMessage('链接删除成功！')
       setShowToast(true)
       setTimeout(() => setShowToast(false), 3000)
     }
   }
 
-  const openDeleteDialog = (tool: Tool) => {
-    setDeletingTool(tool)
+  const openDeleteDialog = (link: Link) => {
+    setDeletingLink(link)
     setIsDeleteDialogOpen(true)
   }
 
-  const handleToggleStatus = async (tool: Tool) => {
+  const handleToggleStatus = async (link: Link) => {
     if (loadingId) return
-    setLoadingId(tool.id)
-    await toggleToolStatus(tool.id)
+    setLoadingId(link.id)
+    await toggleLinkStatus(link.id)
     router.refresh()
-    setToastMessage(tool.status === 1 ? '工具已关闭' : '工具已开启')
+    setToastMessage(link.status === 1 ? '链接已关闭' : '链接已开启')
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
     setLoadingId(null)
   }
 
-  const handleMoveToTop = async (tool: Tool) => {
+  const handleMoveToTop = async (link: Link) => {
     if (loadingId) return
-    setLoadingId(tool.id)
-    await moveToolToTop(tool.id)
+    setLoadingId(link.id)
+    await moveLinkToTop(link.id)
     router.refresh()
-    setToastMessage('工具已置顶')
+    setToastMessage('链接已置顶')
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
     setLoadingId(null)
   }
 
-  const handleMoveUp = async (tool: Tool) => {
+  const handleMoveUp = async (link: Link) => {
     if (loadingId) return
-    setLoadingId(tool.id)
-    await moveToolUp(tool.id)
+    setLoadingId(link.id)
+    await moveLinkUp(link.id)
     router.refresh()
-    setToastMessage('工具已上移')
+    setToastMessage('链接已上移')
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
     setLoadingId(null)
   }
 
-  const handleMoveDown = async (tool: Tool) => {
+  const handleMoveDown = async (link: Link) => {
     if (loadingId) return
-    setLoadingId(tool.id)
-    await moveToolDown(tool.id)
+    setLoadingId(link.id)
+    await moveLinkDown(link.id)
     router.refresh()
-    setToastMessage('工具已下移')
+    setToastMessage('链接已下移')
     setShowToast(true)
     setTimeout(() => setShowToast(false), 3000)
     setLoadingId(null)
@@ -156,7 +155,6 @@ export function ToolTable({ tools }: ToolTableProps) {
 
   return (
     <div className="space-y-4">
-      {/* 成功提示 Toast */}
       {showToast && (
         <div className="fixed top-4 right-4 z-[200] flex items-center gap-3 px-4 py-3 bg-green-100 border border-green-400 rounded-lg text-green-800 shadow-lg animate-in fade-in slide-in-from-right-4 duration-300">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -174,12 +172,11 @@ export function ToolTable({ tools }: ToolTableProps) {
         </div>
       )}
 
-      {/* 顶部操作栏 */}
       <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
         <div className="relative w-full sm:w-80">
           <Search className="absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
           <Input
-            placeholder="搜索工具..."
+            placeholder="搜索链接..."
             defaultValue={searchParams.get('q') || ''}
             onChange={(e) => handleSearch(e.target.value)}
             className="pl-10"
@@ -189,54 +186,118 @@ export function ToolTable({ tools }: ToolTableProps) {
           <DialogTrigger asChild>
             <Button className="transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25">
               <Plus className="mr-2 h-4 w-4 transition-transform duration-200 hover:rotate-90" />
-              添加工具
+              添加链接
             </Button>
           </DialogTrigger>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>添加新工具</DialogTitle>
+              <DialogTitle>添加新链接</DialogTitle>
               <DialogDescription>
-                填写工具信息，点击保存后将添加到数据库。
+                填写链接信息，点击保存后将添加到数据库。
               </DialogDescription>
             </DialogHeader>
-            <ToolForm action={handleCreateTool} />
+            <form onSubmit={async (e) => {
+              e.preventDefault()
+              const formData = new FormData(e.currentTarget)
+              await handleCreateLink(null, formData)
+              router.refresh()
+            }} className="space-y-4 py-4">
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="name">名称 (中文)</Label>
+                  <Input id="name" name="name" placeholder="请输入链接名称" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="nameEn">名称 (English)</Label>
+                  <Input id="nameEn" name="nameEn" placeholder="Enter link name" />
+                </div>
+              </div>
+              <div className="grid grid-cols-2 gap-4">
+                <div className="space-y-2">
+                  <Label htmlFor="desc">描述 (中文)</Label>
+                  <Input id="desc" name="desc" placeholder="请输入描述" required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="descEn">描述 (English)</Label>
+                  <Input id="descEn" name="descEn" placeholder="Enter description" />
+                </div>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="url">链接地址</Label>
+                <Input id="url" name="url" placeholder="https://" required />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="iconUrl">自定义图标 URL（可选）</Label>
+                <Input id="iconUrl" name="iconUrl" placeholder="手动指定图标地址，用于修复无法自动获取图标的网站" />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="category">分类</Label>
+                <Input id="category" name="category" placeholder="例如: AI 对话" required />
+              </div>
+              <Button type="submit" className="w-full">保存链接</Button>
+            </form>
           </DialogContent>
         </Dialog>
 
-        {/* 编辑工具对话框 */}
         <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
           <DialogContent>
             <DialogHeader>
-              <DialogTitle>编辑工具</DialogTitle>
+              <DialogTitle>编辑链接</DialogTitle>
               <DialogDescription>
-                修改工具信息，点击保存后将更新到数据库。
+                修改链接信息，点击保存后将更新到数据库。
               </DialogDescription>
             </DialogHeader>
-            {editingTool && (
-              <ToolForm
-                action={handleEditTool}
-                defaultValues={{
-                  id: editingTool.id,
-                  name: editingTool.name,
-                  nameEn: editingTool.nameEn || undefined,
-                  desc: editingTool.desc,
-                  descEn: editingTool.descEn || undefined,
-                  url: editingTool.url,
-                  logoUrl: editingTool.logoUrl,
-                  category: editingTool.category,
-                }}
-              />
+            {editingLink && (
+              <form onSubmit={async (e) => {
+                e.preventDefault()
+                const formData = new FormData(e.currentTarget)
+                await handleEditLink(null, formData)
+              }} className="space-y-4 py-4">
+                <input type="hidden" name="id" value={editingLink.id} />
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-name">名称 (中文)</Label>
+                    <Input id="edit-name" name="name" defaultValue={editingLink.name} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-nameEn">名称 (English)</Label>
+                    <Input id="edit-nameEn" name="nameEn" defaultValue={editingLink.nameEn || ''} />
+                  </div>
+                </div>
+                <div className="grid grid-cols-2 gap-4">
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-desc">描述 (中文)</Label>
+                    <Input id="edit-desc" name="desc" defaultValue={editingLink.desc} required />
+                  </div>
+                  <div className="space-y-2">
+                    <Label htmlFor="edit-descEn">描述 (English)</Label>
+                    <Input id="edit-descEn" name="descEn" defaultValue={editingLink.descEn || ''} />
+                  </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-url">链接地址</Label>
+                  <Input id="edit-url" name="url" defaultValue={editingLink.url} required />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-iconUrl">自定义图标 URL（可选）</Label>
+                  <Input id="edit-iconUrl" name="iconUrl" defaultValue={editingLink.iconUrl || ''} placeholder="手动指定图标地址" />
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="edit-category">分类</Label>
+                  <Input id="edit-category" name="category" defaultValue={editingLink.category} required />
+                </div>
+                <Button type="submit" className="w-full">更新链接</Button>
+              </form>
             )}
           </DialogContent>
         </Dialog>
 
-        {/* 删除确认对话框 */}
         <Dialog open={isDeleteDialogOpen} onOpenChange={setIsDeleteDialogOpen}>
           <DialogContent className="sm:max-w-md">
             <DialogHeader>
               <DialogTitle className="text-red-600">确认删除</DialogTitle>
               <DialogDescription>
-                确定要删除工具「{deletingTool?.name}」吗？此操作无法撤销。
+                确定要删除链接「{deletingLink?.name}」吗？此操作无法撤销。
               </DialogDescription>
             </DialogHeader>
             <div className="flex justify-end gap-3 pt-4">
@@ -245,7 +306,7 @@ export function ToolTable({ tools }: ToolTableProps) {
               </Button>
               <Button 
                 variant="destructive" 
-                onClick={handleDeleteTool}
+                onClick={handleDeleteLink}
                 className="bg-red-600 hover:bg-red-700"
               >
                 <Trash2 className="mr-2 h-4 w-4" />
@@ -255,27 +316,14 @@ export function ToolTable({ tools }: ToolTableProps) {
           </DialogContent>
         </Dialog>
 
-        {/* Logo预览对话框 */}
-        <Dialog open={isLogoPreviewOpen} onOpenChange={setIsLogoPreviewOpen}>
-          <DialogContent className="sm:max-w-lg p-4">
-            <div className="flex justify-center">
-              <img 
-                src={previewLogoUrl} 
-                alt="Logo预览" 
-                className="max-h-96 object-contain" 
-              />
-            </div>
-          </DialogContent>
-        </Dialog>
       </div>
 
-      {/* 表格 */}
       <div className="rounded-md border bg-white overflow-x-auto">
         <Table className="w-full min-w-[800px]">
           <TableHeader>
             <TableRow className="hover:bg-slate-50">
               <TableHead className="w-16 whitespace-nowrap">Logo</TableHead>
-              <TableHead className="w-32 whitespace-nowrap">工具名称</TableHead>
+              <TableHead className="w-32 whitespace-nowrap">链接名称</TableHead>
               <TableHead className="w-24 whitespace-nowrap">分类</TableHead>
               <TableHead className="w-[30%] whitespace-nowrap">描述</TableHead>
               <TableHead className="w-24 whitespace-nowrap">状态</TableHead>
@@ -285,58 +333,45 @@ export function ToolTable({ tools }: ToolTableProps) {
             </TableRow>
           </TableHeader>
           <TableBody>
-            {tools.length === 0 ? (
+            {links.length === 0 ? (
               <TableRow>
                 <TableCell colSpan={8} className="text-center text-slate-500">
-                  暂无工具数据
+                  暂无链接数据
                 </TableCell>
               </TableRow>
             ) : (
-              tools.map((tool) => (
-                <TableRow key={tool.id} className="hover:bg-slate-50">
+              links.map((link) => (
+                <TableRow key={link.id} className="hover:bg-slate-50">
                   <TableCell>
-                    <div 
-                      className="relative h-10 w-10 overflow-hidden rounded-md cursor-pointer hover:opacity-80 transition-opacity"
-                      onClick={() => {
-                        setPreviewLogoUrl(tool.logoUrl)
-                        setIsLogoPreviewOpen(true)
-                      }}
-                    >
-                      <img
-                        src={tool.logoUrl}
-                        alt={tool.name}
-                        className="object-cover w-full h-full"
-                        style={{
-                          clipPath: 'polygon(10% 0%, 90% 0%, 100% 10%, 100% 90%, 90% 100%, 10% 100%, 0% 90%, 0% 10%)'
-                        }}
-                      />
+                    <div className="flex items-center">
+                      <ToolIcon url={link.url} title={link.name} iconUrl={link.iconUrl || undefined} />
                     </div>
                   </TableCell>
                   <TableCell className="font-medium">
-                    {tool.name}
+                    {link.name}
                   </TableCell>
-                  <TableCell>{tool.category}</TableCell>
-                  <TableCell className="w-[30%] max-w-xs truncate" title={tool.desc}>
-                    {tool.desc}
+                  <TableCell>{link.category}</TableCell>
+                  <TableCell className="w-[30%] max-w-xs truncate" title={link.desc}>
+                    {link.desc}
                   </TableCell>
                   <TableCell>
                     <button
-                      onClick={() => handleToggleStatus(tool)}
-                      disabled={loadingId === tool.id}
+                      onClick={() => handleToggleStatus(link)}
+                      disabled={loadingId === link.id}
                       className={`relative inline-flex h-6 w-11 items-center rounded-full transition-colors duration-200 focus:outline-none ${
-                        tool.status === 1 ? 'bg-green-500' : 'bg-slate-300'
-                      } ${loadingId === tool.id ? 'opacity-50 cursor-not-allowed' : ''}`}
+                        link.status === 1 ? 'bg-green-500' : 'bg-slate-300'
+                      } ${loadingId === link.id ? 'opacity-50 cursor-not-allowed' : ''}`}
                     >
                       <span
                         className={`inline-block h-4 w-4 transform rounded-full bg-white shadow transition-transform duration-200 ${
-                          tool.status === 1 ? 'translate-x-6' : 'translate-x-1'
+                          link.status === 1 ? 'translate-x-6' : 'translate-x-1'
                         }`}
                       />
                     </button>
                   </TableCell>
                   <TableCell className="text-slate-500 font-mono text-sm whitespace-nowrap">
                     {(() => {
-                      const d = new Date(tool.createdAt)
+                      const d = new Date(link.createdAt)
                       const pad = (n: number) => n.toString().padStart(2, '0')
                       return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())} ${pad(d.getHours())}:${pad(d.getMinutes())}:${pad(d.getSeconds())}`
                     })()}
@@ -345,8 +380,8 @@ export function ToolTable({ tools }: ToolTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleMoveToTop(tool)}
-                      disabled={loadingId === tool.id}
+                      onClick={() => handleMoveToTop(link)}
+                      disabled={loadingId === link.id}
                       className="h-7 w-7 p-0 hover:bg-orange-50 hover:text-orange-600"
                       title="置顶"
                     >
@@ -355,9 +390,9 @@ export function ToolTable({ tools }: ToolTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleMoveUp(tool)}
-                      disabled={loadingId === tool.id || tools.indexOf(tool) === 0}
-                      className={`h-7 w-7 p-0 ${tools.indexOf(tool) === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-blue-50 hover:text-blue-600'}`}
+                      onClick={() => handleMoveUp(link)}
+                      disabled={loadingId === link.id || links.indexOf(link) === 0}
+                      className={`h-7 w-7 p-0 ${links.indexOf(link) === 0 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-blue-50 hover:text-blue-600'}`}
                       title="上移"
                     >
                       <ChevronUp className="h-4 w-4" />
@@ -365,9 +400,9 @@ export function ToolTable({ tools }: ToolTableProps) {
                     <Button
                       variant="ghost"
                       size="icon"
-                      onClick={() => handleMoveDown(tool)}
-                      disabled={loadingId === tool.id || tools.indexOf(tool) === tools.length - 1}
-                      className={`h-7 w-7 p-0 ${tools.indexOf(tool) === tools.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-blue-50 hover:text-blue-600'}`}
+                      onClick={() => handleMoveDown(link)}
+                      disabled={loadingId === link.id || links.indexOf(link) === links.length - 1}
+                      className={`h-7 w-7 p-0 ${links.indexOf(link) === links.length - 1 ? 'opacity-30 cursor-not-allowed' : 'hover:bg-blue-50 hover:text-blue-600'}`}
                       title="下移"
                     >
                       <ChevronDown className="h-4 w-4" />
@@ -378,7 +413,7 @@ export function ToolTable({ tools }: ToolTableProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => openEditDialog(tool)}
+                        onClick={() => openEditDialog(link)}
                         className="h-7 w-7 p-0 transition-all duration-200 hover:text-blue-600 hover:bg-blue-50"
                         title="编辑"
                       >
@@ -387,7 +422,7 @@ export function ToolTable({ tools }: ToolTableProps) {
                       <Button
                         variant="ghost"
                         size="icon"
-                        onClick={() => openDeleteDialog(tool)}
+                        onClick={() => openDeleteDialog(link)}
                         className="h-7 w-7 p-0 text-red-600 transition-all duration-200 hover:bg-red-50"
                         title="删除"
                       >

@@ -28,9 +28,9 @@ import {
 
 export default async function AdminDashboard() {
   const now = new Date()
-  const currentMonthStart = new Date(now.getFullYear(), now.getMonth(), 1)
-  const lastMonthStart = new Date(now.getFullYear(), now.getMonth() - 1, 1)
-  const lastMonthEnd = new Date(now.getFullYear(), now.getMonth(), 0)
+  const currentMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 1))
+  const lastMonthStart = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth() - 1, 1))
+  const lastMonthEnd = new Date(Date.UTC(now.getUTCFullYear(), now.getUTCMonth(), 0))
 
   // 从数据库获取真实数据
   const [
@@ -104,8 +104,8 @@ export default async function AdminDashboard() {
   // 计算环比变化
   const toolChange = toolCount - toolCountLastMonth
   const promptChange = promptCount - promptCountLastMonth
-  const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : 0
-  const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : 0
+  const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : '0'
+  const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : '0'
 
   // 格式化数字显示
   const formatNumber = (num: number): string => {
@@ -115,11 +115,11 @@ export default async function AdminDashboard() {
     return num.toString()
   }
 
-  // 格式化日期
+  // 格式化日期（UTC+8）
   const formatDate = (date: Date): string => {
     const d = new Date(date)
     const pad = (n: number) => n.toString().padStart(2, '0')
-    return `${d.getFullYear()}-${pad(d.getMonth() + 1)}-${pad(d.getDate())}`
+    return `${d.getUTCFullYear()}-${pad(d.getUTCMonth() + 1)}-${pad(d.getUTCDate())}`
   }
 
   // 格式化变化值显示
@@ -213,11 +213,11 @@ export default async function AdminDashboard() {
               <Table>
                 <TableHeader>
                   <TableRow>
-                    <TableHead>提示词名称</TableHead>
-                    <TableHead>分类</TableHead>
-                    <TableHead className="text-right">浏览量</TableHead>
-                    <TableHead className="text-right">点赞</TableHead>
-                    <TableHead className="text-right">日期</TableHead>
+                    <TableHead className="whitespace-nowrap">提示词名称</TableHead>
+                    <TableHead className="whitespace-nowrap">分类</TableHead>
+                    <TableHead className="whitespace-nowrap text-right">浏览量</TableHead>
+                    <TableHead className="whitespace-nowrap text-right">点赞</TableHead>
+                    <TableHead className="whitespace-nowrap text-right">日期</TableHead>
                   </TableRow>
                 </TableHeader>
                 <TableBody>

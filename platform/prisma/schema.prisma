@@ -19,7 +19,23 @@ model ToolCard {
   category  String
   status    Int      @default(0)
   sortOrder Int      @default(0)
-  createdAt DateTime @default(now())
+  createdAt DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt DateTime @updatedAt @db.Timestamptz(0)
+}
+
+model NavLink {
+  id        String   @id @default(cuid())
+  name      String
+  nameEn    String?
+  desc      String
+  descEn    String?
+  url       String
+  iconUrl   String?
+  category  String
+  status    Int      @default(1)
+  sortOrder Int      @default(0)
+  createdAt DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt DateTime @updatedAt @db.Timestamptz(0)
 }
 
 model Prompt {
@@ -36,5 +52,6 @@ model Prompt {
   comments   Int      @default(0)
   status     Int      @default(0)
   sortOrder  Int      @default(0)
-  createdAt  DateTime @default(now())
+  createdAt  DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(0)
 }

@@ -1,7 +1,7 @@
 'use client';
 
 import React from 'react';
-import { ChevronDown, Search, ArrowUpRight } from 'lucide-react';
+import { Search, ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
 
@@ -18,8 +18,8 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
     <nav className="h-16 bg-background border-b border-border flex justify-between items-center px-8">
       {/* 左侧 Logo */}
       <Link href="/" className="flex items-center group no-underline">
-        <div 
-          className="flex items-baseline font-extrabold italic tracking-tighter" 
+        <div
+          className="flex items-baseline font-extrabold italic tracking-tighter"
           style={{ fontFamily: "'Exo 2', sans-serif" }}
         >
           {/* iCheng 部分 - 固定黑色 */}
@@ -35,26 +35,23 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
 
       {/* 中间菜单 */}
       <div className="flex space-x-1">
-        <Link 
-          href="/" 
+        <Link
+          href="/"
           className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
         >
           {t('home')}
         </Link>
-        <a 
-          href="#" 
-          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors flex items-center"
+        <span className="text-sm font-medium text-muted-foreground px-3 py-1.5 rounded-md cursor-default">
+          {t('tools')}
+        </span>
+        <Link
+          href="/links"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
         >
-          {t('tools')} <ChevronDown className="ml-1 h-3 w-3 text-muted-foreground" />
-        </a>
-        <a 
-          href="#" 
-          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors flex items-center"
-        >
-          {t('links')} <ChevronDown className="ml-1 h-3 w-3 text-muted-foreground" />
-        </a>
-        <a 
-          href="#" 
+          {t('links')}
+        </Link>
+        <a
+          href="#"
           className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
         >
           {t('about')}

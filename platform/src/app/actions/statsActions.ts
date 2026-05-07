@@ -22,8 +22,7 @@ export async function toggleLike(promptId: string) {
     });
 
     if (hasLock) {
-      cookieStore.delete(cookieName, { path: '/' });
-      console.log(`❤️ [点赞系统] ID: ${promptId} 取消点赞，当前点赞数: ${result.likes}`);
+      cookieStore.delete(cookieName);
     } else {
       cookieStore.set(cookieName, '1', {
         maxAge: 60 * 60 * 24 * 365,
@@ -32,7 +31,6 @@ export async function toggleLike(promptId: string) {
         secure: process.env.NODE_ENV === 'production',
         sameSite: 'lax'
       });
-      console.log(`❤️ [点赞系统] ID: ${promptId} 点赞成功，当前点赞数: ${result.likes}`);
     }
 
     return {
@@ -55,7 +53,6 @@ export async function incrementViews(promptId: string) {
   const hasLock = cookieStore.has(cookieName);
 
   if (hasLock) {
-    console.log(`🛡️ [防刷系统] ID: ${promptId} 已锁定，跳过数据库更新`);
     return { success: true, skipped: true };
   }
 
@@ -73,7 +70,6 @@ export async function incrementViews(promptId: string) {
       sameSite: 'lax'
     });
 
-    console.log(`🚀 [统计系统] ID: ${promptId} 浏览量 +1`);
     return { success: true };
   } catch (error) {
     console.error('统计更新失败:', error);

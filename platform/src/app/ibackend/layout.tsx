@@ -9,6 +9,7 @@ import {
   Wrench,
   Lightbulb,
   Users,
+  Link2,
   LogOut
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
@@ -31,6 +32,11 @@ const navItems = [
     title: "工具管理",
     href: "/ibackend/tools",
     icon: Wrench,
+  },
+  {
+    title: "导航管理",
+    href: "/ibackend/links",
+    icon: Link2,
   },
   {
     title: "提示词管理",

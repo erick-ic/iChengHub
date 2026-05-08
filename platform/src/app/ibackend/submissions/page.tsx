@@ -54,7 +54,7 @@ export default function AdminSubmissionsPage() {
 
   useEffect(() => {
     loadData();
-  }, [mode]);
+  }, [mode]); // eslint-disable-line react-hooks/exhaustive-deps
 
   const loadData = async () => {
     setIsLoading(true);
@@ -321,7 +321,7 @@ export default function AdminSubmissionsPage() {
                         </p>
                       ) : (item as ToolDemand).referenceUrl ? (
                         <a
-                          href={(item as ToolDemand).referenceUrl}
+                          href={(item as ToolDemand).referenceUrl ?? undefined}
                           target="_blank"
                           rel="noopener noreferrer"
                           className="text-[#e52129] hover:underline text-sm truncate max-w-xs block"

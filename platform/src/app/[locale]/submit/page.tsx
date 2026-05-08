@@ -1,12 +1,54 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { useFormState } from 'react-dom';
+import { useFormState, useFormStatus } from 'react-dom';
 import { useTranslations } from 'next-intl';
-import { Loader2 } from 'lucide-react';
+import { Loader2, CheckCircle, AlertCircle } from 'lucide-react';
 import { submitRecommendation, submitDemand } from '@/app/actions/submit-center';
 
-const initialState = { success: false };
+interface SubmitState {
+  success: boolean;
+  error?: string;
+}
+
+const initialState: SubmitState = { success: false };
+
+interface FormData {
+  // Tool submission fields
+  name: string;
+  url: string;
+  description: string;
+  contact: string;
+  // Demand fields
+  title: string;
+  detail: string;
+  referenceUrl: string;
+}
+
+function SubmitButton({ mode, t }: { mode: 'TOOL' | 'DEMAND'; t: ReturnType<typeof useTranslations> }) {
+  const { pending } = useFormStatus();
+  
+  return (
+    <button
+      type="submit"
+      disabled={pending}
+      className={`w-full py-3.5 rounded-lg font-medium text-sm transition-all mt-6 flex items-center justify-center gap-2 ${
+        pending
+          ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
+          : 'bg-[#e52129] text-white hover:bg-[#d11a22] active:bg-[#b8161f]'
+      }`}
+    >
+      {pending ? (
+        <>
+          <Loader2 className="h-4 w-4 animate-spin" />
+          {t('submitting')}
+        </>
+      ) : (
+        mode === 'TOOL' ? t('submitTool') : t('submitDemand')
+      )}
+    </button>
+  );
+}
 
 interface ConfettiProps {
   show: boolean;
@@ -67,7 +109,18 @@ export default function SubmitPage() {
   const [mode, setMode] = useState<'TOOL' | 'DEMAND'>('TOOL');
   const [showSuccess, setShowSuccess] = useState(false);
   const [showConfetti, setShowConfetti] = useState(false);
-  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  
+  // 受控表单数据
+  const [formData, setFormData] = useState<FormData>({
+    name: '',
+    url: '',
+    description: '',
+    contact: '',
+    title: '',
+    detail: '',
+    referenceUrl: '',
+  });
 
   const [toolState, toolAction] = useFormState(submitRecommendation, initialState);
   const [demandState, demandAction] = useFormState(submitDemand, initialState);
@@ -75,30 +128,67 @@ export default function SubmitPage() {
   const currentAction = mode === 'TOOL' ? toolAction : demandAction;
   const currentState = mode === 'TOOL' ? toolState : demandState;
 
-  const handleSubmit = () => {
-    setShowSuccess(false);
-    setIsSubmitting(true);
+  // 处理表单字段变化
+  const handleInputChange = (e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+    const { name, value } = e.target;
+    setFormData(prev => ({
+      ...prev,
+      [name]: value
+    }));
   };
 
-  useEffect(() => {
-    if (currentState.success || (!currentState.success && isSubmitting)) {
-      setIsSubmitting(false);
-    }
-  }, [currentState.success, isSubmitting]);
+  // 重置表单数据
+  const resetForm = () => {
+    setFormData({
+      name: '',
+      url: '',
+      description: '',
+      contact: '',
+      title: '',
+      detail: '',
+      referenceUrl: '',
+    });
+  };
 
+  // 处理提交结果
   useEffect(() => {
-    if (currentState.success && !showSuccess) {
+    // 清除之前的错误
+    setError(null);
+
+    if (currentState.success) {
+      // 显示成功效果
       setShowConfetti(true);
-      setTimeout(() => {
-        setShowConfetti(false);
-      }, 3000);
+      setTimeout(() => setShowConfetti(false), 3000);
+
       setTimeout(() => {
         setShowSuccess(true);
-        const form = document.getElementById('submit-form') as HTMLFormElement;
-        form?.reset();
+        resetForm();
+        
+        // 重置状态以便下次提交
+        if (mode === 'TOOL') {
+          toolAction(new FormData());
+        } else {
+          demandAction(new FormData());
+        }
       }, 100);
+
+      // 3秒后隐藏成功提示
+      const timer = setTimeout(() => setShowSuccess(false), 3000);
+      return () => clearTimeout(timer);
+    } else if (currentState.error) {
+      // 显示错误信息
+      setError(currentState.error);
+      const timer = setTimeout(() => setError(null), 5000);
+      return () => clearTimeout(timer);
     }
-  }, [currentState.success, showSuccess]);
+  }, [currentState, mode, toolAction, demandAction]);
+
+  // 切换模式时重置表单
+  useEffect(() => {
+    resetForm();
+    setShowSuccess(false);
+    setError(null);
+  }, [mode]);
 
   return (
     <>
@@ -139,8 +229,16 @@ export default function SubmitPage() {
             {mode === 'TOOL' ? t('toolSubtitle') : t('demandSubtitle')}
           </p>
 
+          {/* 错误提示 */}
+          {error && (
+            <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg flex items-center gap-3">
+              <AlertCircle className="h-5 w-5 text-red-500 flex-shrink-0" />
+              <span className="text-sm text-red-700">{error}</span>
+            </div>
+          )}
+
           {/* 表单 */}
-          <form id="submit-form" action={currentAction} onSubmit={handleSubmit} className="space-y-5">
+          <form id="submit-form" action={currentAction} className="space-y-5">
             {mode === 'TOOL' ? (
               <>
                 <div>
@@ -150,6 +248,8 @@ export default function SubmitPage() {
                   <input
                     type="text"
                     name="name"
+                    value={formData.name}
+                    onChange={handleInputChange}
                     required
                     placeholder={t('toolNamePlaceholder')}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e52129]/20 focus:border-[#e52129] transition-all"
@@ -163,6 +263,8 @@ export default function SubmitPage() {
                   <input
                     type="text"
                     name="url"
+                    value={formData.url}
+                    onChange={handleInputChange}
                     required
                     placeholder={t('urlPlaceholder')}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e52129]/20 focus:border-[#e52129] transition-all"
@@ -175,6 +277,8 @@ export default function SubmitPage() {
                   </label>
                   <textarea
                     name="description"
+                    value={formData.description}
+                    onChange={handleInputChange}
                     required
                     rows={3}
                     placeholder={t('descriptionPlaceholder')}
@@ -189,6 +293,8 @@ export default function SubmitPage() {
                   <input
                     type="text"
                     name="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
                     placeholder={t('contactToolPlaceholder')}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e52129]/20 focus:border-[#e52129] transition-all"
                   />
@@ -203,6 +309,8 @@ export default function SubmitPage() {
                   <input
                     type="text"
                     name="title"
+                    value={formData.title}
+                    onChange={handleInputChange}
                     required
                     placeholder={t('titlePlaceholder')}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e52129]/20 focus:border-[#e52129] transition-all"
@@ -215,6 +323,8 @@ export default function SubmitPage() {
                   </label>
                   <textarea
                     name="detail"
+                    value={formData.detail}
+                    onChange={handleInputChange}
                     required
                     rows={4}
                     placeholder={t('detailPlaceholder')}
@@ -229,6 +339,8 @@ export default function SubmitPage() {
                   <input
                     type="text"
                     name="referenceUrl"
+                    value={formData.referenceUrl}
+                    onChange={handleInputChange}
                     placeholder={t('referenceUrlPlaceholder')}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e52129]/20 focus:border-[#e52129] transition-all"
                   />
@@ -241,6 +353,8 @@ export default function SubmitPage() {
                   <input
                     type="text"
                     name="contact"
+                    value={formData.contact}
+                    onChange={handleInputChange}
                     placeholder={t('contactDemandPlaceholder')}
                     className="w-full px-4 py-3 bg-gray-50 border border-gray-200 rounded-lg text-sm focus:outline-none focus:ring-2 focus:ring-[#e52129]/20 focus:border-[#e52129] transition-all"
                   />
@@ -249,29 +363,13 @@ export default function SubmitPage() {
             )}
 
             {/* 提交按钮 */}
-            <button
-              type="submit"
-              disabled={isSubmitting}
-              className={`w-full py-3.5 rounded-lg font-medium text-sm transition-all mt-6 flex items-center justify-center gap-2 ${
-                isSubmitting
-                  ? 'bg-gray-400 text-gray-200 cursor-not-allowed'
-                  : 'bg-[#e52129] text-white hover:bg-[#d11a22]'
-              }`}
-            >
-              {isSubmitting ? (
-                <>
-                  <Loader2 className="h-4 w-4 animate-spin" />
-                  {t('submitting')}
-                </>
-              ) : (
-                mode === 'TOOL' ? t('submitTool') : t('submitDemand')
-              )}
-            </button>
+            <SubmitButton mode={mode} t={t} />
 
-            {/* 提示消息 */}
+            {/* 成功提示 */}
             {showSuccess && (
-              <div className="text-center text-sm py-2 text-green-600">
-                {mode === 'TOOL' ? t('toolSuccess') : t('demandSuccess')}
+              <div className="text-center text-sm py-3 bg-green-50 border border-green-200 rounded-lg flex items-center justify-center gap-2">
+                <CheckCircle className="h-4 w-4 text-green-600" />
+                <span className="text-green-700">{mode === 'TOOL' ? t('toolSuccess') : t('demandSuccess')}</span>
               </div>
             )}
           </form>

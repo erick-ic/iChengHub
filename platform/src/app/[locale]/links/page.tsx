@@ -2,6 +2,7 @@ import { PackageOpen } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import { SidebarNav } from '@/components/SidebarNav';
 import { ToolCard } from '@/components/navigation/ToolCard';
+import MobileCategorySelector from '@/components/navigation/MobileCategorySelector';
 import { getTranslations } from 'next-intl/server';
 
 export const dynamic = 'force-dynamic';
@@ -97,25 +98,21 @@ export default async function LinksPage({ params }: { params: Promise<{ locale: 
   const groupedTools = groupToolsByCategory(tools, isEnglish);
 
   return (
-    <div className="container mx-auto px-4 py-8">
-      <div className="flex gap-6">
-        <aside className="w-56 flex-shrink-0">
-          <SidebarNav 
-            categories={categories} 
-            tools={tools} 
-            isEnglish={isEnglish} 
-          />
-        </aside>
-
-        <main className="flex-1 min-w-0">
-          <div className="mb-6">
-            <h1 className="text-2xl font-bold text-gray-900 mb-2">
-              {t('title')}
-            </h1>
-            <p className="text-gray-500">
-              {t('description')}
-            </p>
-          </div>
+    <div className="min-w-0">
+      {/* 移动端布局 */}
+      <div className="md:hidden container mx-auto px-4 py-6">
+        <MobileCategorySelector 
+          categories={categories} 
+          isEnglish={isEnglish} 
+        />
+        
+        <div className="mt-6">
+          <h1 className="text-xl font-bold text-gray-900 mb-2">
+            {t('title')}
+          </h1>
+          <p className="text-gray-500 mb-6">
+            {t('description')}
+          </p>
 
           {tools.length === 0 ? (
             <EmptyState t={t} />
@@ -135,7 +132,7 @@ export default async function LinksPage({ params }: { params: Promise<{ locale: 
                       ({section.tools.length})
                     </span>
                   </div>
-                  <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                  <div className="grid grid-cols-1 gap-4">
                     {section.tools.map((tool) => (
                       <ToolCard
                         key={tool.id}
@@ -148,7 +145,63 @@ export default async function LinksPage({ params }: { params: Promise<{ locale: 
               ))}
             </div>
           )}
-        </main>
+        </div>
+      </div>
+
+      {/* 桌面端布局 */}
+      <div className="hidden md:block container mx-auto px-4 py-8">
+        <div className="flex gap-6">
+          <aside className="w-56 flex-shrink-0">
+            <SidebarNav 
+              categories={categories} 
+              tools={tools} 
+              isEnglish={isEnglish} 
+            />
+          </aside>
+
+          <main className="flex-1 min-w-0">
+            <div className="mb-6">
+              <h1 className="text-2xl font-bold text-gray-900 mb-2">
+                {t('title')}
+              </h1>
+              <p className="text-gray-500">
+                {t('description')}
+              </p>
+            </div>
+
+            {tools.length === 0 ? (
+              <EmptyState t={t} />
+            ) : (
+              <div className="space-y-12">
+                {groupedTools.map((section) => (
+                  <div
+                    key={section.category}
+                    data-category={encodeURIComponent(section.category)}
+                    className="scroll-mt-24"
+                  >
+                    <div className="flex items-center gap-3 mb-4">
+                      <h2 className="text-lg font-semibold text-gray-900">
+                        {section.category}
+                      </h2>
+                      <span className="text-sm text-gray-400">
+                        ({section.tools.length})
+                      </span>
+                    </div>
+                    <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4">
+                      {section.tools.map((tool) => (
+                        <ToolCard
+                          key={tool.id}
+                          tool={tool}
+                          isEnglish={isEnglish}
+                        />
+                      ))}
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
+          </main>
+        </div>
       </div>
     </div>
   );

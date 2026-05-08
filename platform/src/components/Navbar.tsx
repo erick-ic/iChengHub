@@ -41,9 +41,12 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
         >
           {t('home')}
         </Link>
-        <span className="text-sm font-medium text-muted-foreground px-3 py-1.5 rounded-md cursor-default">
+        <Link
+          href="/tools"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+        >
           {t('tools')}
-        </span>
+        </Link>
         <Link
           href="/links"
           className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"

@@ -39,6 +39,13 @@
     "noTools": "No tools available",
     "noToolsDesc": "We are working on adding new tools. Please check back later."
   },
+  "ToolsPage": {
+    "title": "AI Tools Directory",
+    "description": "Explore various AI tools to boost your productivity",
+    "categories": "Categories",
+    "noTools": "No tools available",
+    "noToolsDesc": "Stay tuned for more AI tools coming soon"
+  },
   "language": {
     "zh": "CN",
     "en": "EN"

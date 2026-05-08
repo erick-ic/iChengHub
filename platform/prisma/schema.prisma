@@ -9,18 +9,19 @@ datasource db {
 }
 
 model ToolCard {
-  id        String   @id @default(cuid())
-  name      String
-  nameEn    String?
-  desc      String
-  descEn    String?
-  url       String?
-  logoUrl   String
-  category  String
-  status    Int      @default(0)
-  sortOrder Int      @default(0)
-  createdAt DateTime @default(now()) @db.Timestamptz(0)
-  updatedAt DateTime @updatedAt @db.Timestamptz(0)
+  id         String   @id @default(cuid())
+  name       String
+  nameEn     String?
+  desc       String
+  descEn     String?
+  url        String?
+  logoUrl    String
+  category   String
+  categoryEn String?
+  status     Int      @default(0)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt  DateTime @updatedAt @db.Timestamptz(0)
 }
 
 model NavLink {

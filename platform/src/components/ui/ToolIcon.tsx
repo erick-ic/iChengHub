@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, useRef } from 'react';
+import { useState, useEffect } from 'react';
 
 interface ToolIconProps {
   url: string;
@@ -9,17 +9,15 @@ interface ToolIconProps {
 }
 
 const COLOR_PALETTES = [
-  { from: 'from-indigo-500/10', to: 'to-purple-500/10', text: 'text-indigo-600', border: 'border-indigo-100' },
-  { from: 'from-blue-500/10', to: 'to-cyan-500/10', text: 'text-blue-600', border: 'border-blue-100' },
-  { from: 'from-green-500/10', to: 'to-emerald-500/10', text: 'text-green-600', border: 'border-green-100' },
-  { from: 'from-pink-500/10', to: 'to-rose-500/10', text: 'text-pink-600', border: 'border-pink-100' },
-  { from: 'from-orange-500/10', to: 'to-amber-500/10', text: 'text-orange-600', border: 'border-orange-100' },
-  { from: 'from-red-500/10', to: 'to-rose-500/10', text: 'text-red-600', border: 'border-red-100' },
-  { from: 'from-teal-500/10', to: 'to-cyan-500/10', text: 'text-teal-600', border: 'border-teal-100' },
-  { from: 'from-violet-500/10', to: 'to-purple-500/10', text: 'text-violet-600', border: 'border-violet-100' },
+  { bg: 'bg-indigo-50', text: 'text-indigo-600' },
+  { bg: 'bg-blue-50', text: 'text-blue-600' },
+  { bg: 'bg-green-50', text: 'text-green-600' },
+  { bg: 'bg-pink-50', text: 'text-pink-600' },
+  { bg: 'bg-orange-50', text: 'text-orange-600' },
+  { bg: 'bg-red-50', text: 'text-red-600' },
+  { bg: 'bg-teal-50', text: 'text-teal-600' },
+  { bg: 'bg-violet-50', text: 'text-violet-600' },
 ];
-
-const LOAD_TIMEOUT = 5000;
 
 function getColorPalette(title: string): typeof COLOR_PALETTES[0] {
   let hash = 0;
@@ -29,96 +27,86 @@ function getColorPalette(title: string): typeof COLOR_PALETTES[0] {
   return COLOR_PALETTES[Math.abs(hash) % COLOR_PALETTES.length];
 }
 
-const getDomain = (urlString: string) => {
+const getDomain = (urlString: string): string => {
   try {
     const url = new URL(urlString);
-    return url.hostname;
+    return url.hostname.replace('www.', '');
   } catch {
     return urlString;
   }
 };
 
 export function ToolIcon({ url, title, iconUrl }: ToolIconProps) {
-  const [currentUrlIndex, setCurrentUrlIndex] = useState(0);
-  const [isImageLoaded, setIsImageLoaded] = useState(false);
+  const [currentProviderIndex, setCurrentProviderIndex] = useState(0);
   const [hasError, setHasError] = useState(false);
-  const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   
   const palette = getColorPalette(title);
   const initial = title.charAt(0).toUpperCase();
-
   const domain = getDomain(url);
-  
-  const iconUrls = [
-    iconUrl,
+
+  // 多个 favicon 服务提供商，按优先级排列
+  const faviconProviders = [
     `https://www.google.cn/s2/favicons?domain=${domain}&sz=128`,
-    `https://api.uomg.com/api/get.favicon?url=${encodeURIComponent(url)}`,
     `https://www.google.com/s2/favicons?domain=${domain}&sz=128`,
     `https://icons.duckduckgo.com/ip3/${domain}.ico`,
-  ].filter(Boolean) as string[];
+    `https://favicon.yandex.net/favicon/${domain}`,
+    `https://api.faviconkit.com/${domain}/128`,
+  ];
 
-  const currentIconUrl = iconUrls[currentUrlIndex];
-
-  useEffect(() => {
-    if (!currentIconUrl) {
-      setHasError(true);
-      return;
-    }
-
-    timeoutRef.current = setTimeout(() => {
-      if (currentUrlIndex < iconUrls.length - 1) {
-        setCurrentUrlIndex(prev => prev + 1);
-      } else {
-        setHasError(true);
-      }
-    }, LOAD_TIMEOUT);
-
-    return () => {
-      if (timeoutRef.current) {
-        clearTimeout(timeoutRef.current);
-      }
-    };
-  }, [currentIconUrl, currentUrlIndex, iconUrls.length]);
+  // 如果提供了 iconUrl，优先使用；否则尝试从 URL 抓取 favicon
+  const iconUrls = iconUrl ? [iconUrl] : faviconProviders;
+  const finalIconUrl = iconUrls[currentProviderIndex];
 
   const handleImageError = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    if (currentUrlIndex < iconUrls.length - 1) {
-      setCurrentUrlIndex(prev => prev + 1);
+    if (currentProviderIndex < iconUrls.length - 1) {
+      setCurrentProviderIndex(prev => prev + 1);
     } else {
       setHasError(true);
     }
   };
 
-  const handleImageLoad = () => {
-    if (timeoutRef.current) {
-      clearTimeout(timeoutRef.current);
-    }
-    setIsImageLoaded(true);
-    setHasError(false);
-  };
-
-  const containerClass = 'relative w-12 h-12 flex items-center justify-center rounded-xl overflow-hidden transition-all duration-300 ' + (isImageLoaded ? 'border border-zinc-200/50 bg-white shadow-sm' : 'border ' + palette.border + ' bg-gradient-to-br ' + palette.from + ' ' + palette.to);
+  // 处理空 URL 的情况
+  if (!url || url.trim() === '') {
+    return (
+      <div className="w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden shadow-sm">
+        <div className={`w-full h-full flex items-center justify-center ${palette.bg}`}>
+          <span className={`font-bold text-xl ${palette.text}`}>
+            {initial}
+          </span>
+        </div>
+      </div>
+    );
+  }
 
   return (
-    <div className={containerClass}>
-      {!isImageLoaded && (
-        <span className={'font-bold text-lg ' + palette.text + ' transition-opacity duration-300 ' + (isImageLoaded ? 'opacity-0' : 'opacity-100')}>
-          {initial}
-        </span>
+    // 外层容器添加圆角和 overflow-hidden
+    <div className="relative w-12 h-12 flex-shrink-0 rounded-xl overflow-hidden shadow-sm">
+      {/* 背景容器 */}
+      <div className={`absolute inset-0 ${!hasError ? 'bg-gray-100' : palette.bg}`} />
+      
+      {/* 初始字母占位 */}
+      {hasError && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          <span className={`font-bold text-xl ${palette.text}`}>
+            {initial}
+          </span>
+        </div>
       )}
-      {currentIconUrl && !hasError && (
+      
+      {/* 图片 - 使用 object-cover 填充容器 */}
+      {!hasError && (
         /* eslint-disable-next-line @next/next/no-img-element */
         <img
-          src={currentIconUrl}
+          src={finalIconUrl}
           alt={title}
-          className={'absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-8 h-8 object-contain transition-opacity duration-300 ' + (isImageLoaded ? 'opacity-100' : 'opacity-0')}
+          className="absolute inset-0 w-full h-full object-cover"
           loading="lazy"
-          onLoad={handleImageLoad}
           onError={handleImageError}
         />
       )}
+      
+      {/* hover 效果层 */}
+      <div className="absolute inset-0 bg-black/5 opacity-0 group-hover:opacity-100 transition-opacity duration-200 pointer-events-none" />
     </div>
   );
 }

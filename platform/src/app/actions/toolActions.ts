@@ -11,6 +11,7 @@ export async function createTool(prevState: any, formData: FormData) {
   const url = formData.get('url') as string | null
   const logoUrl = formData.get('logoUrl') as string
   const category = formData.get('category') as string
+  const categoryEn = formData.get('categoryEn') as string
 
   // 查询当前最大的排序值，新工具排在第一位（排序值 = 最大值 + 1）
   const maxSortOrder = await prisma.toolCard.aggregate({
@@ -31,6 +32,7 @@ export async function createTool(prevState: any, formData: FormData) {
       url: url || null,
       logoUrl,
       category,
+      categoryEn: categoryEn || null,
       sortOrder: newSortOrder,
     },
   })
@@ -48,6 +50,7 @@ export async function updateTool(prevState: any, formData: FormData) {
   const url = formData.get('url') as string | null
   const logoUrl = formData.get('logoUrl') as string
   const category = formData.get('category') as string
+  const categoryEn = formData.get('categoryEn') as string
 
   await prisma.toolCard.update({
     where: { id },
@@ -59,6 +62,7 @@ export async function updateTool(prevState: any, formData: FormData) {
       url: url || null,
       logoUrl,
       category,
+      categoryEn: categoryEn || null,
     },
   })
 

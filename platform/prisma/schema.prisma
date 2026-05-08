@@ -57,3 +57,25 @@ model Prompt {
   createdAt  DateTime @default(now()) @db.Timestamptz(0)
   updatedAt  DateTime @updatedAt @db.Timestamptz(0)
 }
+
+model ToolSubmission {
+  id          String   @id @default(cuid())
+  name        String
+  url         String
+  description String
+  contact     String?
+  status      String   @default("PENDING")
+  createdAt   DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(0)
+}
+
+model ToolDemand {
+  id           String   @id @default(cuid())
+  title        String
+  detail       String
+  referenceUrl String?
+  contact      String?
+  status       String   @default("PENDING")
+  createdAt    DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt    DateTime @updatedAt @db.Timestamptz(0)
+}

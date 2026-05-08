@@ -93,10 +93,13 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
         <GlobalSearch items={searchItems} isEnglish={locale === 'en'} />
 
         {/* 行动按钮 */}
-        <button className="bg-foreground text-background px-4 py-2 rounded-full flex items-center text-sm font-medium">
-          {t('submitTool')}
+        <Link
+          href="/submit"
+          className="bg-foreground text-background px-4 py-2 rounded-full flex items-center text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          {t('submitButton')}
           <ArrowUpRight className="ml-2 h-3 w-3 transform rotate-45" />
-        </button>
+        </Link>
       </div>
     </nav>
   );

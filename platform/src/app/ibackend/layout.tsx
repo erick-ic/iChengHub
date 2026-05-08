@@ -10,7 +10,8 @@ import {
   Lightbulb,
   Users,
   Link2,
-  LogOut
+  LogOut,
+  FileText
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -42,6 +43,11 @@ const navItems = [
     title: "提示词管理",
     href: "/ibackend/prompts",
     icon: Lightbulb,
+  },
+  {
+    title: "提交管理",
+    href: "/ibackend/submissions",
+    icon: FileText,
   },
   {
     title: "用户管理",

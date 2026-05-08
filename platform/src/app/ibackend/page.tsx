@@ -26,7 +26,9 @@ import {
   Heart,
   Link2,
   Plus,
-  ArrowUpRight
+  ArrowUpRight,
+  Star,
+  MessageSquare
 } from "lucide-react"
 
 export default async function AdminDashboard() {
@@ -40,18 +42,24 @@ export default async function AdminDashboard() {
     toolCount,
     promptCount,
     linkCount,
+    submissionCount,
+    demandCount,
     totalViews,
     totalLikes,
     recentPrompts,
     toolCountLastMonth,
     promptCountLastMonth,
     linkCountLastMonth,
+    submissionCountLastMonth,
+    demandCountLastMonth,
     viewsLastMonth,
     likesLastMonth,
   ] = await Promise.all([
     prisma.toolCard.count(),
     prisma.prompt.count(),
     prisma.navLink.count(),
+    prisma.toolSubmission.count(),
+    prisma.toolDemand.count(),
     prisma.prompt.aggregate({ _sum: { views: true } }),
     prisma.prompt.aggregate({ _sum: { likes: true } }),
     prisma.prompt.findMany({
@@ -90,6 +98,22 @@ export default async function AdminDashboard() {
         },
       },
     }),
+    prisma.toolSubmission.count({
+      where: {
+        createdAt: {
+          gte: lastMonthStart,
+          lte: lastMonthEnd,
+        },
+      },
+    }),
+    prisma.toolDemand.count({
+      where: {
+        createdAt: {
+          gte: lastMonthStart,
+          lte: lastMonthEnd,
+        },
+      },
+    }),
     prisma.prompt.aggregate({
       _sum: { views: true },
       where: {
@@ -119,6 +143,8 @@ export default async function AdminDashboard() {
   const toolChange = toolCount - toolCountLastMonth
   const promptChange = promptCount - promptCountLastMonth
   const linkChange = linkCount - linkCountLastMonth
+  const submissionChange = submissionCount - submissionCountLastMonth
+  const demandChange = demandCount - demandCountLastMonth
   const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : '0'
   const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : '0'
 
@@ -160,7 +186,7 @@ export default async function AdminDashboard() {
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#e52129' }}></span>
             内容数据
           </h3>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">总工具数</CardTitle>
@@ -196,6 +222,32 @@ export default async function AdminDashboard() {
                 <div className="text-3xl font-bold">{promptCount}</div>
                 <p className={`text-[10px] mt-1 ${promptChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatChange(promptChange)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">推荐总数</CardTitle>
+                <Star className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{submissionCount}</div>
+                <p className={`text-[10px] mt-1 ${submissionChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(submissionChange)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">心愿总数</CardTitle>
+                <MessageSquare className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{demandCount}</div>
+                <p className={`text-[10px] mt-1 ${demandChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(demandChange)}
                 </p>
               </CardContent>
             </Card>

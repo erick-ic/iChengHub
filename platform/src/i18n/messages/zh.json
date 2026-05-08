@@ -6,7 +6,7 @@
     "links": "效率导航",
     "about": "关于",
     "searchPlaceholder": "开始搜索",
-    "submitTool": "提交工具"
+    "submitButton": "提交 / 许愿"
   },
   "layout": {
     "title": "AI 工具卡片门户",
@@ -93,5 +93,35 @@
     "views": "浏览",
     "likes": "点赞",
     "comments": "评论"
+  },
+  "submitPage": {
+    "tabTool": "推荐好物",
+    "tabDemand": "许下心愿",
+    "toolTitle": "推荐一个好工具",
+    "toolSubtitle": "发现好用的工具？推荐给我们，让更多人受益",
+    "demandTitle": "定制开发许愿",
+    "demandSubtitle": "有什么痛点需求？告诉我们，说不定就实现了",
+    "toolNameLabel": "工具名称",
+    "toolNamePlaceholder": "例如：Kimi",
+    "urlLabel": "官网链接",
+    "urlPlaceholder": "https://...",
+    "descriptionLabel": "一句话推荐理由",
+    "descriptionPlaceholder": "这个工具最打动你的点是什么？",
+    "titleLabel": "一句话描述痛点/需求",
+    "titlePlaceholder": "例如：需要一个批量改图工具",
+    "detailLabel": "具体场景描述",
+    "detailPlaceholder": "目前是怎么解决的？痛点在哪？",
+    "referenceUrlLabel": "对标产品链接",
+    "referenceUrlPlaceholder": "有没有类似产品可以参考？",
+    "contactLabel": "联系方式",
+    "contactOptional": "选填",
+    "contactToolPlaceholder": "你的微信/邮箱，方便发版通知",
+    "contactDemandPlaceholder": "你的微信/邮箱，开发出来后第一时间通知你",
+    "submitTool": "提交推荐",
+    "submitDemand": "提交许愿",
+    "toolSuccess": "推荐提交成功！",
+    "demandSuccess": "许愿提交成功！",
+    "required": "*",
+    "submitting": "提交中..."
   }
 }

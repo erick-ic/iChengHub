@@ -6,7 +6,7 @@
     "links": "Links",
     "about": "About",
     "searchPlaceholder": "Start searching",
-    "submitTool": "Submit Tool"
+    "submitButton": "Submit / Wish"
   },
   "layout": {
     "title": "AI Tool Card Portal",
@@ -93,5 +93,35 @@
     "views": "Views",
     "likes": "Likes",
     "comments": "Comments"
+  },
+  "submitPage": {
+    "tabTool": "Recommend Tool",
+    "tabDemand": "Make a Wish",
+    "toolTitle": "Recommend a Great Tool",
+    "toolSubtitle": "Found a useful tool? Share it with us and help more people",
+    "demandTitle": "Custom Development Wish",
+    "demandSubtitle": "Have a pain point or need? Tell us, it might just come true",
+    "toolNameLabel": "Tool Name",
+    "toolNamePlaceholder": "e.g.: Kimi",
+    "urlLabel": "Official Link",
+    "urlPlaceholder": "https://...",
+    "descriptionLabel": "One-line Recommendation",
+    "descriptionPlaceholder": "What impresses you most about this tool?",
+    "titleLabel": "Describe Your Pain Point/Need",
+    "titlePlaceholder": "e.g.: Need a batch image editing tool",
+    "detailLabel": "Detailed Scenario Description",
+    "detailPlaceholder": "How do you solve it currently? What's the pain point?",
+    "referenceUrlLabel": "Reference Product Link",
+    "referenceUrlPlaceholder": "Any similar products for reference?",
+    "contactLabel": "Contact",
+    "contactOptional": "Optional",
+    "contactToolPlaceholder": "Your WeChat/Email for release notifications",
+    "contactDemandPlaceholder": "Your WeChat/Email to be notified when developed",
+    "submitTool": "Submit Recommendation",
+    "submitDemand": "Submit Wish",
+    "toolSuccess": "Recommendation submitted successfully!",
+    "demandSuccess": "Wish submitted successfully!",
+    "required": "*",
+    "submitting": "Submitting..."
   }
 }

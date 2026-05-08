@@ -11,6 +11,11 @@ const intlMiddleware = createMiddleware({
 export default function middleware(request: NextRequest) {
   const pathname = request.nextUrl.pathname;
 
+  // 排除 API 路径
+  if (pathname.startsWith('/api')) {
+    return NextResponse.next();
+  }
+
   if (pathname.startsWith('/ibackend')) {
     if (pathname.startsWith('/ibackendlogin')) {
       return NextResponse.next();

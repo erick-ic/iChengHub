@@ -35,6 +35,7 @@ interface Tool {
   logoUrl: string
   url: string | null
   category: string
+  categoryEn: string | null
   status: number
   sortOrder: number
   createdAt: Date
@@ -225,6 +226,7 @@ export function ToolTable({ tools }: ToolTableProps) {
                   url: editingTool.url || undefined,
                   logoUrl: editingTool.logoUrl,
                   category: editingTool.category,
+                  categoryEn: editingTool.categoryEn || undefined,
                 }}
               />
             )}

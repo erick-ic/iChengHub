@@ -1,6 +1,6 @@
 'use client';
 
-import { Grid3X3 } from 'lucide-react';
+import { Link2 } from 'lucide-react';
 import { useEffect, useState } from 'react';
 
 interface CategorySection {
@@ -61,8 +61,8 @@ export function SidebarNav({ categories, tools, isEnglish }: SidebarNavProps) {
   return (
     <div className="bg-white rounded-xl border border-gray-100 shadow-sm p-4 sticky top-8">
       <h2 className="font-semibold text-gray-900 mb-4 flex items-center gap-2">
-        <Grid3X3 className="w-4 h-4" />
-        {isEnglish ? 'Categories' : '全部链接导航'}
+        <Link2 className="w-4 h-4" />
+        {isEnglish ? 'Categories' : '链接导航'}
       </h2>
       <nav className="space-y-1">
         <button

@@ -30,6 +30,7 @@ interface ToolFormProps {
     url?: string
     logoUrl?: string
     category?: string
+    categoryEn?: string
   }
 }
 
@@ -85,16 +86,17 @@ export function ToolForm({ action, defaultValues }: ToolFormProps) {
         </div>
       </div>
 
+      <div className="space-y-2">
+        <Label htmlFor="url">访问链接 <span className="text-gray-400 text-xs">(可选)</span></Label>
+        <Input
+          id="url"
+          name="url"
+          defaultValue={defaultValues?.url}
+          placeholder="https://..."
+        />
+      </div>
+
       <div className="grid grid-cols-2 gap-4">
-        <div className="space-y-2">
-          <Label htmlFor="url">访问链接 <span className="text-gray-400 text-xs">(可选)</span></Label>
-          <Input
-            id="url"
-            name="url"
-            defaultValue={defaultValues?.url}
-            placeholder="https://..."
-          />
-        </div>
         <div className="space-y-2">
           <Label htmlFor="category">分类</Label>
           <Input
@@ -103,6 +105,15 @@ export function ToolForm({ action, defaultValues }: ToolFormProps) {
             defaultValue={defaultValues?.category}
             placeholder="例如：AI工具"
             required
+          />
+        </div>
+        <div className="space-y-2">
+          <Label htmlFor="categoryEn">英文分类</Label>
+          <Input
+            id="categoryEn"
+            name="categoryEn"
+            defaultValue={defaultValues?.categoryEn}
+            placeholder="例如：AI Tools"
           />
         </div>
       </div>

@@ -1,9 +1,10 @@
 'use client';
 
-import React from 'react';
-import { Search, ArrowUpRight } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { ArrowUpRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { Link, usePathname } from '@/navigation';
+import { GlobalSearch, SearchItem } from './layout/GlobalSearch';
 
 interface NavbarProps {
   locale: string;
@@ -13,15 +14,31 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
   const t = useTranslations('navbar');
   const pathname = usePathname();
   const nextLocale = locale === 'en' ? 'zh' : 'en';
+  const [searchItems, setSearchItems] = useState<SearchItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
+
+  // 获取搜索数据
+  useEffect(() => {
+    const fetchSearchData = async () => {
+      try {
+        const response = await fetch('/api/search');
+        const data = await response.json();
+        setSearchItems(data);
+      } catch (error) {
+        console.error('Failed to fetch search data:', error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchSearchData();
+  }, []);
 
   return (
     <nav className="h-16 bg-background border-b border-border flex justify-between items-center px-8">
       {/* 左侧 Logo */}
       <Link href="/" className="flex items-center group no-underline">
-        <div
-          className="flex items-baseline font-extrabold italic tracking-tighter"
-          style={{ fontFamily: "'Exo 2', sans-serif" }}
-        >
+        <div className="flex items-baseline font-extrabold italic tracking-tighter">
           {/* iCheng 部分 - 固定黑色 */}
           <span className="text-2xl md:text-3xl text-black">
             iCheng
@@ -41,9 +58,12 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
         >
           {t('home')}
         </Link>
-        <span className="text-sm font-medium text-muted-foreground px-3 py-1.5 rounded-md cursor-default">
+        <Link
+          href="/tools"
+          className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+        >
           {t('tools')}
-        </span>
+        </Link>
         <Link
           href="/links"
           className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
@@ -69,21 +89,17 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
           {nextLocale === 'en' ? 'EN' : 'ZH'}
         </Link>
 
-        {/* 搜索框 */}
-        <div className="relative">
-          <input
-            type="text"
-            placeholder={t('searchPlaceholder')}
-            className="rounded-full bg-muted pl-10 pr-4 py-2 w-64 text-sm"
-          />
-          <Search className="absolute left-3 top-1/2 transform -translate-y-1/2 h-4 w-4 text-muted-foreground" />
-        </div>
+        {/* 全局搜索组件 */}
+        <GlobalSearch items={searchItems} isEnglish={locale === 'en'} />
 
         {/* 行动按钮 */}
-        <button className="bg-foreground text-background px-4 py-2 rounded-full flex items-center text-sm font-medium">
-          {t('submitTool')}
+        <Link
+          href="/submit"
+          className="bg-foreground text-background px-4 py-2 rounded-full flex items-center text-sm font-medium hover:opacity-90 transition-opacity"
+        >
+          {t('submitButton')}
           <ArrowUpRight className="ml-2 h-3 w-3 transform rotate-45" />
-        </button>
+        </Link>
       </div>
     </nav>
   );

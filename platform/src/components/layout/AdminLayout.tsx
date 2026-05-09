@@ -11,7 +11,8 @@ import {
   Users,
   Link2,
   LogOut,
-  FileText
+  FileText,
+  Loader2
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -63,6 +64,7 @@ export default function AdminLayout({
 }) {
   const router = useRouter()
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
 
   useEffect(() => {
     const isLoggedOut = localStorage.getItem('admin_logged_out')
@@ -138,23 +140,39 @@ export default function AdminLayout({
               确定要退出后台管理系统吗？退出后将返回网站首页。
             </DialogDescription>
           </DialogHeader>
-          <form id="logout-form" action={logout} className="flex gap-4 mt-6">
+          <div className="flex gap-4 mt-6">
             <Button
               variant="outline"
-              type="button"
               onClick={() => setIsConfirmOpen(false)}
+              disabled={isLoading}
               className="flex-1 px-6 py-2.5 text-sm font-medium border-slate-300 text-slate-700 hover:bg-slate-50"
             >
               取消
             </Button>
             <Button
-              type="submit"
+              onClick={async () => {
+                setIsLoading(true)
+                try {
+                  await logout()
+                } catch (error) {
+                  console.error('Logout failed:', error)
+                  setIsLoading(false)
+                }
+              }}
               variant="destructive"
               className="flex-1"
+              disabled={isLoading}
             >
-              确认
+              {isLoading ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  退出中...
+                </>
+              ) : (
+                '确认'
+              )}
             </Button>
-          </form>
+          </div>
         </DialogContent>
       </Dialog>
     </div>

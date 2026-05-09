@@ -26,5 +26,8 @@ export async function login(state: LoginState, formData: FormData): Promise<Logi
 
 export async function logout() {
   cookies().delete('admin_session')
-  redirect('/')
+  const baseUrl = process.env.NODE_ENV === 'production' 
+    ? 'https://ichenghub.cn' 
+    : 'http://localhost:3000'
+  redirect(`${baseUrl}/`)
 }

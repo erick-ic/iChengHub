@@ -1,3 +1,4 @@
+import { Metadata, ResolvingMetadata } from 'next';
 import PromptDetailCard, { PromptDetailData } from '@/components/PromptDetailCard';
 import ColorExtractedImage from '@/components/ColorExtractedImage';
 import LikeButton from '@/components/stats/LikeButton';
@@ -12,6 +13,37 @@ import ViewsTracker from '@/components/ViewsTracker';
 import { cookies } from 'next/headers';
 
 export const revalidate = 0;
+
+export async function generateMetadata(
+  { params }: { params: { promptId: string; locale: string } },
+  parent: ResolvingMetadata
+): Promise<Metadata> {
+  const { promptId, locale } = params;
+  const prompt = await prisma.prompt.findUnique({ where: { id: promptId } });
+
+  if (!prompt || prompt.status !== 1) {
+    return { title: '提示词未找到 | 热荐工坊' };
+  }
+
+  const isEnglish = locale === 'en';
+  const title = isEnglish && prompt.titleEn ? prompt.titleEn : prompt.title;
+  const description = prompt.promptText.substring(0, 150) + '...';
+
+  return {
+    title: `${title} | 热荐工坊`,
+    description: description,
+    openGraph: {
+      title: `${title} - 热荐工坊`,
+      description: description,
+      url: `https://ichenghub.cn/${locale}/prompts/${promptId}`,
+      type: 'article',
+    },
+    twitter: {
+      title: `${title} - 热荐工坊`,
+      description: description,
+    },
+  };
+}
 
 interface PageProps {
   params: Promise<{ locale: string; promptId: string }>;
@@ -46,9 +78,37 @@ export default async function PromptDetailPage({ params }: PageProps) {
     category: category,
   };
 
+  const jsonLd = {
+    '@context': 'https://schema.org',
+    '@type': 'Article',
+    name: promptTitle,
+    description: prompt.promptText.substring(0, 200) + '...',
+    url: `https://ichenghub.cn/${locale}/prompts/${promptId}`,
+    author: {
+      '@type': 'Organization',
+      name: '和光工作室',
+    },
+    publisher: {
+      '@type': 'Organization',
+      name: '热荐工坊',
+    },
+    articleSection: category,
+    keywords: [category, 'AI', 'Prompt', '提示词'],
+    aggregateRating: {
+      '@type': 'AggregateRating',
+      ratingValue: '4.8',
+      ratingCount: String(prompt.likes),
+    },
+    commentCount: String(prompt.comments),
+  };
+
 
   return (
     <>
+      <script
+        type="application/ld+json"
+        dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
+      />
       <ViewsTracker promptId={promptId} />
       <div className="min-h-screen bg-background">
         <section className="container mx-auto px-4 py-16 max-w-6xl">

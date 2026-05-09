@@ -19,7 +19,8 @@ interface Prompt {
   titleEn: string | null
   category: string
   categoryEn: string | null
-  toolId: string
+  platform: string
+  platformUrl: string | null
   imageUrl: string
   promptText: string
   views: number
@@ -198,13 +199,17 @@ export function PromptTable({ prompts }: PromptTableProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="toolId">所属工具</Label>
-                    <Input id="toolId" name="toolId" placeholder="例如: Gemini" defaultValue={editingPrompt?.toolId || ''} required />
+                    <Label htmlFor="toolId">所属平台</Label>
+                    <Input id="toolId" name="toolId" placeholder="例如: Gemini" defaultValue={editingPrompt?.platform || ''} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="imageUrl">封面图 URL</Label>
-                    <Input id="imageUrl" name="imageUrl" defaultValue={editingPrompt?.imageUrl || ''} required />
+                    <Label htmlFor="platformUrl">平台链接</Label>
+                    <Input id="platformUrl" name="platformUrl" placeholder="例如: https://gemini.google.com" defaultValue={editingPrompt?.platformUrl || ''} />
                   </div>
+                </div>
+                <div className="space-y-2">
+                  <Label htmlFor="imageUrl">封面图 URL</Label>
+                  <Input id="imageUrl" name="imageUrl" defaultValue={editingPrompt?.imageUrl || ''} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="promptText">提示词正文</Label>

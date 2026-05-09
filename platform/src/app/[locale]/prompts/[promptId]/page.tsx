@@ -1,10 +1,12 @@
 import PromptDetailCard, { PromptDetailData } from '@/components/PromptDetailCard';
 import ColorExtractedImage from '@/components/ColorExtractedImage';
 import LikeButton from '@/components/stats/LikeButton';
+import FavoriteButton from '@/components/stats/FavoriteButton';
+import CopyGenerateButton from '@/components/stats/CopyGenerateButton';
+import AnimatedNumber from '@/components/stats/AnimatedNumber';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
-import Image from 'next/image';
-import { Eye, MessageCircle, Tag } from 'lucide-react';
+import { Eye, Tag } from 'lucide-react';
 import { Link } from '@/navigation';
 import ViewsTracker from '@/components/ViewsTracker';
 import { cookies } from 'next/headers';
@@ -30,11 +32,6 @@ export default async function PromptDetailPage({ params }: PageProps) {
     notFound();
   }
 
-  const tool = await prisma.toolCard.findUnique({
-    where: { id: prompt.toolId },
-  });
-
-  const toolName = isEnglish ? (tool?.nameEn || tool?.name) : (tool?.name || '');
   const promptTitle = isEnglish ? (prompt.titleEn || prompt.title) : prompt.title;
   const category = isEnglish ? (prompt.categoryEn || prompt.category) : prompt.category;
 
@@ -43,8 +40,11 @@ export default async function PromptDetailPage({ params }: PageProps) {
     title: prompt.title,
     titleEn: prompt.titleEn,
     promptText: prompt.promptText,
+    platformName: prompt.platform,
+    platformUrl: prompt.platformUrl || undefined,
+    commentsCount: prompt.comments,
+    category: category,
   };
-
 
 
   return (
@@ -65,36 +65,72 @@ export default async function PromptDetailPage({ params }: PageProps) {
           </nav>
 
           <div className="mb-8">
-            <span className="inline-flex items-center gap-1.5 px-4 py-2 bg-gradient-to-r from-blue-300 to-purple-400 text-white text-xs font-semibold rounded-full mb-4 shadow-sm hover:shadow-md transition-all duration-300 hover:-translate-y-0.5">
-              <Tag className="w-3.5 h-3.5" />
-              {category}
-            </span>
-            <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 mb-4 tracking-tight">
+            <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 tracking-tight">
               {promptTitle}
             </h1>
           </div>
 
-          <div className="flex flex-col lg:flex-row gap-8">
+          {/* 标签区域：分类和推荐平台 */}
+          <div className="flex items-center gap-3 mb-6">
+            {category && (
+              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-full px-4 py-2">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
+                  <Tag className="w-3 h-3 text-white" />
+                </div>
+                <span className="text-sm font-semibold text-blue-600">{category}</span>
+              </span>
+            )}
+            {prompt.platform && (
+              <span className="inline-flex items-center gap-2 bg-gradient-to-r from-orange-50 to-amber-50 border border-orange-100 rounded-full px-4 py-2">
+                <div className="w-5 h-5 rounded-full bg-gradient-to-br from-orange-400 to-amber-500 flex items-center justify-center">
+                  <svg className="w-3 h-3 text-white" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M13 10V3L4 14h7v7l9-11h-7z" />
+                  </svg>
+                </div>
+                <span className="text-sm font-medium text-orange-700">{isEnglish ? 'Recommended Platform:' : '推荐平台'}</span>
+                {prompt.platformUrl && (
+                  <a 
+                    href={prompt.platformUrl} 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="text-orange-600 font-semibold hover:text-orange-800 transition-colors flex items-center gap-1"
+                  >
+                    {prompt.platform}
+                    <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+                    </svg>
+                  </a>
+                )}
+              </span>
+            )}
+          </div>
+
+          {/* 双栏布局：移动端垂直排列，桌面端并排，使用 Grid 确保等高 */}
+          <div className="grid grid-cols-1 lg:grid-cols-[3fr,1fr] gap-8 items-stretch">
+            {/* 左侧：图片 */}
             <div className="flex-1">
               <ColorExtractedImage 
                 src={prompt.imageUrl || ''} 
                 alt={promptTitle}
                 unoptimized={prompt.imageUrl?.startsWith('http')}
               />
-              <PromptDetailCard data={promptData} isEnglish={isEnglish} />
             </div>
 
-            <div className="lg:w-72 space-y-4">
-              <div className="flex gap-4">
-                <div className="flex-1 bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300">
-                  <div className="flex items-center gap-3 mb-3">
-                    <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center eye-container">
-                      <Eye className="w-5 h-5 text-blue-500 eye-icon" />
+            {/* 右侧统计卡片：移动端在图片下方，桌面端在图片右侧，撑满高度并两端对齐 */}
+            <div className="flex flex-col justify-between h-full">
+              {/* 上盒子：浏览、点赞、收藏 */}
+              <div className="space-y-4">
+                <div className="relative bg-white/90 backdrop-blur-md border border-zinc-100 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 overflow-hidden h-24">
+                  <div className="absolute top-0 right-0 w-24 h-24 bg-gradient-to-bl from-blue-100/40 to-transparent rounded-bl-full"></div>
+                  <div className="relative h-full flex items-center justify-between">
+                    <div className="flex items-center gap-3">
+                      <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-blue-50 to-blue-100 flex items-center justify-center eye-container ring-2 ring-blue-100/50">
+                        <Eye className="w-5 h-5 text-blue-500 eye-icon" />
+                        <div className="absolute inset-0 bg-blue-500/5 rounded-xl"></div>
+                      </div>
+                      <span className="text-zinc-500 text-sm font-medium">{isEnglish ? 'Views' : '浏览'}</span>
                     </div>
-                    <span className="text-zinc-500 text-sm font-medium">{isEnglish ? 'Views' : '浏览'}</span>
-                  </div>
-                  <div className="text-3xl font-bold text-zinc-900">
-                    {prompt.views.toLocaleString()}
+                    <AnimatedNumber value={prompt.views} className="text-3xl font-bold text-zinc-900" />
                   </div>
                 </div>
 
@@ -104,42 +140,31 @@ export default async function PromptDetailPage({ params }: PageProps) {
                   initialCount={prompt.likes}
                   isEnglish={isEnglish}
                 />
+
+                <FavoriteButton 
+                  promptId={promptId}
+                  initialFavorited={false}
+                  initialCount={prompt.favorites}
+                  isEnglish={isEnglish}
+                />
               </div>
 
-              <div className="bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl p-5 shadow-sm flex flex-col max-h-[600px]">
-                <div className="flex items-center justify-between mb-4">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-gradient-to-br from-purple-50 to-purple-100 flex items-center justify-center">
-                      <MessageCircle className="w-5 h-5 text-purple-500" />
-                    </div>
-                    <span className="text-zinc-500 text-sm font-medium">{isEnglish ? 'Comments' : '评论'}</span>
-                  </div>
-                  <div className="text-2xl font-bold text-zinc-900">
-                    {prompt.comments.toLocaleString()}
-                  </div>
-                </div>
-                
-                <div className="flex-1 flex flex-col gap-3 overflow-y-auto">
-                  <div className="flex gap-3">
-                    <div className="w-8 h-8 rounded-full bg-gradient-to-br from-zinc-200 to-zinc-300 flex items-center justify-center flex-shrink-0">
-                      <span className="text-zinc-600 text-xs font-medium">U</span>
-                    </div>
-                    <div className="flex-1 min-w-0">
-                      <textarea
-                        placeholder={isEnglish ? 'Write a comment...' : '发表评论...'}
-                        className="w-full px-4 py-3 bg-zinc-50 border border-zinc-200 rounded-xl text-sm resize-none focus:outline-none focus:border-purple-300 focus:ring-1 focus:ring-purple-300 transition-all"
-                        rows={2}
-                      />
-                      <div className="flex justify-end mt-2">
-                        <button className="px-4 py-2 bg-gradient-to-r from-purple-300 to-purple-400 text-white text-sm font-medium rounded-lg hover:shadow-md transition-all">
-                          {isEnglish ? 'Send' : '发送'}
-                        </button>
-                      </div>
-                    </div>
-                  </div>
-                </div>
+              {/* 下盒子：复制去生成按钮 */}
+              <div className="mt-4 lg:mt-auto">
+                {prompt.platformUrl && (
+                  <CopyGenerateButton 
+                    promptText={prompt.promptText}
+                    platformUrl={prompt.platformUrl}
+                    isEnglish={isEnglish}
+                  />
+                )}
               </div>
             </div>
+          </div>
+
+          {/* 提示词详情卡片 - 在统计卡片下方 */}
+          <div className="mt-8">
+            <PromptDetailCard data={promptData} isEnglish={isEnglish} />
           </div>
         </section>
       </div>

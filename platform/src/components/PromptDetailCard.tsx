@@ -1,7 +1,7 @@
 'use client';
 
 import { useState } from 'react';
-import { Copy, Check } from 'lucide-react';
+import { Copy, Check, MessageSquare } from 'lucide-react';
 
 export interface PromptDetailData {
   id: string;
@@ -9,6 +9,10 @@ export interface PromptDetailData {
   titleEn: string | null;
   promptText: string;
   description?: string;
+  platformName?: string;
+  platformUrl?: string;
+  commentsCount?: number;
+  category?: string;
 }
 
 interface PromptDetailCardProps {
@@ -19,11 +23,19 @@ interface PromptDetailCardProps {
 
 export default function PromptDetailCard({ data, isEnglish = false, isPortrait = false }: PromptDetailCardProps) {
   const [copied, setCopied] = useState(false);
+  const commentsCount = data.commentsCount || 128;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(data.promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+  };
+
+  const scrollToComments = () => {
+    const commentsSection = document.getElementById('comments-section');
+    if (commentsSection) {
+      commentsSection.scrollIntoView({ behavior: 'smooth' });
+    }
   };
 
   if (isPortrait) {
@@ -67,6 +79,7 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
 
   return (
     <div className="space-y-4">
+      {/* 提示词内容框 */}
       <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm">
         <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-200 bg-zinc-50/50">
           <span className="text-zinc-700 text-sm font-semibold">
@@ -74,22 +87,22 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
           </span>
           <button
             onClick={handleCopy}
-            className="group flex items-center gap-2 px-3 py-1.5 rounded-lg hover:bg-zinc-200 transition-all"
+            className="group flex items-center gap-2 px-4 py-2.5 rounded-xl bg-gradient-to-r from-blue-500 to-indigo-600 text-white shadow-md shadow-blue-500/30 hover:shadow-lg hover:shadow-blue-500/40 hover:from-blue-600 hover:to-indigo-700 hover:-translate-y-0.5 active:scale-[0.95] transition-all duration-300"
             title={isEnglish ? 'Copy Prompt' : '复制提示词'}
           >
             {copied ? (
               <>
-                <Check size={16} className="text-green-600" />
-                <span className="text-green-600 text-sm opacity-0 group-hover:opacity-100 transition-opacity font-medium">
+                <span className="text-sm font-semibold whitespace-nowrap">
                   {isEnglish ? 'Copied!' : '已复制！'}
                 </span>
+                <Check size={16} />
               </>
             ) : (
               <>
-                <Copy size={16} className="text-zinc-600" />
-                <span className="text-zinc-600 text-sm opacity-0 group-hover:opacity-100 transition-opacity font-medium">
-                  {isEnglish ? 'Copy Prompt' : '复制提示词'}
+                <span className="text-sm font-semibold whitespace-nowrap">
+                  {isEnglish ? 'Copy' : '复制'}
                 </span>
+                <Copy size={16} />
               </>
             )}
           </button>
@@ -99,6 +112,25 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
           {data.promptText}
         </div>
       </div>
+
+      {/* 评论区骨架 */}
+      <section id="comments-section" className="mt-8">
+        <h3 className="text-lg font-bold mb-6">{isEnglish ? 'All Comments' : '全部评论'} ({commentsCount})</h3>
+        {/* 评论输入框骨架 */}
+        <div className="mb-8">
+          <textarea 
+            className="w-full bg-gray-50 border-transparent rounded-lg p-4 text-sm focus:border-[#e52129] focus:ring-1 focus:ring-[#e52129] focus:outline-none transition-all" 
+            placeholder={isEnglish ? 'Leave your thoughts...' : '留下你的想法...'} 
+            rows={3}
+          ></textarea>
+          <div className="flex justify-end mt-2">
+            <button className="bg-gray-900 text-white px-6 py-2.5 rounded-xl text-sm font-medium hover:bg-gray-800 hover:shadow-lg hover:shadow-gray-900/20 hover:-translate-y-0.5 active:scale-[0.95] transition-all duration-300">
+              {isEnglish ? 'Post Comment' : '发表评论'}
+            </button>
+          </div>
+        </div>
+        {/* 评论列表占位（未来渲染 Comment 表数据） */}
+      </section>
     </div>
   );
 }

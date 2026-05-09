@@ -41,21 +41,23 @@ model NavLink {
 }
 
 model Prompt {
-  id         String   @id @default(cuid())
-  title      String
-  titleEn    String?
-  category   String
-  categoryEn String?
-  toolId     String
-  imageUrl   String
-  promptText String
-  views      Int      @default(0)
-  likes      Int      @default(0)
-  comments   Int      @default(0)
-  status     Int      @default(0)
-  sortOrder  Int      @default(0)
-  createdAt  DateTime @default(now()) @db.Timestamptz(0)
-  updatedAt  DateTime @updatedAt @db.Timestamptz(0)
+  id          String   @id @default(cuid())
+  title       String
+  titleEn     String?
+  category    String
+  categoryEn  String?
+  platform    String
+  platformUrl String?
+  imageUrl    String
+  promptText  String
+  views       Int      @default(0)
+  likes       Int      @default(0)
+  favorites   Int      @default(0)
+  comments    Int      @default(0)
+  status      Int      @default(0)
+  sortOrder   Int      @default(0)
+  createdAt   DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt   DateTime @updatedAt @db.Timestamptz(0)
 }
 
 model ToolSubmission {

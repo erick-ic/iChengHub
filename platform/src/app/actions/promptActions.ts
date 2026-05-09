@@ -8,7 +8,8 @@ export async function createPrompt(formData: FormData) {
   const titleEn = formData.get('titleEn') as string | null
   const category = formData.get('category') as string
   const categoryEn = formData.get('categoryEn') as string | null
-  const toolId = formData.get('toolId') as string
+  const platform = formData.get('toolId') as string
+  const platformUrl = formData.get('platformUrl') as string | null
   const imageUrl = formData.get('imageUrl') as string
   const promptText = formData.get('promptText') as string
 
@@ -26,7 +27,8 @@ export async function createPrompt(formData: FormData) {
       titleEn: titleEn || null,
       category,
       categoryEn: categoryEn || null,
-      toolId,
+      platform,
+      platformUrl: platformUrl || null,
       imageUrl,
       promptText,
       sortOrder: newSortOrder,
@@ -46,7 +48,8 @@ export async function updatePrompt(id: string, formData: FormData) {
   const titleEn = formData.get('titleEn') as string | null
   const category = formData.get('category') as string
   const categoryEn = formData.get('categoryEn') as string | null
-  const toolId = formData.get('toolId') as string
+  const platform = formData.get('toolId') as string
+  const platformUrl = formData.get('platformUrl') as string | null
   const imageUrl = formData.get('imageUrl') as string
   const promptText = formData.get('promptText') as string
 
@@ -57,7 +60,8 @@ export async function updatePrompt(id: string, formData: FormData) {
       titleEn: titleEn || null,
       category,
       categoryEn: categoryEn || null,
-      toolId,
+      platform,
+      platformUrl: platformUrl || null,
       imageUrl,
       promptText,
     },

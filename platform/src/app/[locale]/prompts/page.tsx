@@ -19,7 +19,7 @@ export default async function PromptsPage({ params }: PageProps) {
 
   const promptData: PromptData[] = prompts.map(prompt => ({
     id: prompt.id,
-    toolId: prompt.toolId,
+    platform: prompt.platform,
     imageUrl: prompt.imageUrl,
     title: isEnglish ? (prompt.titleEn || prompt.title) : prompt.title,
     category: isEnglish ? (prompt.categoryEn || prompt.category) : prompt.category,

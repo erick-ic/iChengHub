@@ -17,7 +17,7 @@ export default function ColorExtractedImage({ src, alt, className = '', unoptimi
   return (
     <>
       <div 
-        className={`relative w-full rounded-2xl overflow-hidden mb-8 shadow-[0_20px_40px_rgba(0,0,0,0.04)] border border-[#D2D2D7] ${className}`}
+        className={`relative w-full rounded-2xl overflow-hidden shadow-[0_20px_40px_rgba(0,0,0,0.04)] border border-[#D2D2D7] ${className}`}
         onClick={() => setIsPreviewOpen(true)}
       >
         <div className="absolute inset-0 w-full h-full">

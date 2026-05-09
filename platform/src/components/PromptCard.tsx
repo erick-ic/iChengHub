@@ -7,7 +7,7 @@ import { useRouter } from '@/navigation';
 
 export interface PromptData {
   id: string;
-  toolId: string;
+  platform: string;
   imageUrl: string;
   title: string;
   category: string;

@@ -3,6 +3,7 @@
 import { useState } from 'react';
 import { Heart } from 'lucide-react';
 import { toggleLike } from '@/app/actions/statsActions';
+import AnimatedNumber from './AnimatedNumber';
 
 interface LikeButtonProps {
   promptId: string;
@@ -54,32 +55,42 @@ export default function LikeButton({
 
   return (
     <div 
-      className="flex-1 bg-white/80 backdrop-blur-md border border-white/40 rounded-2xl p-5 shadow-sm hover:shadow-md hover:-translate-y-0.5 transition-all duration-300 cursor-pointer"
+      className="relative bg-white/90 backdrop-blur-md border border-zinc-100 rounded-2xl p-5 shadow-sm hover:shadow-lg hover:-translate-y-0.5 transition-all duration-300 cursor-pointer overflow-hidden h-24"
       onClick={handleLike}
       onMouseEnter={() => setHovered(true)}
       onMouseLeave={() => setHovered(false)}
     >
-      <div className="flex items-center gap-3 mb-3">
-        <div className="relative w-10 h-10 rounded-xl bg-gradient-to-br from-pink-50 to-pink-100 flex items-center justify-center">
-          <Heart 
-            className={`w-5 h-5 transition-all duration-300 ${
-              isAnimating ? 'like-pop' : ''
-            } ${hovered && isLiked ? 'animate-heartbeat-liked' : ''} ${isLiked ? 'text-red-500' : 'text-pink-500'}`}
-            fill={isLiked ? 'currentColor' : 'none'}
-          />
-          {hovered && !isLiked && (
-            <Heart className="w-5 h-5 text-pink-400 absolute animate-heartbeat opacity-50" fill="currentColor" />
-          )}
-          {hovered && isLiked && (
-            <Heart className="w-5 h-5 text-red-400 absolute animate-heartbeat-liked-secondary opacity-50" fill="currentColor" />
-          )}
+      <div className={`absolute top-0 right-0 w-24 h-24 rounded-bl-full transition-colors duration-300 ${
+        isLiked ? 'bg-gradient-to-bl from-red-100/40 to-transparent' : 'bg-gradient-to-bl from-pink-100/40 to-transparent'
+      }`}></div>
+      <div className="relative h-full flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <div className={`relative w-10 h-10 rounded-xl flex items-center justify-center ring-2 transition-all duration-300 ${
+            isLiked 
+              ? 'bg-gradient-to-br from-red-50 to-red-100 ring-red-100/50' 
+              : 'bg-gradient-to-br from-pink-50 to-pink-100 ring-pink-100/50'
+          }`}>
+            <Heart 
+              className={`w-5 h-5 transition-all duration-300 ${
+                isAnimating ? 'like-pop' : ''
+              } ${hovered && isLiked ? 'animate-heartbeat-liked' : ''} ${isLiked ? 'text-red-500' : 'text-pink-500'}`}
+              fill={isLiked ? 'currentColor' : 'none'}
+            />
+            <div className={`absolute inset-0 rounded-xl transition-colors duration-300 ${
+              isLiked ? 'bg-red-500/5' : 'bg-pink-500/5'
+            }`}></div>
+            {hovered && !isLiked && (
+              <Heart className="w-5 h-5 text-pink-400 absolute animate-heartbeat opacity-50" fill="currentColor" />
+            )}
+            {hovered && isLiked && (
+              <Heart className="w-5 h-5 text-red-400 absolute animate-heartbeat-liked-secondary opacity-50" fill="currentColor" />
+            )}
+          </div>
+          <span className="text-zinc-500 text-sm font-medium">{isEnglish ? 'Likes' : '点赞'}</span>
         </div>
-        <span className="text-zinc-500 text-sm font-medium">{isEnglish ? 'Likes' : '点赞'}</span>
-      </div>
-      <div className={`text-3xl font-bold text-zinc-900 transition-all duration-300 ${
-        isAnimating ? 'scale-125 text-red-500' : ''
-      }`}>
-        {likesCount.toLocaleString()}
+        <AnimatedNumber value={likesCount} className={`text-3xl font-bold text-zinc-900 transition-all duration-300 ${
+          isAnimating ? 'scale-125 text-red-500' : ''
+        }`} />
       </div>
       <style>{`
         @keyframes heartbeat {

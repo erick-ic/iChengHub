@@ -4,7 +4,8 @@ import { cookies } from 'next/headers'
 import { redirect } from 'next/navigation'
 
 interface LoginState {
-  error: string;
+  success: boolean;
+  error?: string;
 }
 
 export async function login(state: LoginState, formData: FormData): Promise<LoginState> {
@@ -18,16 +19,13 @@ export async function login(state: LoginState, formData: FormData): Promise<Logi
       secure: process.env.NODE_ENV === 'production',
       path: '/',
     })
-    redirect('/ibackend')
+    return { success: true }
   }
 
-  return { error: 'Invalid Access Code' }
+  return { success: false, error: 'Invalid Access Code' }
 }
 
-export async function logout() {
+export async function logout(): Promise<{ success: boolean }> {
   cookies().delete('admin_session')
-  const baseUrl = process.env.NODE_ENV === 'production' 
-    ? 'https://ichenghub.cn' 
-    : 'http://localhost:3000'
-  redirect(`${baseUrl}/`)
+  return { success: true }
 }

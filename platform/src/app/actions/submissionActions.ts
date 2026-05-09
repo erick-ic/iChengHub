@@ -3,19 +3,31 @@
 import prisma from '@/lib/prisma';
 
 export async function getToolSubmissions() {
-  return await prisma.toolSubmission.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  try {
+    const data = await prisma.toolSubmission.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return JSON.parse(JSON.stringify(data));
+  } catch (error) {
+    console.error('Error fetching tool submissions:', error);
+    return [];
+  }
 }
 
 export async function getToolDemands() {
-  return await prisma.toolDemand.findMany({
-    orderBy: {
-      createdAt: 'desc',
-    },
-  });
+  try {
+    const data = await prisma.toolDemand.findMany({
+      orderBy: {
+        createdAt: 'desc',
+      },
+    });
+    return JSON.parse(JSON.stringify(data));
+  } catch (error) {
+    console.error('Error fetching tool demands:', error);
+    return [];
+  }
 }
 
 export async function updateSubmissionStatus(id: string, status: string) {

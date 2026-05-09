@@ -1,6 +1,7 @@
 'use client'
 
 import { useState, useTransition } from 'react'
+import { useRouter } from 'next/navigation'
 import { login } from '@/app/actions/authActions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
@@ -8,14 +9,17 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Lock, Shield, Loader2 } from 'lucide-react'
 
 export default function BackendLogin() {
+  const router = useRouter()
   const [error, setError] = useState('')
   const [isPending, startTransition] = useTransition()
 
-  const handleSubmit = async (formData: FormData) => {
+  const handleSubmit = (formData: FormData) => {
     setError('')
     startTransition(async () => {
-      const result = await login({ error: '' }, formData)
-      if (result?.error) {
+      const result = await login({ success: false }, formData)
+      if (result.success) {
+        router.push('/ibackend')
+      } else if (result.error) {
         setError(result.error)
       }
     })

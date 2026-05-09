@@ -8,14 +8,9 @@ const nextConfig = {
   images: {
     unoptimized: true,
   },
-  // 配置正确的基础 URL，解决重定向时连接超时问题
+  // 保持 basePath 为空，不干扰重定向
   basePath: '',
-  assetPrefix: process.env.NODE_ENV === 'production' ? 'https://ichenghub.cn' : '',
-  // 配置服务器运行时使用的 URL
-  serverRuntimeConfig: {
-    baseUrl: process.env.NODE_ENV === 'production' ? 'https://ichenghub.cn' : 'http://localhost:3000'
-  },
-  // 加入这个实验性选项，防止构建时尝试连接不必要的资源
+  // 加入这个实验性选项，防止构建时连接不必要的资源
   experimental: {
     workerThreads: false,
     cpus: 1

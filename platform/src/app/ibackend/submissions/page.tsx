@@ -61,13 +61,18 @@ export default function AdminSubmissionsPage() {
     try {
       if (mode === 'TOOL') {
         const data = await getToolSubmissions();
-        setSubmissions(data);
+        setSubmissions(Array.isArray(data) ? data : []);
       } else {
         const data = await getToolDemands();
-        setDemands(data);
+        setDemands(Array.isArray(data) ? data : []);
       }
     } catch (error) {
       console.error('Failed to load data:', error);
+      if (mode === 'TOOL') {
+        setSubmissions([]);
+      } else {
+        setDemands([]);
+      }
     } finally {
       setIsLoading(false);
     }
@@ -132,14 +137,14 @@ export default function AdminSubmissionsPage() {
   };
 
   const filteredData = mode === 'TOOL'
-    ? submissions.filter(item => {
+    ? (submissions || []).filter(item => {
         const matchesSearch = searchQuery === '' ||
           item.name.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.description.toLowerCase().includes(searchQuery.toLowerCase());
         const matchesStatus = statusFilter === 'ALL' || item.status === statusFilter;
         return matchesSearch && matchesStatus;
       })
-    : demands.filter(item => {
+    : (demands || []).filter(item => {
         const matchesSearch = searchQuery === '' ||
           item.title.toLowerCase().includes(searchQuery.toLowerCase()) ||
           item.detail.toLowerCase().includes(searchQuery.toLowerCase());

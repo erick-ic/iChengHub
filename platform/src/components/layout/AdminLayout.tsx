@@ -1,9 +1,8 @@
 'use client'
 
-import { useState, useEffect, Suspense } from 'react'
-import Link from "next/link"
+import { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
-import { logout } from '@/app/actions/authActions'
+import Link from "next/link"
 import {
   LayoutDashboard,
   Wrench,
@@ -24,39 +23,6 @@ import {
   DialogDescription,
 } from "@/components/ui/dialog"
 
-const navItems = [
-  {
-    title: "控制面板",
-    href: "/ibackend",
-    icon: LayoutDashboard,
-  },
-  {
-    title: "工具管理",
-    href: "/ibackend/tools",
-    icon: Wrench,
-  },
-  {
-    title: "导航管理",
-    href: "/ibackend/links",
-    icon: Link2,
-  },
-  {
-    title: "提示词管理",
-    href: "/ibackend/prompts",
-    icon: Lightbulb,
-  },
-  {
-    title: "提交管理",
-    href: "/ibackend/submissions",
-    icon: FileText,
-  },
-  {
-    title: "用户管理",
-    href: "/ibackend/users",
-    icon: Users,
-  },
-]
-
 export default function AdminLayout({
   children,
 }: {
@@ -66,21 +32,50 @@ export default function AdminLayout({
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
+  // 客户端检查是否已登录
   useEffect(() => {
-    const isLoggedOut = localStorage.getItem('admin_logged_out')
-    if (isLoggedOut) {
-      localStorage.removeItem('admin_logged_out')
-      router.replace('/')
-      return
+    const checkAuth = async () => {
+      try {
+        const response = await fetch('/api/auth/check')
+        if (!response.ok) {
+          router.replace('/ibackendlogin')
+        }
+      } catch (error) {
+        router.replace('/ibackendlogin')
+      }
     }
-
-    const handlePopState = () => {
-      router.replace('/')
-    }
-
-    window.addEventListener('popstate', handlePopState)
-    return () => window.removeEventListener('popstate', handlePopState)
+    checkAuth()
   }, [router])
+
+  const navItems = [
+    { title: "控制面板", href: "/ibackend", icon: LayoutDashboard },
+    { title: "工具管理", href: "/ibackend/tools", icon: Wrench },
+    { title: "导航管理", href: "/ibackend/links", icon: Link2 },
+    { title: "提示词管理", href: "/ibackend/prompts", icon: Lightbulb },
+    { title: "提交管理", href: "/ibackend/submissions", icon: FileText },
+    { title: "用户管理", href: "/ibackend/users", icon: Users },
+  ]
+
+  const handleLogout = async () => {
+    setIsLoading(true)
+    try {
+      const response = await fetch('/api/logout', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+      })
+      if (response.ok) {
+        router.replace('/')
+      } else {
+        console.error('Logout failed')
+        setIsLoading(false)
+      }
+    } catch (error) {
+      console.error('Logout failed:', error)
+      setIsLoading(false)
+    }
+  }
 
   return (
     <div className="flex min-h-screen">
@@ -126,9 +121,7 @@ export default function AdminLayout({
 
       <div className="flex-1 ml-56 overflow-x-hidden">
         <main className="min-h-screen bg-slate-50/50 p-8">
-          <Suspense fallback={<div className="flex items-center justify-center h-32">Loading...</div>}>
-            {children}
-          </Suspense>
+          {children}
         </main>
       </div>
 
@@ -150,15 +143,7 @@ export default function AdminLayout({
               取消
             </Button>
             <Button
-              onClick={async () => {
-                setIsLoading(true)
-                try {
-                  await logout()
-                } catch (error) {
-                  console.error('Logout failed:', error)
-                  setIsLoading(false)
-                }
-              }}
+              onClick={handleLogout}
               variant="destructive"
               className="flex-1"
               disabled={isLoading}

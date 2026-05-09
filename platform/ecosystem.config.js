@@ -10,7 +10,11 @@ module.exports = {
     env: {
       NODE_ENV: 'production',
       PORT: 3000,
-      // 2. 修正为本地环回地址，提高连接稳定性和安全性
+      HOSTNAME: '0.0.0.0',
+      // 配置外部可访问的 URL，解决重定向端口号问题
+      NEXT_PUBLIC_APP_URL: 'https://ichenghub.cn',
+      NEXTAUTH_URL: 'https://ichenghub.cn',
+      // 修正为本地环回地址，提高连接稳定性和安全性
       DATABASE_URL: 'postgresql://admin_user:Aichenghub1024.@127.0.0.1:5432/ichenghub'
     },
     error_file: './logs/err.log',

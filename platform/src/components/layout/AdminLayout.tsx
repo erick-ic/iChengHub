@@ -122,7 +122,7 @@ export default function AdminLayout({
         </div>
       </aside>
 
-      <div className="flex-1 ml-56">
+      <div className="flex-1 ml-56 overflow-x-hidden">
         <main className="min-h-screen bg-slate-50/50 p-8">
           <Suspense fallback={<div className="flex items-center justify-center h-32">Loading...</div>}>
             {children}
@@ -149,7 +149,8 @@ export default function AdminLayout({
             </Button>
             <Button
               type="submit"
-              className="flex-1 px-6 py-2.5 text-sm font-medium bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all shadow-sm hover:shadow"
+              variant="destructive"
+              className="flex-1"
             >
               确认
             </Button>

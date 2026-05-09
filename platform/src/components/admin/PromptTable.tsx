@@ -160,13 +160,12 @@ export function PromptTable({ prompts }: PromptTableProps) {
         <Dialog open={isFormOpen} onOpenChange={setIsFormOpen}>
           <DialogTrigger asChild>
             <Button 
-              className="transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25"
               onClick={() => {
                 setEditingPrompt(null)
                 setIsFormOpen(true)
               }}
             >
-              <Plus className="mr-2 h-4 w-4 transition-transform duration-200 hover:rotate-90" />
+              <Plus className="mr-2 h-4 w-4" />
               添加提示词
             </Button>
           </DialogTrigger>
@@ -256,7 +255,7 @@ export function PromptTable({ prompts }: PromptTableProps) {
               <TableHead className="w-28 whitespace-nowrap">英文标题</TableHead>
               <TableHead className="w-20 whitespace-nowrap">分类</TableHead>
               <TableHead className="w-auto min-w-[180px] max-w-[350px] whitespace-nowrap">提示词内容</TableHead>
-              <TableHead className="w-32 whitespace-nowrap">浏览/点赞/评论</TableHead>
+              <TableHead className="w-16 whitespace-nowrap">统计</TableHead>
               <TableHead className="w-16 whitespace-nowrap">状态</TableHead>
               <TableHead className="w-36 whitespace-nowrap">创建时间</TableHead>
               <TableHead className="w-12 whitespace-nowrap">排序</TableHead>
@@ -299,18 +298,18 @@ export function PromptTable({ prompts }: PromptTableProps) {
                   <TableCell className="max-w-[300px] truncate" title={prompt.promptText}>
                     {prompt.promptText}
                   </TableCell>
-                  <TableCell className="text-sm text-slate-500">
-                    <div className="flex items-center gap-2">
+                  <TableCell className="text-xs text-slate-500">
+                    <div className="flex flex-col gap-0.5">
                       <span className="flex items-center gap-1" title="浏览">
-                        <Eye className="h-3 w-3" />
+                        <Eye className="h-2.5 w-2.5" />
                         {prompt.views}
                       </span>
                       <span className="flex items-center gap-1" title="点赞">
-                        <Heart className="h-3 w-3" />
+                        <Heart className="h-2.5 w-2.5" />
                         {prompt.likes}
                       </span>
                       <span className="flex items-center gap-1" title="评论">
-                        <MessageSquare className="h-3 w-3" />
+                        <MessageSquare className="h-2.5 w-2.5" />
                         {prompt.comments}
                       </span>
                     </div>

@@ -185,8 +185,8 @@ export function LinkTable({ links }: LinkTableProps) {
         </div>
         <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
           <DialogTrigger asChild>
-            <Button className="transition-all duration-200 hover:scale-105 hover:shadow-lg hover:shadow-blue-500/25">
-              <Plus className="mr-2 h-4 w-4 transition-transform duration-200 hover:rotate-90" />
+            <Button>
+              <Plus className="mr-2 h-4 w-4" />
               添加链接
             </Button>
           </DialogTrigger>
@@ -332,7 +332,7 @@ export function LinkTable({ links }: LinkTableProps) {
       </div>
 
       <div className="rounded-md border bg-white overflow-x-auto">
-        <Table className="w-full min-w-[800px]">
+        <Table className="w-full">
           <TableHeader>
             <TableRow className="hover:bg-slate-50">
               <TableHead className="w-16 whitespace-nowrap">Logo</TableHead>

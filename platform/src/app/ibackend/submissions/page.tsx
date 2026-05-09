@@ -171,7 +171,7 @@ export default function AdminSubmissionsPage() {
           onClick={() => setMode('TOOL')}
           className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${
             mode === 'TOOL'
-              ? 'bg-blue-500 text-white shadow-sm'
+              ? 'bg-black text-white shadow-md'
               : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
@@ -181,7 +181,7 @@ export default function AdminSubmissionsPage() {
           onClick={() => setMode('DEMAND')}
           className={`flex-1 py-2.5 px-4 text-sm font-medium rounded-lg transition-all ${
             mode === 'DEMAND'
-              ? 'bg-blue-500 text-white shadow-sm'
+              ? 'bg-black text-white shadow-md'
               : 'text-gray-600 hover:bg-gray-50'
           }`}
         >
@@ -351,7 +351,7 @@ export default function AdminSubmissionsPage() {
                           <>
                             <Button
                               size="sm"
-                              className="bg-green-500 hover:bg-green-600"
+                              className="bg-green-500 hover:bg-green-600 text-white shadow-md hover:shadow-lg"
                               onClick={() => handleStatusChange(item.id, 'APPROVED')}
                             >
                               <Check className="h-3 w-3" />
@@ -404,8 +404,9 @@ export default function AdminSubmissionsPage() {
             </Button>
             <Button
               type="button"
+              variant="destructive"
+              className="flex-1"
               onClick={handleDelete}
-              className="flex-1 px-6 py-2.5 text-sm font-medium bg-red-500 hover:bg-red-600 text-white rounded-lg transition-all"
             >
               确认删除
             </Button>

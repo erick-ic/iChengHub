@@ -1,6 +1,7 @@
 'use client';
 
 import { useState } from 'react';
+import { Link } from '@/navigation';
 import QRCode from 'react-qr-code';
 import { useTranslations } from 'next-intl';
 import { Sparkles, ShieldCheck, Wand2, MessageCircle, BookOpen, Mail, Check } from 'lucide-react';
@@ -137,12 +138,12 @@ export default function AboutPage() {
           <p className="text-gray-600 leading-relaxed mb-6">
             {t('ctaText')}
           </p>
-          <a
+          <Link
             href="/submit"
             className="inline-flex items-center px-8 py-3 bg-[#e52129] text-white rounded-full font-medium hover:bg-red-600 transition-all shadow-md"
           >
             {t('ctaButton')}
-          </a>
+          </Link>
 
           {/* 联系方式 */}
           <div className="flex flex-wrap items-center justify-center gap-6 mt-10 pt-8 border-t border-gray-200">

@@ -128,5 +128,28 @@
     "title": "Page Not Found",
     "description": "Sorry, the page you are looking for does not exist or has been removed.",
     "backToHome": "Back to Home"
+  },
+  "AboutPage": {
+    "badge": "About iChengHub",
+    "title": "Explore the Boundaries of AI, Be Your Exclusive Productivity Compass.",
+    "subtitle": "Hello, we are Heguang Studio. This is our dedicated AI Pure Workshop.",
+    "story1": "As heavy AI users and developers, we've had enough of cluttered AI bookmarks and marketing-style tool recommendations everywhere. We crave a clean, fast, ad-free \"digital toolbox\".",
+    "story2": "So, Heguang Studio wrote the first line of code for iChengHub. This is not a cold commercial project, but our internal \"Hot Recommend Workshop\" fully opened to you. We hope it can not only become our efficiency hub but also help you, bridging the information gap in the AI era.",
+    "signature": "—— Heguang Studio",
+    "feature1Title": "Human-Curated, No Junk",
+    "feature1Desc": "Heguang Studio doesn't pursue quantity. Every tool here has been thoroughly tested by our team. We hope this is a pure haven, helping you filter out those useless copycat products.",
+    "feature2Title": "Battle-Tested Prompts",
+    "feature2Desc": "Provide advanced Prompts that can truly be put into production.",
+    "socialTitle": "Follow Our Social Media",
+    "wechatLabel": "WeChat Official",
+    "wechatName": "Hot Recommend Workshop",
+    "wechatDesc": "Scan to follow, get latest AI tool reviews and beta codes",
+    "xiaohongshuLabel": "rednote",
+    "xiaohongshuName": "Hot Recommend Workshop",
+    "xiaohongshuDesc": "AI productivity hacks and indie developer stories",
+    "ctaText": "Alone we go fast, together we go far. If you've found great tools or have efficiency challenges, feel free to connect with us.",
+    "ctaButton": "⚡️ Submit Pain Point / Wish for Tool",
+    "contact": "Contact Us",
+    "copiedToast": "Email copied: ckstarlit@gmail.com"
   }
 }

@@ -39,7 +39,7 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
     { href: '/', label: t('home') },
     { href: '/tools', label: t('tools') },
     { href: '/links', label: t('links') },
-    { href: '#', label: t('about') },
+    { href: '/about', label: t('about') },
   ];
 
   return (
@@ -59,23 +59,13 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
       {/* 桌面端菜单 */}
       <div className="hidden md:flex space-x-1">
         {navLinks.map((link) => (
-          link.href === '#' ? (
-            <a
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
-            >
-              {link.label}
-            </a>
-          ) : (
-            <Link
-              key={link.href}
-              href={link.href}
-              className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
-            >
-              {link.label}
-            </Link>
-          )
+          <Link
+            key={link.href}
+            href={link.href}
+            className="text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-1.5 rounded-md transition-colors"
+          >
+            {link.label}
+          </Link>
         ))}
       </div>
 
@@ -136,25 +126,14 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
 
             {/* 移动端链接 */}
             {navLinks.map((link) => (
-              link.href === '#' ? (
-                <a
-                  key={link.href}
-                  href={link.href}
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 rounded-md transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </a>
-              ) : (
-                <Link
-                  key={link.href}
-                  href={link.href}
-                  className="block text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 rounded-md transition-colors"
-                  onClick={() => setMobileMenuOpen(false)}
-                >
-                  {link.label}
-                </Link>
-              )
+              <Link
+                key={link.href}
+                href={link.href}
+                className="block text-sm font-medium text-muted-foreground hover:text-foreground hover:bg-muted px-3 py-2 rounded-md transition-colors"
+                onClick={() => setMobileMenuOpen(false)}
+              >
+                {link.label}
+              </Link>
             ))}
 
             {/* 移动端行动按钮 */}

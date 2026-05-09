@@ -128,5 +128,28 @@
     "title": "页面未找到",
     "description": "抱歉，您访问的页面不存在或已被删除。",
     "backToHome": "返回首页"
+  },
+  "AboutPage": {
+    "badge": "关于 iChengHub",
+    "title": "探索 AI 的边界，做你的专属效率罗盘。",
+    "subtitle": "你好，我们是和光工作室。这里是我们倾力打造的 AI 纯净工坊。",
+    "story1": "作为一群重度 AI 用户与开发者，我们受够了杂乱无章的 AI 书签和满天飞的\"营销号式\"工具推荐。我们渴望一个干净、极速、没有满屏广告的\"数字工具箱\"。",
+    "story2": "于是，和光工作室敲下了 iChengHub 的第一行代码。这不是一个冷冰冰的商业项目，而是我们将内部使用的\"热荐工坊\"向你完全敞开。我们希望它不仅能成为我们的效率中枢，也能帮到屏幕前的你，抹平 AI 时代的信息差。",
+    "signature": "—— 和光工作室 (Heguang Studio)",
+    "feature1Title": "人工亲测，拒绝垃圾",
+    "feature1Desc": "和光工作室不追求收录的数量。每一个出现在这里的工具，都经过我们团队的深度试用。我们希望这里是一个纯粹的避风港，帮你过滤掉那些功能鸡肋的套壳产物。",
+    "feature2Title": "实战提示词",
+    "feature2Desc": "提供真正能投入生产环境的高级 Prompt。",
+    "socialTitle": "关注我们的自媒体",
+    "wechatLabel": "微信公众号",
+    "wechatName": "热荐工坊",
+    "wechatDesc": "扫码关注，获取最新 AI 工具深度测评与内测码",
+    "xiaohongshuLabel": "小红书账号",
+    "xiaohongshuName": "热荐工坊",
+    "xiaohongshuDesc": "同步更新 AI 效率黑科技与独立开发者的幕后故事",
+    "ctaText": "一个人走得快，一群人走得远。如果你有发现好工具，或者遇到了效率难题，欢迎找我聊聊。",
+    "ctaButton": "⚡️ 提交痛点 / 许愿工具",
+    "contact": "联系我们",
+    "copiedToast": "邮箱已复制：ckstarlit@gmail.com"
   }
 }

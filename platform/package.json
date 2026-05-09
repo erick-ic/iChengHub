@@ -22,6 +22,7 @@
     "next-themes": "^0.4.6",
     "react": "18.2.0",
     "react-dom": "18.2.0",
+    "react-qr-code": "^2.0.21",
     "tailwind-merge": "^2.3.0",
     "use-debounce": "^10.1.1"
   },

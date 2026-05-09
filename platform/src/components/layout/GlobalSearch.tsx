@@ -128,7 +128,7 @@ export function GlobalSearch({ items, isEnglish }: GlobalSearchProps) {
       <div className="md:hidden">
         {/* 搜索框 */}
         <div className="flex items-center gap-3 px-4 py-3 rounded-full bg-[#f5f5f7]">
-          <Search className="w-4 h-4 text-gray-400" />
+          <Search className="w-4 h-5 text-gray-400" />
           <input
             ref={inputRef}
             type="text"
@@ -136,7 +136,7 @@ export function GlobalSearch({ items, isEnglish }: GlobalSearchProps) {
             onChange={handleChange}
             onKeyDown={handleKeyDown}
             placeholder={isEnglish ? 'Search...' : '搜索...'}
-            className="flex-1 bg-transparent text-sm outline-none placeholder:text-gray-400"
+            className="flex-1 bg-transparent text-base outline-none placeholder:text-gray-400"
           />
           {query && (
             <button onClick={handleClear} className="text-gray-400 hover:text-gray-600">

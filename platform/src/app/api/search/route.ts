@@ -1,6 +1,9 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
 
+// 强制动态渲染，每次请求都执行
+export const dynamic = 'force-dynamic';
+
 export async function GET() {
   try {
     // 获取工具数据
@@ -35,19 +38,6 @@ export async function GET() {
       },
     });
 
-    // 获取提示词数据
-    const prompts = await prisma.prompt.findMany({
-      where: { status: 1 },
-      select: {
-        id: true,
-        title: true,
-        titleEn: true,
-        promptText: true,
-        category: true,
-        categoryEn: true,
-      },
-    });
-
     // 转换为统一格式 - 工具
     const toolItems = tools.map((tool) => ({
       id: tool.id,
@@ -76,24 +66,18 @@ export async function GET() {
       type: 'link' as const,
     }));
 
-    // 转换为统一格式 - 提示词
-    const promptItems = prompts.map((prompt) => ({
-      id: prompt.id,
-      title: prompt.title,
-      titleEn: prompt.titleEn,
-      description: prompt.promptText.substring(0, 100) + (prompt.promptText.length > 100 ? '...' : ''),
-      descriptionEn: prompt.promptText.substring(0, 100) + (prompt.promptText.length > 100 ? '...' : ''),
-      url: `/prompts/${prompt.id}`, // 站内详情页链接
-      iconUrl: undefined,
-      category: prompt.category,
-      categoryEn: prompt.categoryEn,
-      type: 'prompt' as const,
-    }));
+    // 合并并返回（仅工具和导航链接）
+    const allItems = [...toolItems, ...linkItems];
 
-    // 合并并返回
-    const allItems = [...toolItems, ...linkItems, ...promptItems];
-
-    return NextResponse.json(allItems);
+    // 企业级缓存策略：1分钟缓存 + 5分钟后台刷新
+    return NextResponse.json(allItems, {
+      headers: {
+        'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
+        'X-Content-Type-Options': 'nosniff',
+        'X-Frame-Options': 'DENY',
+        'X-XSS-Protection': '1; mode=block',
+      },
+    });
   } catch (error) {
     console.error('Search API error:', error);
     return NextResponse.json([], { status: 500 });

@@ -8,12 +8,21 @@ interface LoginState {
   error?: string;
 }
 
+const getEnvValue = (value: string | undefined): string => {
+  if (!value) return ''
+  return value.replace(/^["']|["']$/g, '')
+}
+
 export async function login(state: LoginState, formData: FormData): Promise<LoginState> {
   await new Promise((resolve) => setTimeout(resolve, 1500))
 
+  const username = formData.get('username') as string
   const password = formData.get('password') as string
 
-  if (password === process.env.ADMIN_PASSWORD) {
+  const AUTH_USER = getEnvValue(process.env.ADMIN_USERNAME)
+  const AUTH_PASS = getEnvValue(process.env.ADMIN_PASSWORD)
+
+  if (username === AUTH_USER && password === AUTH_PASS) {
     cookies().set('admin_session', 'authenticated', {
       httpOnly: true,
       secure: process.env.NODE_ENV === 'production',
@@ -22,7 +31,7 @@ export async function login(state: LoginState, formData: FormData): Promise<Logi
     return { success: true }
   }
 
-  return { success: false, error: 'Invalid Access Code' }
+  return { success: false, error: '凭据错误' }
 }
 
 export async function logout(): Promise<{ success: boolean }> {

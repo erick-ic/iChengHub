@@ -6,7 +6,7 @@ import { login } from '@/app/actions/authActions'
 import { Button } from '@/components/ui/button'
 import { Input } from '@/components/ui/input'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
-import { Lock, Shield, Loader2 } from 'lucide-react'
+import { Lock, Shield, Loader2, User } from 'lucide-react'
 
 export default function BackendLogin() {
   const router = useRouter()
@@ -45,11 +45,24 @@ export default function BackendLogin() {
           <form action={handleSubmit} className="space-y-4">
             <div className="space-y-2">
               <div className="relative">
+                <User className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
+                <Input
+                  type="text"
+                  name="username"
+                  placeholder="Username"
+                  required
+                  className="pl-10 bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-500 focus:ring-zinc-500"
+                  disabled={isPending}
+                />
+              </div>
+            </div>
+            <div className="space-y-2">
+              <div className="relative">
                 <Lock className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-zinc-500" />
                 <Input
                   type="password"
                   name="password"
-                  placeholder="Enter Access Code"
+                  placeholder="Password"
                   required
                   className="pl-10 bg-zinc-800 border-zinc-700 text-zinc-100 placeholder:text-zinc-500 focus:border-zinc-500 focus:ring-zinc-500"
                   disabled={isPending}
@@ -70,7 +83,7 @@ export default function BackendLogin() {
                   Verifying...
                 </>
               ) : (
-                'Verify'
+                'Login'
               )}
             </Button>
           </form>

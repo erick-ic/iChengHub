@@ -10,6 +10,8 @@ import { TopPaths } from './TopPaths'
 import { DeviceDistribution } from './DeviceDistribution'
 import { HourlyChart } from './HourlyChart'
 
+export const dynamic = 'force-dynamic'
+
 interface AnalyticsData {
   totalPV: number
   uniqueUV: number

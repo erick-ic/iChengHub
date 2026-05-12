@@ -1,4 +1,5 @@
 import { Metadata, ResolvingMetadata } from 'next';
+import Image from 'next/image';
 import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Link } from '@/navigation';
@@ -98,10 +99,12 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
             {/* Logo */}
             <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
               {tool.logoUrl ? (
-                <img 
+                <Image 
                   src={tool.logoUrl} 
                   alt={title}
                   className="w-full h-full object-contain p-2"
+                  width={80}
+                  height={80}
                 />
               ) : (
                 <span className="text-2xl font-bold text-gray-400">

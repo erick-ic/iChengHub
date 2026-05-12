@@ -35,9 +35,9 @@ export default function middleware(request: NextRequest) {
       const forwardedHost = request.headers.get('x-forwarded-host');
       let host = forwardedHost || request.nextUrl.host;
 
-      // 如果是 localhost 且没有端口，添加默认端口 3000（开发环境）
+      // 如果是 localhost 且没有端口，使用请求中的端口（开发环境）
       if (!forwardedHost && host === 'localhost') {
-        host = 'localhost:3000';
+        host = request.nextUrl.host;  // 使用请求中的完整主机（包含实际端口）
       }
 
       const url = new URL('/ibackendlogin', `${protocol}://${host}`);

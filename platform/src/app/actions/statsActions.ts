@@ -85,6 +85,11 @@ export async function incrementViews(promptId: string, path: string = '') {
 async function getIPHash(): Promise<string> {
   const headerList = headers();
   const ip = headerList.get('x-forwarded-for') || headerList.get('x-real-ip') || '127.0.0.1';
+  return hashIP(ip);
+}
+
+function hashIP(ip: string | null | undefined): string {
+  if (!ip) return 'anonymous';
   return crypto.createHash('sha256').update(ip).digest('hex');
 }
 

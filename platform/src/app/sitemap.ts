@@ -1,50 +1,80 @@
 import { MetadataRoute } from 'next';
 import prisma from '@/lib/prisma';
 
+// 1. 强制动态渲染：确保搜索引擎每次访问都能获取最新的工具和提示词链接
+export const dynamic = 'force-dynamic';
+export const revalidate = 0;
+
 export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
   const baseUrl = 'https://ichenghub.cn';
 
-  // 静态路由
-  const staticRoutes = [
-    { url: `${baseUrl}/zh`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 1 },
-    { url: `${baseUrl}/en`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 1 },
-    { url: `${baseUrl}/zh/about`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
-    { url: `${baseUrl}/en/about`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.8 },
-    { url: `${baseUrl}/zh/tools`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
-    { url: `${baseUrl}/en/tools`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
-    { url: `${baseUrl}/zh/prompts`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
-    { url: `${baseUrl}/en/prompts`, lastModified: new Date(), changeFrequency: 'daily' as const, priority: 0.9 },
-    { url: `${baseUrl}/zh/links`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${baseUrl}/en/links`, lastModified: new Date(), changeFrequency: 'weekly' as const, priority: 0.7 },
-    { url: `${baseUrl}/zh/submit`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
-    { url: `${baseUrl}/en/submit`, lastModified: new Date(), changeFrequency: 'monthly' as const, priority: 0.6 },
+  // 2. 定义基础静态路由
+  const staticPaths = [
+    { path: '', priority: 1, changeFrequency: 'daily' as const },
+    { path: '/about', priority: 0.8, changeFrequency: 'monthly' as const },
+    { path: '/tools', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/prompts', priority: 0.9, changeFrequency: 'daily' as const },
+    { path: '/links', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: '/submit', priority: 0.6, changeFrequency: 'monthly' as const },
   ];
 
-  // 动态路由 - 工具详情页
-  const tools = await prisma.toolCard.findMany({ 
-    where: { status: 1 },
-    select: { id: true, updatedAt: true }
+  // 生成中英双语的静态链接
+  const staticRoutes: MetadataRoute.Sitemap = [];
+  ['zh', 'en'].forEach((lang) => {
+    staticPaths.forEach((item) => {
+      staticRoutes.push({
+        url: `${baseUrl}/${lang}${item.path}`,
+        lastModified: new Date(),
+        changeFrequency: item.changeFrequency,
+        priority: item.priority,
+      });
+    });
   });
-  
-  const toolRoutes = tools.map((tool) => ({
-    url: `${baseUrl}/zh/tools/${tool.id}`,
-    lastModified: tool.updatedAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }));
 
-  // 动态路由 - 提示词详情页
-  const prompts = await prisma.prompt.findMany({ 
-    where: { status: 1 },
-    select: { id: true, updatedAt: true }
-  });
-  
-  const promptRoutes = prompts.map((prompt) => ({
-    url: `${baseUrl}/zh/prompts/${prompt.id}`,
-    lastModified: prompt.updatedAt,
-    changeFrequency: 'weekly' as const,
-    priority: 0.6,
-  }));
+  // 3. 尝试获取动态数据，增加 try-catch 保护以绕过本地 Build 时的数据库连接限制
+  try {
+    // 并发查询工具和提示词数据
+    const [tools, prompts] = await Promise.all([
+      prisma.toolCard.findMany({
+        where: { status: 1 },
+        select: { id: true, updatedAt: true },
+      }),
+      prisma.prompt.findMany({
+        where: { status: 1 },
+        select: { id: true, updatedAt: true },
+      }),
+    ]);
 
-  return [...staticRoutes, ...toolRoutes, ...promptRoutes];
+    // 生成工具详情页路由（中英双语）
+    const toolRoutes: MetadataRoute.Sitemap = [];
+    tools.forEach((tool) => {
+      ['zh', 'en'].forEach((lang) => {
+        toolRoutes.push({
+          url: `${baseUrl}/${lang}/tools/${tool.id}`,
+          lastModified: tool.updatedAt,
+          changeFrequency: 'weekly',
+          priority: 0.6,
+        });
+      });
+    });
+
+    // 生成提示词详情页路由（中英双语）
+    const promptRoutes: MetadataRoute.Sitemap = [];
+    prompts.forEach((prompt) => {
+      ['zh', 'en'].forEach((lang) => {
+        promptRoutes.push({
+          url: `${baseUrl}/${lang}/prompts/${prompt.id}`,
+          lastModified: prompt.updatedAt,
+          changeFrequency: 'weekly',
+          priority: 0.6,
+        });
+      });
+    });
+
+    return [...staticRoutes, ...toolRoutes, ...promptRoutes];
+  } catch (error) {
+    // 如果构建阶段（Prerender）连不上数据库，仅返回静态路由，防止 build 失败
+    console.error('--- Sitemap Build Warning: Database unreachable, returning static routes only ---');
+    return staticRoutes;
+  }
 }

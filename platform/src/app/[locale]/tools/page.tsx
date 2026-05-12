@@ -3,6 +3,7 @@ import { getTranslations } from 'next-intl/server';
 import CategorySidebar from '@/components/tools/CategorySidebar';
 import CategoryContent from '@/components/tools/CategoryContent';
 import MobileCategorySelector from '@/components/tools/MobileCategorySelector';
+import PageViewTracker from '@/components/PageViewTracker';
 
 export const dynamic = 'force-dynamic';
 
@@ -89,7 +90,9 @@ export default async function ToolsPage({ params }: { params: Promise<{ locale: 
   }));
 
   return (
-    <div className="min-w-0">
+    <>
+      <PageViewTracker path={`/${locale}/tools`} />
+      <div className="min-w-0">
       {/* 移动端布局 */}
       <div className="md:hidden container mx-auto px-4 py-6">
         <MobileCategorySelector 
@@ -143,5 +146,6 @@ export default async function ToolsPage({ params }: { params: Promise<{ locale: 
         </div>
       </div>
     </div>
+    </>
   );
 }

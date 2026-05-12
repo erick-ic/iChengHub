@@ -2,8 +2,10 @@
 
 import Image from 'next/image';
 import { Copy, Check, Eye, Heart, MessageCircle } from 'lucide-react';
-import { useState } from 'react';
-import { useRouter } from '@/navigation';
+import { useState, useTransition } from 'react';
+import { useRouter, usePathname } from '@/navigation';
+import { useLocale } from 'next-intl';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
 export interface PromptData {
   id: string;
@@ -24,12 +26,20 @@ interface PromptCardProps {
 export default function PromptCard({ data }: PromptCardProps) {
   const [copied, setCopied] = useState(false);
   const router = useRouter();
+  const pathname = usePathname();
+  const locale = useLocale();
+  const [isPending, startTransition] = useTransition();
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(data.promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    
+    const fullPath = `/${locale}${pathname}`;
+    startTransition(() => {
+      trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath);
+    });
   };
 
   const handleCardClick = () => {

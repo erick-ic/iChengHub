@@ -1,4 +1,5 @@
 import PromptCard, { PromptData } from '@/components/PromptCard';
+import PageViewTracker from '@/components/PageViewTracker';
 import prisma from '@/lib/prisma';
 
 interface PageProps {
@@ -30,7 +31,9 @@ export default async function PromptsPage({ params }: PageProps) {
   }));
 
   return (
-    <section className="container mx-auto px-4 py-16">
+    <>
+      <PageViewTracker path={`/${locale}/prompts`} />
+      <section className="container mx-auto px-4 py-16">
       <div className="mb-12 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
           {isEnglish ? 'Sharing Tips for Viral Keywords Prompts Library' : '爆款提示词分享提示词词库'}
@@ -54,5 +57,6 @@ export default async function PromptsPage({ params }: PageProps) {
         </div>
       )}
     </section>
+    </>
   );
 }

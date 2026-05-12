@@ -81,3 +81,18 @@ model ToolDemand {
   createdAt    DateTime @default(now()) @db.Timestamptz(0)
   updatedAt    DateTime @updatedAt @db.Timestamptz(0)
 }
+
+model AnalyticsLog {
+  id           String   @id @default(cuid())
+  timestamp    DateTime @default(now()) @db.Timestamptz(0)
+  actionType   String
+  resourceType String
+  resourceId   String?
+  path         String
+  ipHash       String?
+  userAgent    String?
+
+  @@index([actionType, resourceType])
+  @@index([resourceId])
+  @@index([timestamp])
+}

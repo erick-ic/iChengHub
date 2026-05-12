@@ -11,7 +11,8 @@ import {
   Link2,
   LogOut,
   FileText,
-  Loader2
+  Loader2,
+  BarChart3
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -49,6 +50,7 @@ export default function AdminLayout({
 
   const navItems = [
     { title: "控制面板", href: "/ibackend", icon: LayoutDashboard },
+    { title: "数据看板", href: "/ibackend/dashboard", icon: BarChart3 },
     { title: "工具管理", href: "/ibackend/tools", icon: Wrench },
     { title: "导航管理", href: "/ibackend/links", icon: Link2 },
     { title: "提示词管理", href: "/ibackend/prompts", icon: Lightbulb },

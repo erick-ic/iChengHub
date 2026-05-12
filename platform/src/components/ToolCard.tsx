@@ -1,9 +1,10 @@
 "use client";
 import Image from 'next/image';
-import { useState } from 'react';
-import { useRouter } from '@/navigation';
+import { useState, useTransition } from 'react';
+import { useRouter, usePathname } from '@/navigation';
 import { ArrowRight, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
 interface ToolCardProps {
   tool: {
@@ -23,13 +24,19 @@ interface ToolCardProps {
 
 export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [showModal, setShowModal] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const t = useTranslations('HomePage');
   
   const title = tool.displayName || tool.name;
   const description = tool.displayDesc || tool.desc;
 
   const handleClick = () => {
+    startTransition(() => {
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', pathname);
+    });
+
     if (!tool.url) {
       // 没有 URL，显示弹窗
       setShowModal(true);

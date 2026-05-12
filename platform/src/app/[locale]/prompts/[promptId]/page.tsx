@@ -109,7 +109,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}
       />
-      <ViewsTracker promptId={promptId} />
+      <ViewsTracker promptId={promptId} path={`/${locale}/prompts/${promptId}`} />
       <div className="min-h-screen bg-background">
         <section className="container mx-auto px-4 py-16 max-w-6xl">
           <nav className="flex items-center gap-2 mb-12 text-sm text-zinc-500">
@@ -215,6 +215,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
                   <CopyGenerateButton 
                     promptText={prompt.promptText}
                     platformUrl={prompt.platformUrl}
+                    promptId={promptId}
                     isEnglish={isEnglish}
                   />
                 )}

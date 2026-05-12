@@ -1,25 +1,39 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
+import { useLocale } from 'next-intl';
+import { usePathname } from '@/navigation';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
 interface CopyGenerateButtonProps {
   promptText: string;
   platformUrl: string;
+  promptId: string;
   isEnglish?: boolean;
 }
 
 export default function CopyGenerateButton({ 
   promptText, 
   platformUrl, 
+  promptId,
   isEnglish = false 
 }: CopyGenerateButtonProps) {
   const [isCopied, setIsCopied] = useState(false);
+  const [, startTransition] = useTransition();
+  const locale = useLocale();
+  const pathname = usePathname();
 
   const handleClick = async () => {
     try {
       await navigator.clipboard.writeText(promptText);
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
+      
+      const fullPath = `/${locale}${pathname}`;
+      startTransition(() => {
+        trackResourceAction(promptId, 'PROMPT', 'COPY', fullPath);
+      });
+      
       window.open(platformUrl, '_blank');
     } catch (err) {
       console.error('复制失败', err);

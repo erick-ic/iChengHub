@@ -1,7 +1,10 @@
 'use client';
 
+import { useTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ToolIcon } from '@/components/ui/ToolIcon';
+import { usePathname } from '@/navigation';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
 interface ExternalTool {
   id: string;
@@ -21,6 +24,14 @@ interface ToolCardProps {
 export function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const title = isEnglish && tool.titleEn ? tool.titleEn : tool.title;
   const description = isEnglish && tool.descriptionEn ? tool.descriptionEn : tool.description;
+  const pathname = usePathname();
+  const [isPending, startTransition] = useTransition();
+
+  const handleClick = () => {
+    startTransition(() => {
+      trackResourceAction(tool.id, 'LINK', 'CLICK', pathname);
+    });
+  };
 
   return (
     <div className="group relative">
@@ -28,6 +39,7 @@ export function ToolCard({ tool, isEnglish }: ToolCardProps) {
         href={tool.url}
         target="_blank"
         rel="noopener noreferrer"
+        onClick={handleClick}
         className="flex items-center gap-4 p-4 bg-white rounded-xl border border-zinc-200/50 shadow-sm hover:shadow-lg hover:-translate-y-1 hover:border-primary/50 transition-all duration-300 cursor-pointer"
       >
         <ToolIcon url={tool.url} title={title} iconUrl={tool.iconUrl} />

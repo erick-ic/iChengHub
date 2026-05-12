@@ -1,7 +1,10 @@
 'use client';
 
-import { useState } from 'react';
+import { useState, useTransition } from 'react';
 import { Copy, Check, MessageSquare } from 'lucide-react';
+import { useLocale } from 'next-intl';
+import { usePathname } from '@/navigation';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
 export interface PromptDetailData {
   id: string;
@@ -23,12 +26,20 @@ interface PromptDetailCardProps {
 
 export default function PromptDetailCard({ data, isEnglish = false, isPortrait = false }: PromptDetailCardProps) {
   const [copied, setCopied] = useState(false);
+  const [, startTransition] = useTransition();
+  const locale = useLocale();
+  const pathname = usePathname();
   const commentsCount = data.commentsCount || 128;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(data.promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
+    
+    const fullPath = `/${locale}${pathname}`;
+    startTransition(() => {
+      trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath);
+    });
   };
 
   const scrollToComments = () => {

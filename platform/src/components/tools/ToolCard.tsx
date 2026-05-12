@@ -1,9 +1,10 @@
 "use client";
-import { useState } from 'react';
-import { useRouter } from '@/navigation';
+import { useState, useTransition } from 'react';
+import { useRouter, usePathname } from '@/navigation';
 import { ArrowRight, X } from 'lucide-react';
 import { useTranslations } from 'next-intl';
 import { ToolIcon } from '../ui/ToolIcon';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
 interface ToolCardProps {
   tool: {
@@ -20,7 +21,9 @@ interface ToolCardProps {
 
 export default function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const router = useRouter();
+  const pathname = usePathname();
   const [showModal, setShowModal] = useState(false);
+  const [isPending, startTransition] = useTransition();
   const t = useTranslations('HomePage');
 
   // 根据语言选择显示的标题和描述
@@ -28,6 +31,10 @@ export default function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const description = isEnglish && tool.descEn ? tool.descEn : tool.desc;
 
   const handleClick = () => {
+    startTransition(() => {
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', pathname);
+    });
+
     if (!tool.url) {
       // 没有 URL，显示弹窗
       setShowModal(true);

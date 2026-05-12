@@ -1,8 +1,9 @@
 'use server';
 
 import { cookies } from 'next/headers';
+import { headers } from 'next/headers';
+import crypto from 'crypto';
 import prisma from '@/lib/prisma';
-import { redirect } from 'next/navigation';
 
 export async function toggleLike(promptId: string) {
   if (!promptId) return { success: false, message: '缺少参数' };
@@ -44,7 +45,7 @@ export async function toggleLike(promptId: string) {
   }
 }
 
-export async function incrementViews(promptId: string) {
+export async function incrementViews(promptId: string, path: string = '') {
   if (!promptId) return;
 
   const cookieStore = await cookies();
@@ -70,9 +71,98 @@ export async function incrementViews(promptId: string) {
       sameSite: 'lax'
     });
 
+    logAnalytics(promptId, 'PROMPT', 'VIEW', path).catch(err => {
+      console.error('日志记录失败:', err);
+    });
+
     return { success: true };
   } catch (error) {
     console.error('统计更新失败:', error);
+    return { success: false };
+  }
+}
+
+async function getIPHash(): Promise<string> {
+  const headerList = headers();
+  const ip = headerList.get('x-forwarded-for') || headerList.get('x-real-ip') || '127.0.0.1';
+  return crypto.createHash('sha256').update(ip).digest('hex');
+}
+
+async function checkDuplicateLog(
+  ipHash: string,
+  resourceId: string | null,
+  actionType: string,
+  resourceType: string
+): Promise<boolean> {
+  const now = new Date();
+  const todayStart = new Date(now.getFullYear(), now.getMonth(), now.getDate(), 0, 0, 0, 0);
+  
+  const query: any = {
+    ipHash,
+    actionType,
+    resourceType,
+    timestamp: { gte: todayStart }
+  };
+  
+  if (resourceId) {
+    query.resourceId = resourceId;
+  } else {
+    query.resourceId = null;
+  }
+
+  const lastRecord = await prisma.analyticsLog.findFirst({
+    where: query
+  });
+
+  return !!lastRecord;
+}
+
+async function logAnalytics(
+  resourceId: string | null,
+  resourceType: string,
+  actionType: string,
+  path: string
+) {
+  try {
+    const ipHash = await getIPHash();
+    const headerList = headers();
+    const userAgent = headerList.get('user-agent') || null;
+
+    const isDuplicate = await checkDuplicateLog(ipHash, resourceId, actionType, resourceType);
+    if (isDuplicate) {
+      console.log(`Skipped duplicated log: ${actionType} - ${resourceType} - ${resourceId || 'null'}`);
+      return { success: true, skipped: true };
+    }
+
+    await prisma.analyticsLog.create({
+      data: {
+        actionType,
+        resourceType,
+        resourceId,
+        path,
+        ipHash,
+        userAgent
+      }
+    });
+
+    return { success: true, skipped: false };
+  } catch (error) {
+    console.error('Analytics log failed:', error);
+    throw error;
+  }
+}
+
+export async function trackResourceAction(
+  resourceId: string | null,
+  resourceType: string,
+  actionType: string,
+  path: string
+) {
+  try {
+    const result = await logAnalytics(resourceId, resourceType, actionType, path);
+    return { success: true, skipped: result?.skipped || false };
+  } catch (error) {
+    console.error('Track action failed:', error);
     return { success: false };
   }
 }

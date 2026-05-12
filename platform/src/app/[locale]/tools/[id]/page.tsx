@@ -3,6 +3,7 @@ import prisma from '@/lib/prisma';
 import { notFound } from 'next/navigation';
 import { Link } from '@/navigation';
 import { Tag, ArrowRight, ExternalLink } from 'lucide-react';
+import PageViewTracker from '@/components/PageViewTracker';
 
 export const revalidate = 0;
 
@@ -71,6 +72,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
 
   return (
     <>
+      <PageViewTracker path={`/${locale}/tools/${id}`} resourceId={id} resourceType="TOOL" />
       <script
         type="application/ld+json"
         dangerouslySetInnerHTML={{ __html: JSON.stringify(jsonLd) }}

@@ -1,5 +1,6 @@
 import { getTranslations } from 'next-intl/server';
 import ToolCard from '@/components/ToolCard';
+import PageViewTracker from '@/components/PageViewTracker';
 import prisma from '@/lib/prisma';
 
 export const dynamic = 'force-dynamic';
@@ -38,7 +39,9 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
   }));
 
   return (
-    <section className="container mx-auto px-4 py-16">
+    <>
+      <PageViewTracker path={`/${locale}`} />
+      <section className="container mx-auto px-4 py-16">
       <div className="mb-12 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
           {t('title')}
@@ -66,5 +69,6 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
         )}
       </div>
     </section>
+    </>
   );
 }

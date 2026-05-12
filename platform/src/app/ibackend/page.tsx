@@ -46,6 +46,7 @@ export default async function AdminDashboard() {
     demandCount,
     totalViews,
     totalLikes,
+    totalFavorites,
     recentPrompts,
     toolCountLastMonth,
     promptCountLastMonth,
@@ -54,6 +55,7 @@ export default async function AdminDashboard() {
     demandCountLastMonth,
     viewsLastMonth,
     likesLastMonth,
+    favoritesLastMonth,
   ] = await Promise.all([
     prisma.toolCard.count(),
     prisma.prompt.count(),
@@ -62,6 +64,7 @@ export default async function AdminDashboard() {
     prisma.toolDemand.count(),
     prisma.prompt.aggregate({ _sum: { views: true } }),
     prisma.prompt.aggregate({ _sum: { likes: true } }),
+    prisma.prompt.aggregate({ _sum: { favorites: true } }),
     prisma.prompt.findMany({
       orderBy: { createdAt: 'desc' },
       take: 4,
@@ -132,12 +135,23 @@ export default async function AdminDashboard() {
         },
       },
     }),
+    prisma.prompt.aggregate({
+      _sum: { favorites: true },
+      where: {
+        createdAt: {
+          gte: lastMonthStart,
+          lte: lastMonthEnd,
+        },
+      },
+    }),
   ])
 
   const views = totalViews._sum.views || 0
   const likes = totalLikes._sum.likes || 0
+  const favorites = totalFavorites._sum.favorites || 0
   const viewsLast = viewsLastMonth._sum.views || 0
   const likesLast = likesLastMonth._sum.likes || 0
+  const favoritesLast = favoritesLastMonth._sum.favorites || 0
 
   // 计算环比变化
   const toolChange = toolCount - toolCountLastMonth
@@ -147,6 +161,7 @@ export default async function AdminDashboard() {
   const demandChange = demandCount - demandCountLastMonth
   const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : '0'
   const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : '0'
+  const favoritesChangePercent = favoritesLast > 0 ? ((favorites - favoritesLast) / favoritesLast * 100).toFixed(1) : '0'
 
   // 格式化数字显示
   const formatNumber = (num: number): string => {
@@ -260,7 +275,7 @@ export default async function AdminDashboard() {
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#e52129' }}></span>
             互动数据
           </h3>
-          <div className="grid gap-4 md:grid-cols-2">
+          <div className="grid gap-4 md:grid-cols-3">
             <Card>
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">总浏览量</CardTitle>
@@ -283,6 +298,19 @@ export default async function AdminDashboard() {
                 <div className="text-3xl font-bold">{formatNumber(likes)}</div>
                 <p className={`text-[10px] mt-1 ${parseFloat(likesChangePercent) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
                   {formatChange(likesChangePercent, true)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card>
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">收藏数</CardTitle>
+                <Star className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{formatNumber(favorites)}</div>
+                <p className={`text-[10px] mt-1 ${parseFloat(favoritesChangePercent) >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(favoritesChangePercent, true)}
                 </p>
               </CardContent>
             </Card>

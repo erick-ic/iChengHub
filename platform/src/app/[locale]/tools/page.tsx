@@ -1,9 +1,24 @@
+import { Metadata } from 'next';
 import prisma from '@/lib/prisma';
 import { getTranslations } from 'next-intl/server';
 import CategorySidebar from '@/components/tools/CategorySidebar';
 import CategoryContent from '@/components/tools/CategoryContent';
 import MobileCategorySelector from '@/components/tools/MobileCategorySelector';
 import PageViewTracker from '@/components/PageViewTracker';
+
+type Props = {
+  params: { locale: string };
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const isEn = params.locale === 'en';
+  return {
+    title: isEn ? 'AI Tools - Curated Collection' : 'AI 工具 - 精选收录',
+    description: isEn 
+      ? 'Discover our curated collection of high-quality AI tools. No ads, no bloatware, just pure productivity.' 
+      : '探索我们精心收录的高质量 AI 工具。无广告、无套壳，纯粹高效。',
+  };
+}
 
 export const dynamic = 'force-dynamic';
 

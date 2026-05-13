@@ -1,9 +1,24 @@
+import { Metadata } from 'next';
 import { PackageOpen } from 'lucide-react';
 import prisma from '@/lib/prisma';
 import { SidebarNav } from '@/components/SidebarNav';
 import { ToolCard } from '@/components/navigation/ToolCard';
 import MobileCategorySelector from '@/components/navigation/MobileCategorySelector';
 import { getTranslations } from 'next-intl/server';
+
+type Props = {
+  params: { locale: string };
+};
+
+export async function generateMetadata({ params }: Props): Promise<Metadata> {
+  const isEn = params.locale === 'en';
+  return {
+    title: isEn ? 'Useful Links - Resources Directory' : '实用链接 - 资源导航',
+    description: isEn 
+      ? 'Explore our curated directory of useful resources and AI-related links. Hand-picked for maximum value.' 
+      : '探索我们精心整理的实用资源与 AI 相关链接。精挑细选，价值最大化。',
+  };
+}
 
 export const dynamic = 'force-dynamic';
 

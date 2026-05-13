@@ -8,6 +8,10 @@ export const metadata: Metadata = {
     follow: false,
     nocache: true,
   },
+  icons: {
+    icon: '/favicon.svg',
+    apple: '/favicon.svg',
+  },
 };
 
 export default function IBackendLayout({
@@ -15,5 +19,11 @@ export default function IBackendLayout({
 }: {
   children: React.ReactNode
 }) {
-  return <AdminLayout>{children}</AdminLayout>;
+  return (
+    <html lang="zh">
+      <body className="font-sans">
+        <AdminLayout>{children}</AdminLayout>
+      </body>
+    </html>
+  );
 }

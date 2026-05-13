@@ -4,6 +4,7 @@ import { useTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ToolIcon } from '@/components/ui/ToolIcon';
 import { usePathname } from '@/navigation';
+import { useLocale } from 'next-intl';
 import { trackResourceAction } from '@/app/actions/statsActions';
 
 interface ExternalTool {
@@ -25,11 +26,16 @@ export function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const title = isEnglish && tool.titleEn ? tool.titleEn : tool.title;
   const description = isEnglish && tool.descriptionEn ? tool.descriptionEn : tool.description;
   const pathname = usePathname();
+  const locale = useLocale();
   const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
+    let fullPath = pathname;
+    if (!fullPath.startsWith('/' + locale)) {
+      fullPath = '/' + locale + fullPath;
+    }
     startTransition(() => {
-      trackResourceAction(tool.id, 'LINK', 'CLICK', pathname);
+      trackResourceAction(tool.id, 'LINK', 'CLICK', fullPath);
     });
   };
 

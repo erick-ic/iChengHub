@@ -2,7 +2,7 @@
 import { useState, useTransition } from 'react';
 import { useRouter, usePathname } from '@/navigation';
 import { ArrowRight, X } from 'lucide-react';
-import { useTranslations } from 'next-intl';
+import { useTranslations, useLocale } from 'next-intl';
 import { ToolIcon } from '../ui/ToolIcon';
 import { trackResourceAction } from '@/app/actions/statsActions';
 
@@ -22,6 +22,7 @@ interface ToolCardProps {
 export default function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const router = useRouter();
   const pathname = usePathname();
+  const locale = useLocale();
   const [showModal, setShowModal] = useState(false);
   const [isPending, startTransition] = useTransition();
   const t = useTranslations('HomePage');
@@ -31,8 +32,9 @@ export default function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const description = isEnglish && tool.descEn ? tool.descEn : tool.desc;
 
   const handleClick = () => {
+    const fullPath = `/${locale}${pathname}`;
     startTransition(() => {
-      trackResourceAction(tool.id, 'TOOL', 'CLICK', pathname);
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', fullPath);
     });
 
     if (!tool.url) {

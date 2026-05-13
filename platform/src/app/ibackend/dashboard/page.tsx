@@ -38,7 +38,7 @@ interface AnalyticsData {
 
 function maskIP(ipHash: string | null): string {
   if (!ipHash) return '匿名用户'
-  return ipHash.substring(0, 6) + '***'
+  return ipHash
 }
 
 function getTimeAgo(timestamp: Date): string {
@@ -357,6 +357,20 @@ export default async function DashboardPage() {
         <TrendChart data={data.chartData} />
       )}
 
+      {/* 最近动态 - 单独一行 */}
+      <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <CardHeader className="pb-2">
+          <CardTitle className="text-lg flex items-center gap-2">
+            <Activity className="w-5 h-5" style={{ color: '#e52129' }} />
+            最近动态
+          </CardTitle>
+          <p className="text-xs text-slate-400 mt-1">规则：展示最近5条用户行为记录</p>
+        </CardHeader>
+        <CardContent className="p-0">
+          <RecentActivity activities={data.recentActivity} />
+        </CardContent>
+      </Card>
+
       <div className="grid gap-4 lg:grid-cols-4">
         <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-2">
@@ -423,8 +437,8 @@ export default async function DashboardPage() {
         </Card>
       </div>
 
-      <div className="grid gap-4 lg:grid-cols-4">
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300 lg:col-span-2">
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <FolderOpen className="w-5 h-5" style={{ color: '#e52129' }} />
@@ -437,16 +451,36 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300 lg:col-span-2">
+        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Activity className="w-5 h-5" style={{ color: '#e52129' }} />
-              最近动态
+              <Lightbulb className="w-5 h-5" style={{ color: '#e52129' }} />
+              热门提示词 TOP5
             </CardTitle>
-            <p className="text-xs text-slate-400 mt-1">规则：展示最近5条用户行为记录</p>
+            <p className="text-xs text-slate-400 mt-1">规则：统计提示词的复制次数，同一用户同一提示词当日内只记1次</p>
           </CardHeader>
-          <CardContent className="p-0">
-            <RecentActivity activities={data.recentActivity} />
+          <CardContent>
+            {data.topPrompts.length === 0 ? (
+              <EmptyState message="暂无复制数据" />
+            ) : (
+              <div className="space-y-3">
+                {data.topPrompts.map((prompt, index) => {
+                  return (
+                    <div key={prompt.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                      <div className="flex items-center gap-3">
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
+                          {index + 1}
+                        </span>
+                        <span className="text-sm font-medium text-slate-700 truncate max-w-[120px]">{prompt.title}</span>
+                      </div>
+                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50">
+                        {prompt.copies} 次
+                      </Badge>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
           </CardContent>
         </Card>
       </div>
@@ -458,7 +492,7 @@ export default async function DashboardPage() {
               <Wrench className="w-5 h-5" style={{ color: '#e52129' }} />
               热门工具 TOP5
             </CardTitle>
-            <p className="text-xs text-slate-400 mt-1">规则：统计工具的点击+浏览，同一用户同一工具24小时内只记1次</p>
+            <p className="text-xs text-slate-400 mt-1">规则：统计工具的点击+浏览，同一用户同一工具当日内只记1次</p>
           </CardHeader>
           <CardContent>
             {data.topTools.length === 0 ? (
@@ -488,43 +522,10 @@ export default async function DashboardPage() {
         <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
-              <Lightbulb className="w-5 h-5" style={{ color: '#e52129' }} />
-              热门提示词 TOP5
-            </CardTitle>
-            <p className="text-xs text-slate-400 mt-1">规则：统计提示词的复制次数，同一用户同一提示词24小时内只记1次</p>
-          </CardHeader>
-          <CardContent>
-            {data.topPrompts.length === 0 ? (
-              <EmptyState message="暂无复制数据" />
-            ) : (
-              <div className="space-y-3">
-                {data.topPrompts.map((prompt, index) => {
-                  return (
-                    <div key={prompt.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
-                          {index + 1}
-                        </span>
-                        <span className="text-sm font-medium text-slate-700 truncate max-w-[120px]">{prompt.title}</span>
-                      </div>
-                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50">
-                        {prompt.copies} 次
-                      </Badge>
-                    </div>
-                  )
-                })}
-              </div>
-            )}
-          </CardContent>
-        </Card>
-
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
-          <CardHeader className="pb-2">
-            <CardTitle className="text-lg flex items-center gap-2">
               <Link2 className="w-5 h-5" style={{ color: '#e52129' }} />
               热门导航 TOP5
             </CardTitle>
-            <p className="text-xs text-slate-400 mt-1">规则：统计导航链接的点击次数，同一用户同一链接24小时内只记1次</p>
+            <p className="text-xs text-slate-400 mt-1">规则：统计导航链接的点击次数，同一用户同一链接当日内只记1次</p>
           </CardHeader>
           <CardContent>
             {data.topLinks.length === 0 ? (

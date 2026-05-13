@@ -63,13 +63,17 @@ export async function incrementViews(promptId: string, path: string = '') {
       data: { views: { increment: 1 } }
     });
 
-    cookieStore.set(cookieName, '1', {
-      maxAge: 60 * 60 * 24,
-      path: '/',
-      httpOnly: true,
-      secure: process.env.NODE_ENV === 'production',
-      sameSite: 'lax'
-    });
+    const now = new Date();
+      const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+      const maxAge = Math.floor((midnight.getTime() - now.getTime()) / 1000);
+      
+      cookieStore.set(cookieName, '1', {
+        maxAge,
+        path: '/',
+        httpOnly: true,
+        secure: process.env.NODE_ENV === 'production',
+        sameSite: 'lax'
+      });
 
     logAnalytics(promptId, 'PROMPT', 'VIEW', path).catch(err => {
       console.error('日志记录失败:', err);

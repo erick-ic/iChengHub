@@ -1,6 +1,7 @@
 'use client';
 
 import { useEffect, useTransition } from 'react';
+import { useLocale } from 'next-intl';
 import { trackResourceAction } from '@/app/actions/statsActions';
 
 interface PageViewTrackerProps {
@@ -24,6 +25,7 @@ function setCookie(name: string, maxAge: number) {
 
 export default function PageViewTracker({ path = '', resourceId = '', resourceType = 'PAGE' }: PageViewTrackerProps) {
   const [, startTransition] = useTransition();
+  const locale = useLocale();
 
   useEffect(() => {
     const cookieName = `view_lock_${resourceType}_${resourceId || 'home'}`;
@@ -32,10 +34,19 @@ export default function PageViewTracker({ path = '', resourceId = '', resourceTy
       return;
     }
 
-    setCookie(cookieName, 60 * 60 * 24);
+    const now = new Date();
+    const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
+    const maxAge = Math.floor((midnight.getTime() - now.getTime()) / 1000);
+    
+    setCookie(cookieName, maxAge);
+
+    let fullPath = path;
+    if (fullPath && !fullPath.startsWith('/' + locale)) {
+      fullPath = '/' + locale + fullPath;
+    }
 
     startTransition(() => {
-      trackResourceAction(resourceId, resourceType, 'VIEW', path);
+      trackResourceAction(resourceId, resourceType, 'VIEW', fullPath);
     });
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);

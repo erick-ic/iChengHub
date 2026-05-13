@@ -29,7 +29,7 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
   const [, startTransition] = useTransition();
   const locale = useLocale();
   const pathname = usePathname();
-  const commentsCount = data.commentsCount || 128;
+  const commentsCount = data.commentsCount || 0;
 
   const handleCopy = () => {
     navigator.clipboard.writeText(data.promptText);

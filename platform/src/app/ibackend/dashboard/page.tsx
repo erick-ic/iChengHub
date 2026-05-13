@@ -467,13 +467,13 @@ export default async function DashboardPage() {
                 {data.topPrompts.map((prompt, index) => {
                   return (
                     <div key={prompt.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
+                      <div className="flex items-center gap-3 flex-[0.9] min-w-0">
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
                           {index + 1}
                         </span>
-                        <span className="text-sm font-medium text-slate-700 truncate max-w-[120px]">{prompt.title}</span>
+                        <span className="text-sm font-medium text-slate-700 truncate block min-w-0" title={prompt.title}>{prompt.title}</span>
                       </div>
-                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50">
+                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50 flex-shrink-0">
                         {prompt.copies} 次
                       </Badge>
                     </div>
@@ -502,13 +502,13 @@ export default async function DashboardPage() {
                 {data.topTools.map((tool, index) => {
                   return (
                     <div key={tool.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                      <div className="flex items-center gap-3">
-                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
+                      <div className="flex items-center gap-3 flex-[0.9] min-w-0">
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
                           {index + 1}
                         </span>
-                        <span className="text-sm font-medium text-slate-700 truncate max-w-[120px]">{tool.name}</span>
+                        <span className="text-sm font-medium text-slate-700 truncate block min-w-0" title={tool.name}>{tool.name}</span>
                       </div>
-                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50">
+                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50 flex-shrink-0">
                         {tool.clicks + tool.views} 次
                       </Badge>
                     </div>
@@ -534,13 +534,13 @@ export default async function DashboardPage() {
               <div className="space-y-3">
                 {data.topLinks.map((link, index) => (
                   <div key={link.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
-                    <div className="flex items-center gap-3">
-                      <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
-                        {index + 1}
-                      </span>
-                      <span className="text-sm font-medium text-slate-700 truncate max-w-[120px]">{link.name}</span>
-                    </div>
-                    <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50">
+                    <div className="flex items-center gap-3 flex-[0.9] min-w-0">
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
+                          {index + 1}
+                        </span>
+                        <span className="text-sm font-medium text-slate-700 truncate block min-w-0" title={link.name}>{link.name}</span>
+                      </div>
+                    <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50 flex-shrink-0">
                       {link.clicks} 次
                     </Badge>
                   </div>

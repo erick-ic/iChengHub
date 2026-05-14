@@ -20,10 +20,6 @@ export default function IBackendLayout({
   children: React.ReactNode
 }) {
   return (
-    <html lang="zh">
-      <body className="font-sans">
-        <AdminLayout>{children}</AdminLayout>
-      </body>
-    </html>
+    <AdminLayout>{children}</AdminLayout>
   );
 }

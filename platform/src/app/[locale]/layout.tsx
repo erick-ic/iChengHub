@@ -16,11 +16,11 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
       template: isEn ? '%s | iChengHub Efficiency Compass' : '%s | iChengHub 效率罗盘',
       default: isEn ? 'iChengHub - Explore AI Boundaries, Your Efficiency Compass' : '热荐工坊 - 探索 AI 的边界，你的专属效率罗盘',
     },
-    description: isEn 
-      ? 'Pure AI workshop crafted by Heguang Studio. Curating high-quality, ad-free AI productivity tools and prompts.' 
+    description: isEn
+      ? 'Pure AI workshop crafted by Heguang Studio. Curating high-quality, ad-free AI productivity tools and prompts.'
       : '和光工作室倾力打造的 AI 纯净工坊。收录全网高质量、无广告套壳的 AI 效率工具与生产力提示词。',
-    keywords: isEn 
-      ? ['AI Tools', 'ChatGPT Prompts', 'AI Productivity', 'iChengHub', 'Independent Developer'] 
+    keywords: isEn
+      ? ['AI Tools', 'ChatGPT Prompts', 'AI Productivity', 'iChengHub', 'Independent Developer']
       : ['AI工具导航', 'ChatGPT提示词', 'AI效率工具', '热荐工坊', '独立开发者'],
     authors: [{ name: isEn ? 'Heguang Studio' : '和光工作室' }],
     alternates: {
@@ -28,8 +28,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     },
     openGraph: {
       title: isEn ? 'iChengHub - AI Efficiency Compass' : '热荐工坊 - AI 效率罗盘',
-      description: isEn 
-        ? 'No ads, no bloatware. Hand-picked high-quality AI tools and prompts.' 
+      description: isEn
+        ? 'No ads, no bloatware. Hand-picked high-quality AI tools and prompts.'
         : '拒绝垃圾与满屏广告，站长亲测的高质量 AI 工具与提示词大本营。',
       url: 'https://ichenghub.cn',
       siteName: isEn ? 'iChengHub' : '热荐工坊',
@@ -39,8 +39,8 @@ export async function generateMetadata({ params }: Props): Promise<Metadata> {
     twitter: {
       card: 'summary_large_image',
       title: isEn ? 'iChengHub - AI Efficiency Compass' : '热荐工坊 - AI 效率罗盘',
-      description: isEn 
-        ? 'No ads, no bloatware. Hand-picked high-quality AI tools and prompts.' 
+      description: isEn
+        ? 'No ads, no bloatware. Hand-picked high-quality AI tools and prompts.'
         : '拒绝垃圾与满屏广告，站长亲测的高质量 AI 工具与提示词大本营。',
     },
     icons: {
@@ -60,17 +60,13 @@ export default async function LocaleLayout({
   params: { locale: string };
 }) {
   const messages = await getMessages({ locale: params.locale });
-  
+
   return (
-    <html lang={params.locale}>
-      <body className="font-sans">
-        <NextIntlClientProvider messages={messages} locale={params.locale}>
-          <div className="min-h-screen bg-background">
-            <Navbar locale={params.locale} />
-            {children}
-          </div>
-        </NextIntlClientProvider>
-      </body>
-    </html>
+    <NextIntlClientProvider messages={messages} locale={params.locale}>
+      <div className="min-h-screen bg-background">
+        <Navbar locale={params.locale} />
+        {children}
+      </div>
+    </NextIntlClientProvider>
   );
 }

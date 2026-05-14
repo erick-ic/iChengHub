@@ -66,13 +66,14 @@ export default async function PromptDetailPage({ params }: PageProps) {
 
   const promptTitle = isEnglish ? (prompt.titleEn || prompt.title) : prompt.title;
   const category = isEnglish ? (prompt.categoryEn || prompt.category) : prompt.category;
+  const platformName = isEnglish ? (prompt.platformEn || prompt.platform) : prompt.platform;
 
   const promptData: PromptDetailData = {
     id: prompt.id,
     title: prompt.title,
     titleEn: prompt.titleEn,
     promptText: prompt.promptText,
-    platformName: prompt.platform,
+    platformName: platformName,
     platformUrl: prompt.platformUrl || undefined,
     commentsCount: prompt.comments,
     category: category,
@@ -155,7 +156,7 @@ export default async function PromptDetailPage({ params }: PageProps) {
                     rel="noopener noreferrer"
                     className="text-orange-600 font-semibold hover:text-orange-800 transition-colors flex items-center gap-1"
                   >
-                    {prompt.platform}
+                    {platformName}
                     <svg className="w-4 h-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                       <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
                     </svg>

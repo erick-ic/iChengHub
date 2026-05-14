@@ -20,6 +20,7 @@ interface Prompt {
   category: string
   categoryEn: string | null
   platform: string
+  platformEn: string | null
   platformUrl: string | null
   imageUrl: string
   promptText: string
@@ -198,17 +199,21 @@ export function PromptTable({ prompts }: PromptTableProps) {
                 </div>
                 <div className="grid grid-cols-2 gap-4">
                   <div className="space-y-2">
-                    <Label htmlFor="toolId">所属平台</Label>
+                    <Label htmlFor="toolId">所属平台 (中文)</Label>
                     <Input id="toolId" name="toolId" placeholder="例如: Gemini" defaultValue={editingPrompt?.platform || ''} required />
                   </div>
                   <div className="space-y-2">
-                    <Label htmlFor="platformUrl">平台链接</Label>
-                    <Input id="platformUrl" name="platformUrl" placeholder="例如: https://gemini.google.com" defaultValue={editingPrompt?.platformUrl || ''} />
+                    <Label htmlFor="platformEn">所属平台 (English)</Label>
+                    <Input id="platformEn" name="platformEn" placeholder="e.g.: Gemini" defaultValue={editingPrompt?.platformEn || ''} />
                   </div>
                 </div>
                 <div className="space-y-2">
+                  <Label htmlFor="platformUrl">平台链接</Label>
+                  <Input id="platformUrl" name="platformUrl" placeholder="例如: https://gemini.google.com 或 https://chat.openai.com" defaultValue={editingPrompt?.platformUrl || ''} />
+                </div>
+                <div className="space-y-2">
                   <Label htmlFor="imageUrl">封面图 URL</Label>
-                  <Input id="imageUrl" name="imageUrl" defaultValue={editingPrompt?.imageUrl || ''} required />
+                  <Input id="imageUrl" name="imageUrl" placeholder="例如: https://example.com/prompt-cover.jpg (支持 jpg, png, webp, svg 格式)" defaultValue={editingPrompt?.imageUrl || ''} required />
                 </div>
                 <div className="space-y-2">
                   <Label htmlFor="promptText">提示词正文</Label>

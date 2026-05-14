@@ -46,8 +46,9 @@ model Prompt {
   titleEn     String?
   category    String
   categoryEn  String?
-  platform    String
-  platformUrl String?
+  platform     String
+  platformEn   String?
+  platformUrl  String?
   imageUrl    String
   promptText  String
   views       Int      @default(0)

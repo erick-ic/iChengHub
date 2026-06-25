@@ -37,6 +37,7 @@ const Navbar: React.FC<NavbarProps> = ({ locale }) => {
 
   const navLinks = [
     { href: '/', label: t('home') },
+    { href: '/blog', label: t('blog') },
     { href: '/tools', label: t('tools') },
     { href: '/links', label: t('links') },
     { href: '/about', label: t('about') },

@@ -1,7 +1,7 @@
 'use client'
 
 import { useState, useEffect } from 'react'
-import { useRouter } from 'next/navigation'
+import { useRouter, usePathname } from 'next/navigation'
 import Link from "next/link"
 import {
   LayoutDashboard,
@@ -12,7 +12,8 @@ import {
   LogOut,
   FileText,
   Loader2,
-  BarChart3
+  BarChart3,
+  BookOpen
 } from "lucide-react"
 import { Button } from "@/components/ui/button"
 import { Separator } from "@/components/ui/separator"
@@ -30,6 +31,7 @@ export default function AdminLayout({
   children: React.ReactNode
 }) {
   const router = useRouter()
+  const pathname = usePathname()
   const [isConfirmOpen, setIsConfirmOpen] = useState(false)
   const [isLoading, setIsLoading] = useState(false)
 
@@ -54,6 +56,7 @@ export default function AdminLayout({
     { title: "工具管理", href: "/ibackend/tools", icon: Wrench },
     { title: "导航管理", href: "/ibackend/links", icon: Link2 },
     { title: "提示词管理", href: "/ibackend/prompts", icon: Lightbulb },
+    { title: "博客管理", href: "/ibackend/blogs", icon: BookOpen },
     { title: "提交管理", href: "/ibackend/submissions", icon: FileText },
     { title: "用户管理", href: "/ibackend/users", icon: Users },
   ]
@@ -95,16 +98,24 @@ export default function AdminLayout({
 
         <nav className="flex-1 overflow-auto p-4">
           <div className="space-y-1">
-            {navItems.map((item) => (
-              <Link
-                key={item.href}
-                href={item.href}
-                className="group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium hover:bg-slate-800 transition-colors"
-              >
-                <item.icon className="h-4 w-4" />
-                {item.title}
-              </Link>
-            ))}
+            {navItems.map((item) => {
+              const isActive = pathname === item.href || 
+                (item.href === '/ibackend' && pathname.startsWith('/ibackend') && !navItems.some(n => pathname === n.href))
+              return (
+                <Link
+                  key={item.href}
+                  href={item.href}
+                  className={`group flex items-center gap-3 rounded-lg px-3 py-2 text-sm font-medium transition-colors ${
+                    isActive 
+                      ? 'bg-slate-800 text-[#e52129] border-l-2 border-[#e52129] ml-[-2px]' 
+                      : 'hover:bg-slate-800 text-slate-300 hover:text-white'
+                  }`}
+                >
+                  <item.icon className="h-4 w-4" />
+                  {item.title}
+                </Link>
+              )
+            })}
           </div>
         </nav>
 

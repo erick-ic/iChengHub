@@ -1,7 +1,7 @@
 'use client';
 
 import { Wrench } from 'lucide-react';
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 
 interface CategoryItem {
   categoryName: string;
@@ -17,24 +17,35 @@ interface CategorySidebarProps {
 
 export default function CategorySidebar({ categories, totalCount, isEnglish }: CategorySidebarProps) {
   const [activeCategory, setActiveCategory] = useState<string>('');
+  const rafRef = useRef<number | null>(null);
 
   useEffect(() => {
     const handleScroll = () => {
-      const sections = document.querySelectorAll('[data-category]');
-      let currentCategory = '';
-      
-      sections.forEach((section) => {
-        const rect = section.getBoundingClientRect();
-        if (rect.top <= 100 && rect.bottom >= 100) {
-          currentCategory = section.getAttribute('data-category') || '';
-        }
+      if (rafRef.current) return;
+
+      rafRef.current = requestAnimationFrame(() => {
+        const sections = document.querySelectorAll('[data-category]');
+        let currentCategory = '';
+        
+        sections.forEach((section) => {
+          const rect = section.getBoundingClientRect();
+          if (rect.top <= 100 && rect.bottom >= 100) {
+            currentCategory = section.getAttribute('data-category') || '';
+          }
+        });
+        
+        setActiveCategory(currentCategory);
+        rafRef.current = null;
       });
-      
-      setActiveCategory(currentCategory);
     };
 
-    window.addEventListener('scroll', handleScroll);
-    return () => window.removeEventListener('scroll', handleScroll);
+    window.addEventListener('scroll', handleScroll, { passive: true });
+    return () => {
+      window.removeEventListener('scroll', handleScroll);
+      if (rafRef.current) {
+        cancelAnimationFrame(rafRef.current);
+      }
+    };
   }, []);
 
   const handleCategoryClick = (categoryName: string) => {

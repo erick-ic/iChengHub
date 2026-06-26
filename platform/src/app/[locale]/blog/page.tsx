@@ -59,30 +59,28 @@ export default async function BlogListPage({ params }: PageProps) {
                   <li
                     key={post.id}
                     className={[
-                      // 物理分割线：除最后一项外
                       isLast ? '' : 'border-b border-gray-100 dark:border-gray-800',
                     ].join(' ')}
                   >
                     <Link
                       href={`/blog/${post.id}`}
-                      className="group block py-8 transition-all duration-200 hover:bg-gray-50/30 dark:hover:bg-white/[0.02] -mx-3 px-3 rounded-md"
+                      className="group block py-8 px-4 transition-all duration-300 hover:bg-white hover:shadow-md hover:-translate-y-0.5 -mx-4 rounded-lg"
                     >
                       {/* 第一层：标题（hover 时变品牌红） */}
-                      <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground transition-colors duration-200 group-hover:text-[#e52129]">
+                      <h2 className="text-xl md:text-2xl font-bold tracking-tight text-foreground transition-all duration-300 group-hover:text-[#e52129]">
                         {title}
                       </h2>
 
                       {/* 第二层：摘要（严格 2 行截断） */}
-                      <p className="mt-2 text-sm md:text-base leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-2">
+                      <p className="mt-2 text-sm md:text-base leading-relaxed text-gray-500 dark:text-gray-400 line-clamp-2 transition-colors duration-300 group-hover:text-gray-700 dark:group-hover:text-gray-300">
                         {excerpt}
                       </p>
 
                       {/* 第三层：元数据行（分类 + 日期） */}
-                      <div className="flex flex-wrap items-center gap-x-2 text-xs mt-2">
-                        <span className="text-[#e52129] font-semibold tracking-[0.18em] uppercase">
+                      <div className="flex flex-wrap items-center gap-x-3 text-xs mt-3">
+                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#e52129]/10 text-[#e52129] font-semibold tracking-wider text-[10px] uppercase transition-all duration-300 group-hover:bg-[#e52129]/20">
                           {category}
                         </span>
-                        <span className="text-gray-300 dark:text-gray-600">·</span>
                         <time
                           dateTime={post.date}
                           className="text-gray-400 dark:text-gray-500 font-normal tabular-nums"

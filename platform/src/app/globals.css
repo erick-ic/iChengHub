@@ -2,6 +2,9 @@
 @tailwind components;
 @tailwind utilities;
 
+/* Prism.js 代码高亮主题 */
+@import 'prismjs/themes/prism-tomorrow.css';
+
 @layer base {
   :root {
     /* 背景色 #f5f5f7 -> HSL 分量 */
@@ -84,4 +87,33 @@
 /* 额外的平滑滚动优化 */
 html {
   scroll-behavior: smooth;
+}
+
+/* 复制按钮状态切换 */
+.copy-button .copy-icon-hidden,
+.copy-button .copy-text-hidden {
+  display: none;
+}
+
+.copy-button.copied .copy-icon,
+.copy-button.copied .copy-text {
+  display: none;
+}
+
+.copy-button.copied .copy-icon-hidden,
+.copy-button.copied .copy-text-hidden {
+  display: inline-flex;
+}
+
+@keyframes fade-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+.animate-fade-in {
+  animation: fade-in 0.2s ease-out;
 }

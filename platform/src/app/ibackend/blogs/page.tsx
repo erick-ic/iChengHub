@@ -1,18 +1,18 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, memo } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Textarea } from '@/components/ui/textarea';
 import { Label } from '@/components/ui/label';
-import { Card, CardContent, CardDescription, CardHeader, CardTitle } from '@/components/ui/card';
+import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
-import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle, DialogTrigger } from '@/components/ui/dialog';
+import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Plus, Edit, Trash2, Save, X, Search, Check, RefreshCw } from 'lucide-react';
-import { createPost, updatePost, deletePost, getPosts } from '@/app/actions/postActions';
+import { Plus, Edit, Trash2, Save, Search, Check, RefreshCw, GripVertical, ArrowLeft, ArrowRight } from 'lucide-react';
+import { createPost, updatePost, deletePost, getPosts, updatePostsSortOrder } from '@/app/actions/postActions';
 
 interface Post {
   id: string;
@@ -25,9 +25,90 @@ interface Post {
   contentZh: string;
   contentEn: string;
   status: number;
+  sortOrder: number;
   createdAt: Date;
   updatedAt: Date;
 }
+
+interface PostCardProps {
+  post: Post;
+  index: number;
+  isDragOver: boolean;
+  onDragStart: () => void;
+  onDragOver: (e: React.DragEvent) => void;
+  onDragEnd: () => void;
+  onEdit: () => void;
+  onDelete: () => void;
+}
+
+const PostCard = memo(({ post, index, isDragOver, onDragStart, onDragOver, onDragEnd, onEdit, onDelete }: PostCardProps) => {
+  return (
+    <Card
+      key={post.id}
+      className={`cursor-move transition-all ${isDragOver ? 'ring-2 ring-primary' : ''}`}
+      draggable
+      onDragStart={onDragStart}
+      onDragOver={onDragOver}
+      onDragEnd={onDragEnd}
+    >
+      <CardHeader>
+        <div className="flex justify-between items-start">
+          <div className="flex items-center gap-3">
+            <GripVertical className="h-5 w-5 text-gray-400 cursor-grab" />
+            <div>
+              <Badge variant="outline" className="mr-2 font-mono">
+                #{post.sortOrder}
+              </Badge>
+              <CardTitle className="text-xl inline">{post.titleZh}</CardTitle>
+            </div>
+          </div>
+          <div className="flex items-center gap-2">
+            <Badge variant={post.status === 1 ? 'default' : 'secondary'}>
+              {post.status === 1 ? '已发布' : '草稿'}
+            </Badge>
+          </div>
+        </div>
+      </CardHeader>
+      <CardContent>
+        <div className="flex justify-between items-center">
+          <div className="space-y-2">
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="font-medium">分类：</span>
+              {post.categoryZh} / {post.categoryEn}
+            </p>
+            <p className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="font-medium">摘要：</span>
+              {post.excerptZh}
+            </p>
+            <p className="text-xs text-gray-500 dark:text-gray-500">
+              创建时间：{new Date(post.createdAt).toLocaleString('zh-CN')}
+            </p>
+          </div>
+          <div className="flex gap-2">
+            <Button
+              variant="outline"
+              size="sm"
+              onClick={onEdit}
+              className="flex items-center gap-1"
+            >
+              <Edit className="h-4 w-4" />
+              编辑
+            </Button>
+            <Button
+              variant="destructive"
+              size="sm"
+              onClick={onDelete}
+              className="flex items-center gap-1"
+            >
+              <Trash2 className="h-4 w-4" />
+              删除
+            </Button>
+          </div>
+        </div>
+      </CardContent>
+    </Card>
+  );
+});
 
 export default function PostsPage() {
   const searchParams = useSearchParams();
@@ -48,10 +129,21 @@ export default function PostsPage() {
     contentZh: '',
     contentEn: '',
     status: '0',
+    sortOrder: '0',
   });
+  const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
+  const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [pagination, setPagination] = useState({
+    total: 0,
+    totalPages: 1,
+    currentPage: 1,
+    pageSize: 20,
+  });
+
+  const currentPage = parseInt(searchParams.get('page') || '1');
 
   const handleSearch = useDebouncedCallback((term: string) => {
     const params = new URLSearchParams(searchParams);
@@ -60,18 +152,31 @@ export default function PostsPage() {
     } else {
       params.delete('q');
     }
+    params.set('page', '1');
     router.replace(`${pathname}?${params.toString()}`);
   }, 300);
 
+  const handlePageChange = (page: number) => {
+    const params = new URLSearchParams(searchParams);
+    params.set('page', page.toString());
+    router.replace(`${pathname}?${params.toString()}`);
+  };
+
   useEffect(() => {
-    loadPosts(searchParams.get('q') || undefined);
+    loadPosts(searchParams.get('q') || undefined, currentPage);
   }, [searchParams]);
 
-  const loadPosts = async (query?: string) => {
+  const loadPosts = async (query?: string, page: number = 1) => {
     setLoading(true);
-    const result = await getPosts(query || searchQuery);
+    const result = await getPosts(query || searchQuery, page);
     if (result.success) {
       setPosts(result.posts);
+      setPagination({
+        total: result.total || 0,
+        totalPages: result.totalPages || 1,
+        currentPage: result.currentPage || 1,
+        pageSize: result.pageSize || 20,
+      });
     }
     setLoading(false);
   };
@@ -88,6 +193,7 @@ export default function PostsPage() {
       contentZh: '',
       contentEn: '',
       status: '0',
+      sortOrder: '0',
     });
     setIsDialogOpen(true);
   };
@@ -104,6 +210,7 @@ export default function PostsPage() {
       contentZh: post.contentZh,
       contentEn: post.contentEn,
       status: post.status.toString(),
+      sortOrder: post.sortOrder.toString(),
     });
     setIsDialogOpen(true);
   };
@@ -204,60 +311,87 @@ export default function PostsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {posts.map((post) => (
-            <Card key={post.id}>
-              <CardHeader>
-                <div className="flex justify-between items-start">
-                  <div className="flex-1">
-                    <CardTitle className="text-xl">{post.titleZh}</CardTitle>
-                    <CardDescription className="mt-1">{post.titleEn}</CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                    <Badge variant={post.status === 1 ? 'default' : 'secondary'}>
-                      {post.status === 1 ? '已发布' : '草稿'}
-                    </Badge>
-                  </div>
-                </div>
-              </CardHeader>
-              <CardContent>
-                <div className="flex justify-between items-center">
-                  <div className="space-y-2">
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <span className="font-medium">分类：</span>
-                      {post.categoryZh} / {post.categoryEn}
-                    </p>
-                    <p className="text-sm text-gray-600 dark:text-gray-400">
-                      <span className="font-medium">摘要：</span>
-                      {post.excerptZh}
-                    </p>
-                    <p className="text-xs text-gray-500 dark:text-gray-500">
-                      创建时间：{new Date(post.createdAt).toLocaleString('zh-CN')}
-                    </p>
-                  </div>
-                  <div className="flex gap-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => handleEdit(post)}
-                      className="flex items-center gap-1"
-                    >
-                      <Edit className="h-4 w-4" />
-                      编辑
-                    </Button>
-                    <Button
-                      variant="destructive"
-                      size="sm"
-                      onClick={() => handleDelete(post.id)}
-                      className="flex items-center gap-1"
-                    >
-                      <Trash2 className="h-4 w-4" />
-                      删除
-                    </Button>
-                  </div>
-                </div>
-              </CardContent>
-            </Card>
+          {posts.map((post, index) => (
+            <PostCard
+              key={post.id}
+              post={post}
+              index={index}
+              isDragOver={dragOverIndex === index}
+              onDragStart={() => setDraggedIndex(index)}
+              onDragOver={(e) => {
+                e.preventDefault();
+                setDragOverIndex(index);
+              }}
+              onDragEnd={() => {
+                if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
+                  const newPosts = [...posts];
+                  const [movedItem] = newPosts.splice(draggedIndex, 1);
+                  newPosts.splice(dragOverIndex, 0, movedItem);
+                  setPosts(newPosts);
+                  setToastMessage('拖拽成功，排序已更新');
+                  setShowToast(true);
+
+                  const updates = newPosts.map((p, i) => ({ id: p.id, sortOrder: i }));
+                  updatePostsSortOrder(updates);
+                  setTimeout(() => setShowToast(false), 2000);
+                }
+                setDraggedIndex(null);
+                setDragOverIndex(null);
+              }}
+              onEdit={() => handleEdit(post)}
+              onDelete={() => handleDelete(post.id)}
+            />
           ))}
+
+          {pagination.totalPages > 1 && (
+            <div className="flex items-center justify-between mt-6">
+              <p className="text-sm text-gray-500">
+                共 {pagination.total} 篇文章 · 第 {pagination.currentPage}/{pagination.totalPages} 页
+              </p>
+              <div className="flex items-center gap-2">
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.currentPage - 1)}
+                  disabled={pagination.currentPage === 1}
+                >
+                  <ArrowLeft className="h-4 w-4" />
+                  上一页
+                </Button>
+                {Array.from({ length: Math.min(5, pagination.totalPages) }, (_, i) => {
+                  let pageNum;
+                  if (pagination.totalPages <= 5) {
+                    pageNum = i + 1;
+                  } else if (pagination.currentPage <= 3) {
+                    pageNum = i + 1;
+                  } else if (pagination.currentPage >= pagination.totalPages - 2) {
+                    pageNum = pagination.totalPages - 4 + i;
+                  } else {
+                    pageNum = pagination.currentPage - 2 + i;
+                  }
+                  return (
+                    <Button
+                      key={pageNum}
+                      variant={pageNum === pagination.currentPage ? 'default' : 'outline'}
+                      size="sm"
+                      onClick={() => handlePageChange(pageNum)}
+                    >
+                      {pageNum}
+                    </Button>
+                  );
+                })}
+                <Button
+                  variant="outline"
+                  size="sm"
+                  onClick={() => handlePageChange(pagination.currentPage + 1)}
+                  disabled={pagination.currentPage === pagination.totalPages}
+                >
+                  下一页
+                  <ArrowRight className="h-4 w-4" />
+                </Button>
+              </div>
+            </div>
+          )}
         </div>
       )}
 
@@ -371,15 +505,29 @@ export default function PostsPage() {
               />
             </div>
 
-            <div className="space-y-2">
-              <Label>状态</Label>
-              <RadioGroup
-                value={formData.status}
-                onValueChange={(value) => setFormData({ ...formData, status: value })}
-              >
-                <RadioGroupItem value="0" label="草稿" />
-                <RadioGroupItem value="1" label="已发布" />
-              </RadioGroup>
+            <div className="grid grid-cols-2 gap-4">
+              <div className="space-y-2">
+                <Label>状态</Label>
+                <RadioGroup
+                  value={formData.status}
+                  onValueChange={(value) => setFormData({ ...formData, status: value })}
+                >
+                  <RadioGroupItem value="0" label="草稿" />
+                  <RadioGroupItem value="1" label="已发布" />
+                </RadioGroup>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="sortOrder">排序序号</Label>
+                <Input
+                  id="sortOrder"
+                  name="sortOrder"
+                  type="number"
+                  min="0"
+                  value={formData.sortOrder}
+                  onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
+                  placeholder="数字越小越靠前"
+                />
+              </div>
             </div>
 
             <div className="flex justify-end gap-3">

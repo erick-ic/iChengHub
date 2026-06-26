@@ -71,6 +71,7 @@ export async function updatePost(formData: FormData) {
     const contentZh = formData.get('contentZh') as string;
     const contentEn = formData.get('contentEn') as string;
     const status = parseInt(formData.get('status') as string || '0');
+    const sortOrder = parseInt(formData.get('sortOrder') as string || '0');
 
     if (!id || !titleZh || !titleEn || !contentZh || !contentEn) {
       return { success: false, error: 'Missing required fields' };
@@ -88,6 +89,7 @@ export async function updatePost(formData: FormData) {
         contentZh,
         contentEn,
         status,
+        sortOrder,
       },
     });
 
@@ -99,6 +101,34 @@ export async function updatePost(formData: FormData) {
   } catch (error) {
     console.error('Failed to update post:', error);
     return { success: false, error: 'Failed to update post' };
+  }
+}
+
+export async function updatePostsSortOrder(updates: { id: string; sortOrder: number }[]) {
+  try {
+    if (updates.length === 0) {
+      return { success: true };
+    }
+
+    const caseClauses = updates
+      .map(({ id, sortOrder }) => `WHEN "id" = '${id}' THEN ${sortOrder}`)
+      .join(' ');
+
+    const ids = updates.map(({ id }) => `'${id}'`).join(',');
+
+    await prisma.$executeRawUnsafe(`
+      UPDATE "Blog"
+      SET "sortOrder" = CASE ${caseClauses} END
+      WHERE "id" IN (${ids})
+    `);
+
+    revalidatePath('/blog');
+    revalidatePath('/ibackend/blogs');
+
+    return { success: true };
+  } catch (error) {
+    console.error('Failed to update posts sort order:', error);
+    return { success: false, error: 'Failed to update sort order' };
   }
 }
 
@@ -118,7 +148,7 @@ export async function deletePost(id: string) {
   }
 }
 
-export async function getPosts(query?: string) {
+export async function getPosts(query?: string, page: number = 1, pageSize: number = 20) {
   try {
     const where = query
       ? {
@@ -133,14 +163,22 @@ export async function getPosts(query?: string) {
         }
       : {};
 
-    const posts = await prisma.blog.findMany({
-      where,
-      orderBy: [
-        { sortOrder: 'asc' },
-        { createdAt: 'desc' },
-      ],
-    });
-    return { success: true, posts };
+    const [posts, total] = await Promise.all([
+      prisma.blog.findMany({
+        where,
+        orderBy: [
+          { sortOrder: 'asc' },
+          { createdAt: 'desc' },
+        ],
+        skip: (page - 1) * pageSize,
+        take: pageSize,
+      }),
+      prisma.blog.count({ where }),
+    ]);
+
+    const totalPages = Math.ceil(total / pageSize);
+
+    return { success: true, posts, total, totalPages, currentPage: page, pageSize };
   } catch (error) {
     console.error('Failed to get posts:', error);
     return { success: false, error: 'Failed to get posts', posts: [] };

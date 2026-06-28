@@ -325,16 +325,22 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
   return { totalPV, uniqueUV, toolClicks, promptCopies, blogViews, blogCopies, chartData, topTools, topPrompts, topBlogs, topLinks, languageDistribution, topPaths, deviceDistribution, hourlyData, recentActivity: recentLogs }
 }
 
-function StatCard({ title, value, icon, color, hint }: { title: string; value: number; icon: React.ReactNode; color: string; hint?: string }) {
+function StatCard({ title, value, icon, color, hint, trend }: { title: string; value: number; icon: React.ReactNode; color: string; hint?: string; trend?: string }) {
   return (
-    <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
-      <CardContent className="p-6">
-        <div className="flex items-center justify-between">
-          <div>
-            <p className="text-sm font-medium text-slate-500 mb-1" title={hint}>{title}</p>
-            <p className="text-3xl font-bold" style={{ color }}>{value.toLocaleString()}</p>
+    <Card className="group relative overflow-hidden bg-white border border-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
+      <CardContent className="p-5">
+        <div className="flex items-start justify-between gap-3">
+          <div className="min-w-0">
+            <p className="text-xs font-medium text-slate-500 mb-2 tracking-wide uppercase" title={hint}>{title}</p>
+            <p className="text-[28px] font-bold leading-none tracking-tight tabular-nums" style={{ color }}>{value.toLocaleString()}</p>
+            {trend && (
+              <p className="mt-2 text-xs text-slate-400 flex items-center gap-1">
+                <span className="inline-block w-1 h-1 rounded-full" style={{ backgroundColor: color + '60' }} />
+                {trend}
+              </p>
+            )}
           </div>
-          <div className="w-12 h-12 rounded-full flex items-center justify-center transition-transform hover:scale-110" style={{ backgroundColor: color + '15' }}>
+          <div className="w-11 h-11 rounded-xl flex-shrink-0 flex items-center justify-center transition-transform group-hover:scale-105" style={{ backgroundColor: color + '12' }}>
             <div style={{ color }}>{icon}</div>
           </div>
         </div>
@@ -365,46 +371,46 @@ export default async function DashboardPage() {
         <RefreshButton />
       </div>
 
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-6">
+      <div className="grid gap-3 sm:gap-4 grid-cols-2 md:grid-cols-3 xl:grid-cols-6">
         <StatCard
           title="总访问量 (PV)"
           value={data.totalPV}
-          icon={<Eye className="w-6 h-6" />}
+          icon={<Eye className="w-5 h-5" />}
           color="#e52129"
           hint="所有页面浏览次数累计，同一用户多次访问重复记录"
         />
         <StatCard
           title="独立访客 (UV)"
           value={data.uniqueUV}
-          icon={<Users className="w-6 h-6" />}
+          icon={<Users className="w-5 h-5" />}
           color="#e52129"
           hint="按 IP 哈希去重后的独立访客数"
         />
         <StatCard
           title="工具点击"
           value={data.toolClicks}
-          icon={<MousePointerClick className="w-6 h-6" />}
+          icon={<MousePointerClick className="w-5 h-5" />}
           color="#e52129"
           hint="统计对工具卡片的点击次数"
         />
         <StatCard
           title="提示词复制"
           value={data.promptCopies}
-          icon={<Copy className="w-6 h-6" />}
+          icon={<Copy className="w-5 h-5" />}
           color="#e52129"
           hint="统计提示词详情页的复制次数"
         />
         <StatCard
           title="博客访问"
           value={data.blogViews}
-          icon={<FileText className="w-6 h-6" />}
+          icon={<FileText className="w-5 h-5" />}
           color="#e52129"
           hint="统计博客详情页的访问次数"
         />
         <StatCard
           title="代码复制"
           value={data.blogCopies}
-          icon={<Code className="w-6 h-6" />}
+          icon={<Code className="w-5 h-5" />}
           color="#e52129"
           hint="统计博客代码块右上角复制按钮被点击的次数"
         />

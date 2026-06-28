@@ -18,7 +18,7 @@ interface TrendChartProps {
 
 export function TrendChart({ data }: TrendChartProps) {
   return (
-    <Card className="bg-white border-0 shadow-sm">
+    <Card className="bg-white border border-slate-100 shadow-[0_1px_2px_rgba(0,0,0,0.04)] hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <TrendingUp className="w-5 h-5" style={{ color: '#e52129' }} />

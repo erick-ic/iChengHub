@@ -2,6 +2,15 @@ import Link from "next/link"
 import prisma from "@/lib/prisma"
 import { getSystemMetrics } from "@/app/actions/metricsActions"
 
+type RecentPromptRow = {
+  id: string
+  title: string
+  category: string
+  views: number
+  likes: number
+  createdAt: Date
+}
+
 export const dynamic = 'force-dynamic'
 import {
   Card,
@@ -32,6 +41,8 @@ import {
   MessageSquare,
   FileText
 } from "lucide-react"
+
+import { SystemStatusCard } from "@/components/SystemStatusCard"
 
 export default async function AdminDashboard() {
   const now = new Date()
@@ -72,7 +83,7 @@ export default async function AdminDashboard() {
     prisma.prompt.aggregate({ _sum: { likes: true } }),
     prisma.prompt.aggregate({ _sum: { favorites: true } }),
     prisma.prompt.findMany({
-      orderBy: { createdAt: 'desc' },
+      orderBy: { createdAt: 'desc' as const },
       take: 4,
       select: {
         id: true,
@@ -82,7 +93,7 @@ export default async function AdminDashboard() {
         likes: true,
         createdAt: true,
       },
-    }),
+    }) as unknown as Promise<RecentPromptRow[]>,
     prisma.toolCard.count({
       where: {
         createdAt: {
@@ -178,6 +189,10 @@ export default async function AdminDashboard() {
   const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : '0'
   const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : '0'
   const favoritesChangePercent = favoritesLast > 0 ? ((favorites - favoritesLast) / favoritesLast * 100).toFixed(1) : '0'
+
+  const rawErrors: unknown[] = Array.isArray((systemMetrics as any)?.errorLogs) ? ((systemMetrics as any).errorLogs as unknown[]) : []
+  const apiFailed = systemMetrics?.apiFailed ?? 0
+  const aiErrorsCount = systemMetrics?.aiErrors ?? 0
 
   // 格式化数字显示
   const formatNumber = (num: number): string => {
@@ -348,10 +363,10 @@ export default async function AdminDashboard() {
       </div>
 
       {/* 内容区域 */}
-      <div className="grid gap-4 lg:grid-cols-3">
+      <div className="grid gap-4 lg:grid-cols-3 items-stretch">
         {/* 左侧：最近提示词 */}
-        <div className="lg:col-span-2">
-          <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
+        <div className="lg:col-span-2 flex flex-col">
+          <Card className="flex-1 flex flex-col bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>最近添加的提示词</CardTitle>
@@ -404,7 +419,7 @@ export default async function AdminDashboard() {
         </div>
 
         {/* 右侧：快捷操作 */}
-        <div className="space-y-4">
+        <div className="flex flex-col gap-4">
           <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
             <CardHeader>
               <CardTitle>快捷操作</CardTitle>
@@ -432,57 +447,17 @@ export default async function AdminDashboard() {
             </CardContent>
           </Card>
 
-          <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
+          <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out flex-1 flex flex-col">
             <CardHeader>
               <CardTitle>系统状态</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-3">
-              {(() => {
-                const total = (systemMetrics?.apiSuccess ?? 0) + (systemMetrics?.apiFailed ?? 0)
-                const successRate = total === 0 ? 100 : Math.round(((systemMetrics?.apiSuccess ?? 0) / total) * 10000) / 100
-                const failed = systemMetrics?.apiFailed ?? 0
-                const aiErrors = systemMetrics?.aiErrors ?? 0
-                return (
-                  <>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">API 成功率</span>
-                      <span
-                        className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
-                          successRate >= 95
-                            ? 'bg-green-50 text-green-600'
-                            : 'bg-amber-50 text-amber-600'
-                        }`}
-                      >
-                        {successRate}%
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">核心请求失败</span>
-                      <span
-                        className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
-                          failed === 0
-                            ? 'bg-slate-50 text-slate-500'
-                            : 'bg-pink-50 text-pink-600'
-                        }`}
-                      >
-                        {failed > 0 ? `${failed} 次失败` : '无异常'}
-                      </span>
-                    </div>
-                    <div className="flex items-center justify-between">
-                      <span className="text-sm">AI 服务异常</span>
-                      <span
-                        className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
-                          aiErrors === 0
-                            ? 'bg-slate-50 text-slate-500'
-                            : 'bg-pink-50 text-pink-600'
-                        }`}
-                      >
-                        {aiErrors > 0 ? `${aiErrors} 次异常` : '无异常'}
-                      </span>
-                    </div>
-                  </>
-                )
-              })()}
+            <CardContent className="flex-1 flex flex-col justify-center">
+              <SystemStatusCard
+                apiSuccess={systemMetrics?.apiSuccess ?? 0}
+                apiFailed={apiFailed}
+                aiErrors={aiErrorsCount}
+                rawErrorCount={rawErrors.length}
+              />
             </CardContent>
           </Card>
         </div>

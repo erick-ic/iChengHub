@@ -1,7 +1,7 @@
 'use client';
 
-import { useState, useTransition } from 'react';
-import { Copy, Check, MessageSquare } from 'lucide-react';
+import { useState } from 'react';
+import { Copy, Check } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { usePathname } from '@/navigation';
 import { trackResourceAction } from '@/app/actions/statsActions';
@@ -26,20 +26,18 @@ interface PromptDetailCardProps {
 
 export default function PromptDetailCard({ data, isEnglish = false, isPortrait = false }: PromptDetailCardProps) {
   const [copied, setCopied] = useState(false);
-  const [, startTransition] = useTransition();
   const locale = useLocale();
   const pathname = usePathname();
   const commentsCount = data.commentsCount || 0;
 
   const handleCopy = () => {
-    navigator.clipboard.writeText(data.promptText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-    
+    navigator.clipboard.writeText(data.promptText).then(() => {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }).catch(() => {});
+
     const fullPath = `/${locale}${pathname}`;
-    startTransition(() => {
-      trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath);
-    });
+    trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath).catch(() => {});
   };
 
   const scrollToComments = () => {
@@ -90,7 +88,6 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
 
   return (
     <div className="space-y-4">
-      {/* 提示词内容框 */}
       <div className="bg-white border border-zinc-200 rounded-xl overflow-hidden shadow-sm">
         <div className="flex justify-between items-center px-4 py-3 border-b border-zinc-200 bg-zinc-50/50">
           <span className="text-zinc-700 text-sm font-semibold">
@@ -124,13 +121,12 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
         </div>
       </div>
 
-      {/* 评论区骨架 */}
       {/* <section id="comments-section" className="mt-8">
         <h3 className="text-lg font-bold mb-6">{isEnglish ? 'All Comments' : '全部评论'} ({commentsCount})</h3>
         <div className="mb-8">
-          <textarea 
-            className="w-full bg-gray-50 border-transparent rounded-lg p-4 text-sm focus:border-[#e52129] focus:ring-1 focus:ring-[#e52129] focus:outline-none transition-all" 
-            placeholder={isEnglish ? 'Leave your thoughts...' : '留下你的想法...'} 
+          <textarea
+            className="w-full bg-gray-50 border-transparent rounded-lg p-4 text-sm focus:border-[#e52129] focus:ring-1 focus:ring-[#e52129] focus:outline-none transition-all"
+            placeholder={isEnglish ? 'Leave your thoughts...' : '留下你的想法...'}
             rows={3}
           ></textarea>
           <div className="flex justify-end mt-2">

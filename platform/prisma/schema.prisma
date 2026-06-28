@@ -123,5 +123,6 @@ model SystemMetrics {
   aiErrors    Int      @default(0)
   dbLatency   Float    @default(0.0)
   resetAt     DateTime @default(now()) @db.Timestamptz(0)
-  updatedAt   DateTime @updatedAt
+  errorLogs   Json?
+  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
 }

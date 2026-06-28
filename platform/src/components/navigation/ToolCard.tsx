@@ -1,6 +1,5 @@
 'use client';
 
-import { useTransition } from 'react';
 import { ArrowRight } from 'lucide-react';
 import { ToolIcon } from '@/components/ui/ToolIcon';
 import { usePathname } from '@/navigation';
@@ -27,16 +26,13 @@ export function ToolCard({ tool, isEnglish }: ToolCardProps) {
   const description = isEnglish && tool.descriptionEn ? tool.descriptionEn : tool.description;
   const pathname = usePathname();
   const locale = useLocale();
-  const [isPending, startTransition] = useTransition();
 
   const handleClick = () => {
     let fullPath = pathname;
     if (!fullPath.startsWith('/' + locale)) {
       fullPath = '/' + locale + fullPath;
     }
-    startTransition(() => {
-      trackResourceAction(tool.id, 'LINK', 'CLICK', fullPath);
-    });
+    trackResourceAction(tool.id, 'LINK', 'CLICK', fullPath).catch(() => {});
   };
 
   return (

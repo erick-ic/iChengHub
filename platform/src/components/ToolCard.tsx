@@ -1,8 +1,9 @@
-"use client";
+'use client';
+
 import Image from 'next/image';
-import { useState, useTransition } from 'react';
-import { useRouter, usePathname } from '@/navigation';
 import { ArrowRight, X } from 'lucide-react';
+import { useState } from 'react';
+import { useRouter, usePathname } from '@/navigation';
 import { useTranslations, useLocale } from 'next-intl';
 import { trackResourceAction } from '@/app/actions/statsActions';
 
@@ -27,33 +28,28 @@ export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
   const pathname = usePathname();
   const locale = useLocale();
   const [showModal, setShowModal] = useState(false);
-  const [isPending, startTransition] = useTransition();
   const t = useTranslations('HomePage');
-  
+
   const title = tool.displayName || tool.name;
   const description = tool.displayDesc || tool.desc;
 
   const handleClick = () => {
     const fullPath = `/${locale}${pathname}`;
-    startTransition(() => {
-      trackResourceAction(tool.id, 'TOOL', 'CLICK', fullPath);
-    });
 
     if (!tool.url) {
-      // 没有 URL，显示弹窗
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', fullPath).catch(() => {});
       setShowModal(true);
       return;
     }
 
-    // 判断是站内路径还是站外链接
     if (tool.url.startsWith('/')) {
-      // 站内路径：使用 next/router 进行客户端导航
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', fullPath).catch(() => {});
       router.push(tool.url);
     } else if (tool.url.startsWith('http://') || tool.url.startsWith('https://')) {
-      // 站外链接：在新窗口打开
-      window.open(tool.url, '_blank');
+      window.open(tool.url, '_blank', 'noopener,noreferrer');
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', fullPath).catch(() => {});
     } else {
-      // 其他情况（相对路径等），尝试作为站内路径处理
+      trackResourceAction(tool.id, 'TOOL', 'CLICK', fullPath).catch(() => {});
       router.push('/' + tool.url);
     }
   };
@@ -96,7 +92,6 @@ export default function ToolCard({ tool, isFirst = false }: ToolCardProps) {
         </div>
       </div>
 
-      {/* 弹窗 */}
       {showModal && (
         <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm animate-in fade-in duration-200">
           <div className="bg-white rounded-3xl p-10 max-w-md mx-4 text-center shadow-2xl transform animate-in zoom-in-95 duration-300">

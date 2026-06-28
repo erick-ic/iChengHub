@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Copy, Check, Eye, Heart, MessageCircle } from 'lucide-react';
-import { useState, useTransition } from 'react';
+import { useState } from 'react';
 import { useRouter, usePathname } from '@/navigation';
 import { useLocale } from 'next-intl';
 import { trackResourceAction } from '@/app/actions/statsActions';
@@ -28,18 +28,15 @@ export default function PromptCard({ data }: PromptCardProps) {
   const router = useRouter();
   const pathname = usePathname();
   const locale = useLocale();
-  const [isPending, startTransition] = useTransition();
 
   const handleCopy = (e: React.MouseEvent) => {
     e.stopPropagation();
     navigator.clipboard.writeText(data.promptText);
     setCopied(true);
     setTimeout(() => setCopied(false), 2000);
-    
+
     const fullPath = `/${locale}${pathname}`;
-    startTransition(() => {
-      trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath);
-    });
+    trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath).catch(() => {});
   };
 
   const handleCardClick = () => {
@@ -51,7 +48,7 @@ export default function PromptCard({ data }: PromptCardProps) {
       className="flex flex-col bg-white rounded-2xl border border-gray-100 shadow-sm overflow-hidden transition-all duration-300 hover:shadow-lg hover:-translate-y-1 cursor-pointer"
       onClick={handleCardClick}
     >
-      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-50 border-b border-gray-50">
+      <div className="relative w-full aspect-[4/3] overflow-hidden bg-gray-50 border border-gray-50">
         <Image
           src={data.imageUrl}
           alt={data.title}

@@ -1,6 +1,6 @@
 'use client';
 
-import { useEffect, useTransition } from 'react';
+import { useEffect } from 'react';
 import { useLocale } from 'next-intl';
 import { trackResourceAction } from '@/app/actions/statsActions';
 
@@ -24,7 +24,6 @@ function setCookie(name: string, maxAge: number) {
 }
 
 export default function PageViewTracker({ path = '', resourceId = '', resourceType = 'PAGE' }: PageViewTrackerProps) {
-  const [, startTransition] = useTransition();
   const locale = useLocale();
 
   useEffect(() => {
@@ -37,7 +36,7 @@ export default function PageViewTracker({ path = '', resourceId = '', resourceTy
     const now = new Date();
     const midnight = new Date(now.getFullYear(), now.getMonth(), now.getDate() + 1, 0, 0, 0, 0);
     const maxAge = Math.floor((midnight.getTime() - now.getTime()) / 1000);
-    
+
     setCookie(cookieName, maxAge);
 
     let fullPath = path;
@@ -45,11 +44,8 @@ export default function PageViewTracker({ path = '', resourceId = '', resourceTy
       fullPath = '/' + locale + fullPath;
     }
 
-    startTransition(() => {
-      trackResourceAction(resourceId, resourceType, 'VIEW', fullPath);
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+    trackResourceAction(resourceId, resourceType, 'VIEW', fullPath).catch(() => {});
+  }, [resourceId, resourceType, locale, path]);
 
   return null;
 }

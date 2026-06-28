@@ -1,5 +1,6 @@
 import './globals.css';
 import { Metadata } from 'next';
+import TopLoader from '@/components/TopLoader';
 
 export const metadata: Metadata = {
   title: 'iChengHub',
@@ -20,7 +21,10 @@ export default function RootLayout({
       <head>
         <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no" />
       </head>
-      <body className="font-sans">{children}</body>
+      <body className="font-sans">
+        <TopLoader />
+        {children}
+      </body>
     </html>
   );
 }

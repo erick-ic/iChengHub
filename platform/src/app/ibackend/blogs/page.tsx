@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, memo } from 'react';
+import { useState, useEffect, memo, Suspense } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -110,7 +110,9 @@ const BlogPostCard = memo(({ blog, index, isDragOver, onDragStart, onDragOver, o
   );
 });
 
-export default function BlogsPage() {
+BlogPostCard.displayName = 'BlogPostCard';
+
+function BlogsPageContent() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
@@ -557,5 +559,21 @@ export default function BlogsPage() {
         </DialogContent>
       </Dialog>
     </div>
+  );
+}
+
+export default function BlogsPage() {
+  return (
+    <Suspense
+      fallback={
+        <div className="space-y-6">
+          {[1, 2, 3].map((i) => (
+            <div key={i} className="h-24 rounded-lg bg-slate-100 animate-pulse" />
+          ))}
+        </div>
+      }
+    >
+      <BlogsPageContent />
+    </Suspense>
   );
 }

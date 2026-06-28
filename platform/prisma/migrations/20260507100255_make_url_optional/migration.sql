@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "ToolCard" ALTER COLUMN "url" DROP NOT NULL;

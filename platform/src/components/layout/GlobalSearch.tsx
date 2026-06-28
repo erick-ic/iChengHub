@@ -14,8 +14,16 @@ export interface SearchItem {
   url: string;
   iconUrl?: string;
   category: string;
-  type: 'tool' | 'link' | 'prompt';
+  categoryEn?: string | null;
+  type: 'tool' | 'link' | 'prompt' | 'blog';
 }
+
+const TYPE_META: Record<SearchItem['type'], { color: string; colorDark: string; cn: string; en: string; initial: string; }> = {
+  tool: { color: 'text-blue-600', colorDark: 'bg-blue-50', cn: '工具', en: 'Tools', initial: '🛠' },
+  link: { color: 'text-green-600', colorDark: 'bg-green-50', cn: '链接', en: 'Links', initial: '🔗' },
+  prompt: { color: 'text-purple-600', colorDark: 'bg-purple-50', cn: '提示词', en: 'Prompts', initial: '💡' },
+  blog: { color: 'text-[#e52129]', colorDark: 'bg-red-50', cn: '技术博客', en: 'Blogs', initial: '📝' },
+};
 
 interface GlobalSearchProps {
   items: SearchItem[];
@@ -30,22 +38,55 @@ export function GlobalSearch({ items, isEnglish }: GlobalSearchProps) {
   const inputRef = useRef<HTMLInputElement>(null);
   const dropdownRef = useRef<HTMLDivElement>(null);
 
-  // 过滤搜索结果
+  const locale = isEnglish ? 'en' : 'zh';
+
   const debouncedSearch = useDebouncedCallback((searchQuery: string) => {
     if (!searchQuery.trim()) {
       setResults([]);
       return;
     }
 
+    const q = searchQuery.toLowerCase();
     const filteredResults = items
-      .filter(item => {
+      .filter((item) => {
         const title = isEnglish ? (item.titleEn || item.title) : item.title;
-        return title.toLowerCase().includes(searchQuery.toLowerCase());
+        const desc = isEnglish ? (item.descriptionEn || item.description) : item.description;
+        const cat = isEnglish ? (item.categoryEn || item.category) : item.category;
+        return (
+          title.toLowerCase().includes(q) ||
+          (desc || '').toLowerCase().includes(q) ||
+          cat.toLowerCase().includes(q)
+        );
       })
       .slice(0, 10);
 
     setResults(filteredResults);
   }, 300);
+
+  const resolveUrl = (item: SearchItem) => {
+    const isExternal = item.url.startsWith('http://') || item.url.startsWith('https://');
+    if (isExternal) return item.url;
+    if (item.type === 'blog' || item.type === 'prompt') {
+      return `/${locale}${item.url.startsWith('/') ? item.url : '/' + item.url}`;
+    }
+    return item.url;
+  };
+
+  const handleResultClick = (item: SearchItem) => {
+    const url = resolveUrl(item);
+    const isExternal = url.startsWith('http://') || url.startsWith('https://');
+
+    if (isExternal) {
+      window.open(url, '_blank');
+    } else {
+      window.location.href = url;
+    }
+
+    setIsOpen(false);
+    setIsMobileExpanded(false);
+    setQuery('');
+    setResults([]);
+  };
 
   // 监听输入变化
   const handleChange = useCallback((e: React.ChangeEvent<HTMLInputElement>) => {
@@ -82,33 +123,12 @@ export function GlobalSearch({ items, isEnglish }: GlobalSearchProps) {
     inputRef.current?.focus();
   };
 
-  // 点击搜索结果跳转
-  const handleResultClick = (url: string) => {
-    // 判断是否为外部链接（包含协议）
-    const isExternal = url.startsWith('http://') || url.startsWith('https://');
-    
-    if (isExternal) {
-      // 外部链接，在新窗口打开
-      window.open(url, '_blank');
-    } else {
-      // 站内链接，在当前页面导航
-      window.location.href = url;
-    }
-    
-    setIsOpen(false);
-    setIsMobileExpanded(false);
-    setQuery('');
-    setResults([]);
-  };
-
   // 处理键盘事件
   const handleKeyDown = (e: React.KeyboardEvent<HTMLInputElement>) => {
-    // 按 Enter 键打开第一个搜索结果
     if (e.key === 'Enter') {
       e.preventDefault();
-      console.log('Enter pressed, results length:', results.length);
       if (results.length > 0) {
-        handleResultClick(results[0].url);
+        handleResultClick(results[0]);
       }
     }
   };
@@ -157,7 +177,7 @@ export function GlobalSearch({ items, isEnglish }: GlobalSearchProps) {
                   return (
                       <button
                         key={item.id}
-                        onClick={() => handleResultClick(item.url)}
+                        onClick={() => handleResultClick(item)}
                         className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
                       >
                         <ToolIcon url={item.url} title={title} iconUrl={item.iconUrl} />
@@ -235,32 +255,32 @@ export function GlobalSearch({ items, isEnglish }: GlobalSearchProps) {
                 {/* 按类型分组显示 */}
                 {Object.entries(groupedResults).map(([type, items]) => (
                   <div key={type} className="border-b border-gray-50 last:border-b-0">
-                    {/* 分组标题 */}
                     <div className="px-4 py-2 bg-gray-50/50">
-                      <span className={`text-xs font-medium ${
-                        type === 'tool' ? 'text-blue-600' : 
-                        type === 'prompt' ? 'text-purple-600' : 'text-green-600'
-                      }`}>
-                        {isEnglish 
-                          ? (type === 'tool' ? 'Tools' : type === 'prompt' ? 'Prompts' : 'Links') 
-                          : (type === 'tool' ? '工具' : type === 'prompt' ? '提示词' : '链接')
+                      <span className={`text-xs font-medium ${TYPE_META[type as SearchItem['type']].color}`}>
+                        {isEnglish
+                          ? TYPE_META[type as SearchItem['type']].en
+                          : TYPE_META[type as SearchItem['type']].cn
                         } ({items.length})
                       </span>
                     </div>
-                    
-                    {/* 分组内容 */}
+
                     {items.map((item) => {
                       const title = isEnglish ? (item.titleEn || item.title) : item.title;
                       const description = isEnglish ? (item.descriptionEn || item.description) : item.description;
-                      
+
                       return (
                         <button
                           key={item.id}
-                          onClick={() => handleResultClick(item.url)}
+                          onClick={() => handleResultClick(item)}
                           className="w-full flex items-center gap-3 px-4 py-3 hover:bg-gray-50 transition-colors text-left"
                         >
-                          {/* 图标 */}
-                          <ToolIcon url={item.url} title={title} iconUrl={item.iconUrl} />
+                          {(item.type === 'blog' || item.type === 'prompt') ? (
+                            <span className={`w-8 h-8 flex items-center justify-center rounded-lg text-sm font-semibold ${TYPE_META[item.type].colorDark}`}>
+                              {TYPE_META[item.type].initial}
+                            </span>
+                          ) : (
+                            <ToolIcon url={item.url} title={title} iconUrl={item.iconUrl} />
+                          )}
                           
                           {/* 文字内容 */}
                           <div className="flex-1 min-w-0">

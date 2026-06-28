@@ -6,24 +6,54 @@ export const dynamic = 'force-dynamic';
 
 const handler = async function GET() {
   try {
-    const tools = await prisma.toolCard.findMany({
-      where: { status: 1 },
-      select: {
-        id: true, name: true, nameEn: true, desc: true, descEn: true,
-        url: true, logoUrl: true, category: true, categoryEn: true,
-      },
-    });
-
-    const links = await prisma.navLink.findMany({
-      where: { status: 1 },
-      select: {
-        id: true, name: true, nameEn: true, desc: true, descEn: true,
-        url: true, iconUrl: true, category: true, categoryEn: true,
-      },
-    });
+    const [tools, links, blogs, prompts] = await Promise.all([
+      prisma.toolCard.findMany({
+        where: { status: 1 },
+        select: {
+          id: true, name: true, nameEn: true, desc: true, descEn: true,
+          url: true, logoUrl: true, category: true, categoryEn: true,
+        },
+      }),
+      prisma.navLink.findMany({
+        where: { status: 1 },
+        select: {
+          id: true, name: true, nameEn: true, desc: true, descEn: true,
+          url: true, iconUrl: true, category: true, categoryEn: true,
+        },
+      }),
+      prisma.blog.findMany({
+        where: { status: 1 },
+        select: {
+          id: true,
+          titleZh: true,
+          titleEn: true,
+          excerptZh: true,
+          excerptEn: true,
+          categoryZh: true,
+          categoryEn: true,
+        },
+        orderBy: { createdAt: 'desc' as const },
+        take: 60,
+      }),
+      prisma.prompt.findMany({
+        where: { status: 1 },
+        select: {
+          id: true,
+          title: true,
+          titleEn: true,
+          category: true,
+          categoryEn: true,
+          platform: true,
+          platformEn: true,
+          promptText: true,
+        },
+        orderBy: { likes: 'desc' as const },
+        take: 80,
+      }),
+    ]);
 
     const toolItems = tools.map((tool) => ({
-      id: tool.id,
+      id: `tool-${tool.id}`,
       title: tool.name,
       titleEn: tool.nameEn,
       description: tool.desc,
@@ -36,7 +66,7 @@ const handler = async function GET() {
     }));
 
     const linkItems = links.map((link) => ({
-      id: link.id,
+      id: `link-${link.id}`,
       title: link.name,
       titleEn: link.nameEn,
       description: link.desc,
@@ -48,7 +78,37 @@ const handler = async function GET() {
       type: 'link' as const,
     }));
 
-    const allItems = [...toolItems, ...linkItems];
+    const blogItems = blogs.map((blog) => ({
+      id: `blog-${blog.id}`,
+      title: blog.titleZh,
+      titleEn: blog.titleEn,
+      description: blog.excerptZh || blog.categoryZh,
+      descriptionEn: blog.excerptEn || blog.categoryEn,
+      url: `/blog/${blog.id}`,
+      iconUrl: undefined as string | undefined,
+      category: blog.categoryZh,
+      categoryEn: blog.categoryEn,
+      type: 'blog' as const,
+    }));
+
+    const promptItems = prompts.map((p) => {
+      const snippet = (t: string, max = 80) =>
+        t.length > max ? t.slice(0, max) + '…' : t;
+      return {
+        id: `prompt-${p.id}`,
+        title: p.title,
+        titleEn: p.titleEn,
+        description: snippet(p.promptText || p.platform || '', 80),
+        descriptionEn: snippet(p.promptText || p.platformEn || '', 80),
+        url: `/prompts/${p.id}`,
+        iconUrl: undefined as string | undefined,
+        category: p.category,
+        categoryEn: p.categoryEn,
+        type: 'prompt' as const,
+      };
+    });
+
+    const allItems = [...toolItems, ...linkItems, ...blogItems, ...promptItems];
 
     return NextResponse.json(allItems, {
       headers: {

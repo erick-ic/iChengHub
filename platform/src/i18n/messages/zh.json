@@ -133,6 +133,10 @@
   "blog": {
     "backToList": "回到列表"
   },
+  "footer": {
+    "icp": "皖ICP备{number}号-1",
+    "copyright": "© {year} iChengHub 热荐工坊 · 和光工作室 · 保留所有权利"
+  },
   "AboutPage": {
     "badge": "关于 iChengHub",
     "title": "探索 AI 的边界，做你的专属效率罗盘。",

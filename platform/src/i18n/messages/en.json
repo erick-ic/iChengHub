@@ -133,6 +133,10 @@
   "blog": {
     "backToList": "Back to List"
   },
+  "footer": {
+    "icp": "ICP License: 2025085990-1",
+    "copyright": "© {year} iChengHub. All rights reserved."
+  },
   "AboutPage": {
     "badge": "About iChengHub",
     "title": "Explore the Boundaries of AI, Be Your Exclusive Productivity Compass.",

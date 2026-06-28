@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import './../globals.css';
 import Navbar from '@/components/Navbar';
+import Footer from '@/components/layout/Footer';
 import { NextIntlClientProvider } from 'next-intl';
 import { getMessages } from 'next-intl/server';
 
@@ -63,9 +64,12 @@ export default async function LocaleLayout({
 
   return (
     <NextIntlClientProvider messages={messages} locale={params.locale}>
-      <div className="min-h-screen bg-background">
+      <div className="min-h-screen bg-background flex flex-col">
         <Navbar locale={params.locale} />
-        {children}
+        <main className="flex-1">
+          {children}
+        </main>
+        <Footer />
       </div>
     </NextIntlClientProvider>
   );

@@ -400,7 +400,9 @@ export default async function AdminDashboard() {
                   ) : (
                     recentPrompts.map((prompt) => (
                       <TableRow key={prompt.id}>
-                        <TableCell className="font-medium">{prompt.title}</TableCell>
+                        <TableCell className="font-medium max-w-[240px]">
+                        <span className="block truncate" title={prompt.title}>{prompt.title}</span>
+                      </TableCell>
                         <TableCell>
                           <Badge variant="secondary">{prompt.category}</Badge>
                         </TableCell>

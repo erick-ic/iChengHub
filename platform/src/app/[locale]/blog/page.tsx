@@ -14,11 +14,11 @@ export function generateMetadata({ params }: PageProps): Metadata {
     metadataBase: new URL(base),
     title: isEn ? 'Technical Blog - iChengHub' : '技术博客专栏 - iChengHub 热荐工坊',
     description: isEn
-      ? 'Professional technical blogs on frontend architecture, design systems, Go, Next.js and engineering productivity.'
-      : '专注前端架构、设计系统、Go / Next.js 与工程效能的独立技术博客专栏。',
+      ? 'Independent tech blog covering AI, full-stack development, engineering practices and industry thoughts.'
+      : '涵盖 AI、全栈开发、工程实践与行业思考的独立技术博客专栏。',
     keywords: isEn
-      ? ['Tech Blog', 'Frontend Architecture', 'Next.js', 'Go', 'Engineering']
-      : ['技术博客', '前端架构', 'Next.js', 'Go', '工程效能'],
+      ? ['Tech Blog', 'AI', 'Full Stack', 'Engineering', 'Go', 'Next.js']
+      : ['技术博客', 'AI', '全栈开发', '工程实践', 'Go', 'Next.js'],
     alternates: {
       canonical: isEn ? `${base}/en/blog` : `${base}/zh/blog`,
       languages: {
@@ -30,8 +30,8 @@ export function generateMetadata({ params }: PageProps): Metadata {
     openGraph: {
       title: isEn ? 'Technical Blog - iChengHub' : '技术博客专栏 - iChengHub 热荐工坊',
       description: isEn
-        ? 'Professional technical blogs on frontend architecture and engineering productivity.'
-        : '专注前端架构与工程效能的独立技术博客。',
+        ? 'Independent tech blog covering AI, full-stack development and engineering practices.'
+        : '涵盖 AI、全栈开发与工程实践的独立技术博客。',
       url: isEn ? `${base}/en/blog` : `${base}/zh/blog`,
       siteName: 'iChengHub',
       locale: isEn ? 'en_US' : 'zh_CN',
@@ -66,8 +66,8 @@ export default async function BlogListPage({ params }: PageProps) {
             </h1>
             <p className="mt-3 text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
               {isEnglish
-                ? 'Notes on frontend architecture, design systems, and engineering productivity.'
-                : '关于前端架构、设计系统与工程效能的一些沉淀。'}
+                ? 'Notes on AI, full-stack development, and engineering practices.'
+                : '关于 AI、全栈开发与工程实践的一些思考与沉淀。'}
             </p>
           </header>
 

@@ -33,6 +33,9 @@ export async function createBlog(formData: FormData) {
       return { success: false, error: `Missing required fields: ${missing.join(', ')}` };
     }
 
+    const count = await prisma.blog.count();
+    const nextOrder = count + 1;
+
     const blog = await prisma.blog.create({
       data: {
         titleZh,
@@ -44,7 +47,7 @@ export async function createBlog(formData: FormData) {
         contentZh,
         contentEn,
         status,
-        sortOrder: 0,
+        sortOrder: nextOrder,
       },
     });
 
@@ -77,6 +80,28 @@ export async function updateBlog(formData: FormData) {
       return { success: false, error: 'Missing required fields' };
     }
 
+    if (sortOrder > 0) {
+      const existing = await prisma.blog.findFirst({ where: { id } });
+      if (existing && existing.sortOrder !== sortOrder) {
+        if (existing.sortOrder === 0) {
+          const target = await prisma.blog.findFirst({
+            where: { sortOrder },
+            select: { id: true },
+          });
+          if (target) {
+            await prisma.$executeRawUnsafe(
+              `UPDATE "Blog" SET "sortOrder" = "sortOrder" + 1 WHERE "sortOrder" >= ${sortOrder} AND "id" != '${id}'`
+            );
+          }
+        } else {
+          const direction = sortOrder < existing.sortOrder ? 1 : -1;
+          await prisma.$executeRawUnsafe(
+            `UPDATE "Blog" SET "sortOrder" = "sortOrder" + ${direction} WHERE "sortOrder" ${sortOrder < existing.sortOrder ? '>=' : '>'} ${Math.min(sortOrder, existing.sortOrder)} AND "sortOrder" ${sortOrder < existing.sortOrder ? '<' : '<='} ${Math.max(sortOrder, existing.sortOrder)} AND "id" != '${id}'`
+          );
+        }
+      }
+    }
+
     const blog = await prisma.blog.update({
       where: { id },
       data: {
@@ -89,7 +114,7 @@ export async function updateBlog(formData: FormData) {
         contentZh,
         contentEn,
         status,
-        sortOrder,
+        sortOrder: sortOrder > 0 ? sortOrder : 1,
       },
     });
 

@@ -377,44 +377,46 @@ export default async function DashboardPage() {
           value={data.totalPV}
           icon={<Eye className="w-5 h-5" />}
           color="#e52129"
-          hint="所有页面浏览次数累计，同一用户多次访问重复记录"
+          hint="统计最近 7 天内所有页面浏览次数，同一用户多次访问重复记录"
         />
         <StatCard
           title="独立访客 (UV)"
           value={data.uniqueUV}
           icon={<Users className="w-5 h-5" />}
           color="#e52129"
-          hint="按 IP 哈希去重后的独立访客数"
+          hint="统计最近 7 天内按 IP 哈希去重后的独立访客数"
         />
         <StatCard
           title="工具点击"
           value={data.toolClicks}
           icon={<MousePointerClick className="w-5 h-5" />}
           color="#e52129"
-          hint="统计对工具卡片的点击次数"
+          hint="统计最近 7 天内对工具卡片的点击次数"
         />
         <StatCard
           title="提示词复制"
           value={data.promptCopies}
           icon={<Copy className="w-5 h-5" />}
           color="#e52129"
-          hint="统计提示词详情页的复制次数"
+          hint="统计最近 7 天内提示词详情页的复制次数"
         />
         <StatCard
           title="博客访问"
           value={data.blogViews}
           icon={<FileText className="w-5 h-5" />}
           color="#e52129"
-          hint="统计博客详情页的访问次数"
+          hint="统计最近 7 天内博客详情页的访问次数"
         />
         <StatCard
           title="代码复制"
           value={data.blogCopies}
           icon={<Code className="w-5 h-5" />}
           color="#e52129"
-          hint="统计博客代码块右上角复制按钮被点击的次数"
+          hint="统计最近 7 天内博客代码块右上角复制按钮被点击的次数"
         />
       </div>
+
+      <p className="-mt-4 mb-4 text-xs text-slate-400">以上统计均基于最近 7 天的用户行为日志（本地时区）</p>
 
       {data.chartData.length === 0 ? (
         <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">

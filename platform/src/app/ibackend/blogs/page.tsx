@@ -57,7 +57,7 @@ const BlogPostCard = memo(({ blog, index, isDragOver, onDragStart, onDragOver, o
             <GripVertical className="h-5 w-5 text-gray-400 cursor-grab" />
             <div>
               <Badge variant="outline" className="mr-2 font-mono">
-                #{blog.sortOrder}
+                #{blog.sortOrder > 0 ? blog.sortOrder : index + 1}
               </Badge>
               <CardTitle className="text-xl inline">{blog.titleZh}</CardTitle>
             </div>
@@ -131,7 +131,7 @@ function BlogsPageContent() {
     contentZh: '',
     contentEn: '',
     status: '0',
-    sortOrder: '0',
+    sortOrder: '1',
   });
   const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
   const [dragOverIndex, setDragOverIndex] = useState<number | null>(null);
@@ -195,7 +195,7 @@ function BlogsPageContent() {
       contentZh: '',
       contentEn: '',
       status: '0',
-      sortOrder: '0',
+      sortOrder: '1',
     });
     setIsDialogOpen(true);
   };
@@ -333,7 +333,7 @@ function BlogsPageContent() {
                   setToastMessage('拖拽成功，排序已更新');
                   setShowToast(true);
 
-                  const updates = newBlogs.map((b, i) => ({ id: b.id, sortOrder: i }));
+                  const updates = newBlogs.map((b, i) => ({ id: b.id, sortOrder: i + 1 }));
                   updateBlogsSortOrder(updates);
                   setTimeout(() => setShowToast(false), 2000);
                 }
@@ -524,7 +524,7 @@ function BlogsPageContent() {
                   id="sortOrder"
                   name="sortOrder"
                   type="number"
-                  min="0"
+                  min="1"
                   value={formData.sortOrder}
                   onChange={(e) => setFormData({ ...formData, sortOrder: e.target.value })}
                   placeholder="数字越小越靠前"

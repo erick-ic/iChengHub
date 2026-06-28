@@ -113,9 +113,9 @@ async function highlightMarkdown(content: string): Promise<string> {
 /**
  * 从数据库获取所有已发布的文章（按发布时间倒序）。
  */
-export async function getAllPosts(): Promise<BlogPost[]> {
+export async function getAllBlogs(): Promise<BlogPost[]> {
   try {
-    const posts = await prisma.blog.findMany({
+    const blogs = await prisma.blog.findMany({
       where: { status: 1 },
       orderBy: [
         { sortOrder: 'asc' },
@@ -123,43 +123,43 @@ export async function getAllPosts(): Promise<BlogPost[]> {
       ],
     });
 
-    return posts.map((post) => ({
-      id: post.id,
-      title: { zh: post.titleZh, en: post.titleEn },
-      excerpt: { zh: post.excerptZh, en: post.excerptEn },
-      category: { zh: post.categoryZh, en: post.categoryEn },
-      date: post.updatedAt.toISOString().split('T')[0],
-      content: post.contentZh,
+    return blogs.map((blog) => ({
+      id: blog.id,
+      title: { zh: blog.titleZh, en: blog.titleEn },
+      excerpt: { zh: blog.excerptZh, en: blog.excerptEn },
+      category: { zh: blog.categoryZh, en: blog.categoryEn },
+      date: blog.updatedAt.toISOString().split('T')[0],
+      content: blog.contentZh,
     }));
   } catch (error) {
-    console.error('[blog] getAllPosts failed:', error);
+    console.error('[blog] getAllBlogs failed:', error);
     return [];
   }
 }
 
 /**
- * 按 id 获取单篇文章。找不到返回 null，调用方需自行决定 notFound()。
+ * 按 id 获取单篇博客。找不到返回 null，调用方需自行决定 notFound()。
  */
-export async function getPostById(id: string): Promise<BlogPost | null> {
+export async function getBlogById(id: string): Promise<BlogPost | null> {
   try {
-    const post = await prisma.blog.findUnique({
+    const blog = await prisma.blog.findUnique({
       where: { id },
     });
 
-    if (!post) {
+    if (!blog) {
       return null;
     }
 
     return {
-      id: post.id,
-      title: { zh: post.titleZh, en: post.titleEn },
-      excerpt: { zh: post.excerptZh, en: post.excerptEn },
-      category: { zh: post.categoryZh, en: post.categoryEn },
-      date: post.updatedAt.toISOString().split('T')[0],
-      content: post.contentZh,
+      id: blog.id,
+      title: { zh: blog.titleZh, en: blog.titleEn },
+      excerpt: { zh: blog.excerptZh, en: blog.excerptEn },
+      category: { zh: blog.categoryZh, en: blog.categoryEn },
+      date: blog.updatedAt.toISOString().split('T')[0],
+      content: blog.contentZh,
     };
   } catch (error) {
-    console.error('[blog] getPostById failed for id:', id, error);
+    console.error('[blog] getBlogById failed for id:', id, error);
     return null;
   }
 }
@@ -167,9 +167,9 @@ export async function getPostById(id: string): Promise<BlogPost | null> {
 import { extractHeadings as extractHeadingsUtil } from '@/lib/headingUtils';
 
 /**
- * 按 id 获取单篇文章的原始内容（用于 react-markdown 渲染）。
+ * 按 id 获取单篇博客的原始内容（用于 react-markdown 渲染）。
  */
-export async function getPostContentById(id: string, locale: string): Promise<{
+export async function getBlogContentById(id: string, locale: string): Promise<{
   title: string;
   excerpt: string;
   category: string;
@@ -178,28 +178,28 @@ export async function getPostContentById(id: string, locale: string): Promise<{
   updatedAt: string;
 } | null> {
   try {
-    const post = await prisma.blog.findUnique({
+    const blog = await prisma.blog.findUnique({
       where: { id },
     });
 
-    if (!post) {
+    if (!blog) {
       return null;
     }
 
     const isEnglish = locale === 'en';
-    const rawContent = isEnglish ? post.contentEn : post.contentZh;
+    const rawContent = isEnglish ? blog.contentEn : blog.contentZh;
     const highlightedContent = await highlightMarkdown(rawContent);
 
     return {
-      title: isEnglish ? post.titleEn : post.titleZh,
-      excerpt: isEnglish ? post.excerptEn : post.excerptZh,
-      category: isEnglish ? post.categoryEn : post.categoryZh,
+      title: isEnglish ? blog.titleEn : blog.titleZh,
+      excerpt: isEnglish ? blog.excerptEn : blog.excerptZh,
+      category: isEnglish ? blog.categoryEn : blog.categoryZh,
       content: highlightedContent,
-      date: post.createdAt.toISOString().split('T')[0],
-      updatedAt: post.updatedAt.toISOString().split('T')[0],
+      date: blog.createdAt.toISOString().split('T')[0],
+      updatedAt: blog.updatedAt.toISOString().split('T')[0],
     };
   } catch (error) {
-    console.error('[blog] getPostContentById failed for id:', id, error);
+    console.error('[blog] getBlogContentById failed for id:', id, error);
     return null;
   }
 }
@@ -210,18 +210,18 @@ export async function getPostContentById(id: string, locale: string): Promise<{
  */
 export { extractHeadingsUtil as extractHeadings };
 
-export interface NavPost {
+export interface NavBlog {
   id: string;
   titleZh: string;
   titleEn: string;
 }
 
-export async function getPrevAndNextPosts(id: string): Promise<{
-  prev: NavPost | null;
-  next: NavPost | null;
+export async function getPrevAndNextBlogs(id: string): Promise<{
+  prev: NavBlog | null;
+  next: NavBlog | null;
 }> {
   try {
-    const posts = await prisma.blog.findMany({
+    const blogs = await prisma.blog.findMany({
       where: { status: 1 },
       orderBy: [
         { sortOrder: 'asc' },
@@ -234,17 +234,17 @@ export async function getPrevAndNextPosts(id: string): Promise<{
       },
     });
 
-    const currentIndex = posts.findIndex((post) => post.id === id);
+    const currentIndex = blogs.findIndex((blog) => blog.id === id);
     if (currentIndex === -1) {
       return { prev: null, next: null };
     }
 
-    const prev = currentIndex > 0 ? posts[currentIndex - 1] : null;
-    const next = currentIndex < posts.length - 1 ? posts[currentIndex + 1] : null;
+    const prev = currentIndex > 0 ? blogs[currentIndex - 1] : null;
+    const next = currentIndex < blogs.length - 1 ? blogs[currentIndex + 1] : null;
 
     return { prev, next };
   } catch (error) {
-    console.error('[blog] getPrevAndNextPosts failed:', error);
+    console.error('[blog] getPrevAndNextBlogs failed:', error);
     return { prev: null, next: null };
   }
 }

@@ -3,7 +3,7 @@
 import prisma from '@/lib/prisma';
 import { revalidatePath } from 'next/cache';
 
-export async function createPost(formData: FormData) {
+export async function createBlog(formData: FormData) {
   try {
     const titleZh = formData.get('titleZh') as string;
     const titleEn = formData.get('titleEn') as string;
@@ -15,7 +15,7 @@ export async function createPost(formData: FormData) {
     const contentEn = formData.get('contentEn') as string;
     const status = parseInt(formData.get('status') as string || '0');
 
-    console.log('createPost received:', {
+    console.log('createBlog received:', {
       hasTitleZh: !!titleZh,
       hasTitleEn: !!titleEn,
       hasContentZh: !!contentZh,
@@ -33,7 +33,7 @@ export async function createPost(formData: FormData) {
       return { success: false, error: `Missing required fields: ${missing.join(', ')}` };
     }
 
-    const post = await prisma.blog.create({
+    const blog = await prisma.blog.create({
       data: {
         titleZh,
         titleEn,
@@ -51,15 +51,15 @@ export async function createPost(formData: FormData) {
     revalidatePath('/blog');
     revalidatePath('/ibackend/blogs');
 
-    return { success: true, post };
+    return { success: true, blog };
   } catch (error) {
     const errorMessage = error instanceof Error ? error.message : JSON.stringify(error);
-    console.error('Failed to create post:', errorMessage);
-    return { success: false, error: `Failed to create post: ${errorMessage}` };
+    console.error('Failed to create blog:', errorMessage);
+    return { success: false, error: `Failed to create blog: ${errorMessage}` };
   }
 }
 
-export async function updatePost(formData: FormData) {
+export async function updateBlog(formData: FormData) {
   try {
     const id = formData.get('id') as string;
     const titleZh = formData.get('titleZh') as string;
@@ -77,7 +77,7 @@ export async function updatePost(formData: FormData) {
       return { success: false, error: 'Missing required fields' };
     }
 
-    const post = await prisma.blog.update({
+    const blog = await prisma.blog.update({
       where: { id },
       data: {
         titleZh,
@@ -97,14 +97,14 @@ export async function updatePost(formData: FormData) {
     revalidatePath(`/blog/${id}`);
     revalidatePath('/ibackend/blogs');
 
-    return { success: true, post };
+    return { success: true, blog };
   } catch (error) {
-    console.error('Failed to update post:', error);
-    return { success: false, error: 'Failed to update post' };
+    console.error('Failed to update blog:', error);
+    return { success: false, error: 'Failed to update blog' };
   }
 }
 
-export async function updatePostsSortOrder(updates: { id: string; sortOrder: number }[]) {
+export async function updateBlogsSortOrder(updates: { id: string; sortOrder: number }[]) {
   try {
     if (updates.length === 0) {
       return { success: true };
@@ -127,12 +127,12 @@ export async function updatePostsSortOrder(updates: { id: string; sortOrder: num
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to update posts sort order:', error);
+    console.error('Failed to update blogs sort order:', error);
     return { success: false, error: 'Failed to update sort order' };
   }
 }
 
-export async function deletePost(id: string) {
+export async function deleteBlog(id: string) {
   try {
     await prisma.blog.delete({
       where: { id },
@@ -143,12 +143,12 @@ export async function deletePost(id: string) {
 
     return { success: true };
   } catch (error) {
-    console.error('Failed to delete post:', error);
-    return { success: false, error: 'Failed to delete post' };
+    console.error('Failed to delete blog:', error);
+    return { success: false, error: 'Failed to delete blog' };
   }
 }
 
-export async function getPosts(query?: string, page: number = 1, pageSize: number = 20) {
+export async function getBlogs(query?: string, page: number = 1, pageSize: number = 20) {
   try {
     const where = query
       ? {
@@ -163,7 +163,7 @@ export async function getPosts(query?: string, page: number = 1, pageSize: numbe
         }
       : {};
 
-    const [posts, total] = await Promise.all([
+    const [blogs, total] = await Promise.all([
       prisma.blog.findMany({
         where,
         orderBy: [
@@ -178,9 +178,9 @@ export async function getPosts(query?: string, page: number = 1, pageSize: numbe
 
     const totalPages = Math.ceil(total / pageSize);
 
-    return { success: true, posts, total, totalPages, currentPage: page, pageSize };
+    return { success: true, blogs, total, totalPages, currentPage: page, pageSize };
   } catch (error) {
-    console.error('Failed to get posts:', error);
-    return { success: false, error: 'Failed to get posts', posts: [] };
+    console.error('Failed to get blogs:', error);
+    return { success: false, error: 'Failed to get blogs', blogs: [] };
   }
 }

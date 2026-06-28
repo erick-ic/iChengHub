@@ -15,6 +15,7 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
     { path: '/tools', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/prompts', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/links', priority: 0.7, changeFrequency: 'weekly' as const },
+    { path: '/blog', priority: 0.9, changeFrequency: 'daily' as const },
     { path: '/submit', priority: 0.6, changeFrequency: 'monthly' as const },
   ];
 
@@ -33,13 +34,17 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
 
   // 3. 尝试获取动态数据，增加 try-catch 保护以绕过本地 Build 时的数据库连接限制
   try {
-    // 并发查询工具和提示词数据
-    const [tools, prompts] = await Promise.all([
+    // 并发查询工具、提示词与博客数据
+    const [tools, prompts, blogs] = await Promise.all([
       prisma.toolCard.findMany({
         where: { status: 1 },
         select: { id: true, updatedAt: true },
       }),
       prisma.prompt.findMany({
+        where: { status: 1 },
+        select: { id: true, updatedAt: true },
+      }),
+      prisma.blog.findMany({
         where: { status: 1 },
         select: { id: true, updatedAt: true },
       }),
@@ -71,7 +76,20 @@ export default async function sitemap(): Promise<MetadataRoute.Sitemap> {
       });
     });
 
-    return [...staticRoutes, ...toolRoutes, ...promptRoutes];
+    // 生成博客详情页路由（中英双语）
+    const blogRoutes: MetadataRoute.Sitemap = [];
+    blogs.forEach((blog) => {
+      ['zh', 'en'].forEach((lang) => {
+        blogRoutes.push({
+          url: `${baseUrl}/${lang}/blog/${blog.id}`,
+          lastModified: blog.updatedAt,
+          changeFrequency: 'weekly',
+          priority: 0.7,
+        });
+      });
+    });
+
+    return [...staticRoutes, ...toolRoutes, ...promptRoutes, ...blogRoutes];
   } catch (error) {
     // 如果构建阶段（Prerender）连不上数据库，仅返回静态路由，防止 build 失败
     console.error('--- Sitemap Build Warning: Database unreachable, returning static routes only ---');

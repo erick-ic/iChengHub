@@ -125,9 +125,8 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
       </div>
 
       {/* 评论区骨架 */}
-      <section id="comments-section" className="mt-8">
+      {/* <section id="comments-section" className="mt-8">
         <h3 className="text-lg font-bold mb-6">{isEnglish ? 'All Comments' : '全部评论'} ({commentsCount})</h3>
-        {/* 评论输入框骨架 */}
         <div className="mb-8">
           <textarea 
             className="w-full bg-gray-50 border-transparent rounded-lg p-4 text-sm focus:border-[#e52129] focus:ring-1 focus:ring-[#e52129] focus:outline-none transition-all" 
@@ -140,8 +139,7 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
             </button>
           </div>
         </div>
-        {/* 评论列表占位（未来渲染 Comment 表数据） */}
-      </section>
+      </section> */}
     </div>
   );
 }

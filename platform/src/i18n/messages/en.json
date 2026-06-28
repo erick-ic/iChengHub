@@ -14,6 +14,8 @@
     "description": "A card-based navigation platform for discovering and using quality AI tools"
   },
   "HomePage": {
+    "heroTitle": "Explore Next-Gen AI Tools & Tech Insights",
+    "heroSubtitle": "Your ultimate hub for viral AI prompts, self-developed efficiency tools, curated navigational directories, and deep-dive technical blogs.",
     "title": "Create Stunning Images for Free Online",
     "description": "Boost your image editing efficiency by 10x with advanced AI, powerful editing tools, and seamless converters.",
     "aiImageGenerator": "AI Image Generator",

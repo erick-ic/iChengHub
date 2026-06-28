@@ -68,12 +68,10 @@ export default function AboutView() {
         </div>
 
         {/* 热荐工坊 自媒体引流区 */}
-        <div className="mt-16">
+        {/* <div className="mt-16">
           <h3 className="text-2xl font-bold mb-6 text-gray-900">{t('socialTitle')}</h3>
           <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mt-12">
-            {/* 微信公众号卡片 */}
             <div className="flex items-center justify-between p-6 sm:p-8 bg-white border border-gray-100 rounded-[2rem] hover:shadow-lg hover:shadow-green-500/5 hover:border-green-100 transition-all duration-300 group">
-              {/* 左侧文字信息 */}
               <div className="flex flex-col pr-4">
                 <div className="flex items-center gap-2.5 mb-3 text-green-600">
                   <div className="w-8 h-8 rounded-full bg-green-50 flex items-center justify-center">
@@ -86,8 +84,6 @@ export default function AboutView() {
                   {t('wechatDesc')}
                 </p>
               </div>
-
-              {/* 右侧二维码 */}
               <div className="flex-shrink-0 relative w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-2xl p-2 border border-gray-100 group-hover:scale-105 transition-transform duration-300 shadow-sm flex items-center justify-center">
                 <QRCode
                   value="http://weixin.qq.com/r/mp/-SPP1z-EZ2IYrXu093bv"
@@ -101,9 +97,7 @@ export default function AboutView() {
               </div>
             </div>
 
-            {/* 小红书卡片 */}
             <div className="flex items-center justify-between p-6 sm:p-8 bg-white border border-gray-100 rounded-[2rem] hover:shadow-lg hover:shadow-red-500/5 hover:border-red-100 transition-all duration-300 group">
-              {/* 左侧文字信息 */}
               <div className="flex flex-col pr-4">
                 <div className="flex items-center gap-2.5 mb-3 text-[#ff2442]">
                   <div className="w-8 h-8 rounded-full bg-red-50 flex items-center justify-center">
@@ -116,8 +110,6 @@ export default function AboutView() {
                   {t('xiaohongshuDesc')}
                 </p>
               </div>
-
-              {/* 右侧二维码 */}
               <div className="flex-shrink-0 relative w-24 h-24 sm:w-28 sm:h-28 bg-white rounded-2xl p-2 border border-gray-100 group-hover:scale-105 transition-transform duration-300 shadow-sm flex items-center justify-center">
                 <QRCode
                   value="http://xhslink.com/m/1zwWrtMsiTL"
@@ -131,7 +123,7 @@ export default function AboutView() {
               </div>
             </div>
           </div>
-        </div>
+        </div> */}
 
         {/* 底部共建按钮 */}
         <div className="mt-16 bg-gray-50 rounded-3xl p-10 flex flex-col items-center text-center">

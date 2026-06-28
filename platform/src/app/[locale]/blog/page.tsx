@@ -1,9 +1,43 @@
+import { Metadata } from 'next';
 import { Link } from '@/navigation';
 import PageViewTracker from '@/components/PageViewTracker';
-import { BlogPost, getAllPosts } from '@/data/blogs';
+import { BlogPost, getAllBlogs } from '@/data/blogs';
 
 interface PageProps {
   params: Promise<{ locale: string }>;
+}
+
+export function generateMetadata({ params }: PageProps): Metadata {
+  const isEn = (params as unknown as { locale: string }).locale === 'en';
+  const base = 'https://ichenghub.cn';
+  return {
+    metadataBase: new URL(base),
+    title: isEn ? 'Technical Blog - iChengHub' : '技术博客专栏 - iChengHub 热荐工坊',
+    description: isEn
+      ? 'Professional technical blogs on frontend architecture, design systems, Go, Next.js and engineering productivity.'
+      : '专注前端架构、设计系统、Go / Next.js 与工程效能的独立技术博客专栏。',
+    keywords: isEn
+      ? ['Tech Blog', 'Frontend Architecture', 'Next.js', 'Go', 'Engineering']
+      : ['技术博客', '前端架构', 'Next.js', 'Go', '工程效能'],
+    alternates: {
+      canonical: isEn ? `${base}/en/blog` : `${base}/zh/blog`,
+      languages: {
+        'zh': `${base}/zh/blog`,
+        'en': `${base}/en/blog`,
+        'x-default': `${base}/zh/blog`,
+      },
+    },
+    openGraph: {
+      title: isEn ? 'Technical Blog - iChengHub' : '技术博客专栏 - iChengHub 热荐工坊',
+      description: isEn
+        ? 'Professional technical blogs on frontend architecture and engineering productivity.'
+        : '专注前端架构与工程效能的独立技术博客。',
+      url: isEn ? `${base}/en/blog` : `${base}/zh/blog`,
+      siteName: 'iChengHub',
+      locale: isEn ? 'en_US' : 'zh_CN',
+      type: 'website',
+    },
+  };
 }
 
 export default async function BlogListPage({ params }: PageProps) {
@@ -11,12 +45,12 @@ export default async function BlogListPage({ params }: PageProps) {
   const isEnglish = locale === 'en';
 
   // 防御性：未来切到 Prisma 时，单点失败不应击穿整页。
-  let posts: BlogPost[] = [];
+  let blogs: BlogPost[] = [];
   try {
-    posts = await getAllPosts();
+    blogs = await getAllBlogs();
   } catch (error) {
-    console.error('[blog] failed to load posts:', error);
-    posts = [];
+    console.error('[blog] failed to load blogs:', error);
+    blogs = [];
   }
 
   return (
@@ -37,7 +71,7 @@ export default async function BlogListPage({ params }: PageProps) {
             </p>
           </header>
 
-          {posts.length === 0 ? (
+          {blogs.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
               <p className="text-2xl font-semibold text-foreground mb-2">
                 {isEnglish ? 'No posts yet' : '还没有文章'}
@@ -49,21 +83,21 @@ export default async function BlogListPage({ params }: PageProps) {
           ) : (
             // 单列垂直排列：放弃瀑布流，回到 List Layout
             <ul className="flex flex-col gap-0">
-              {posts.map((post, index) => {
-                const isLast = index === posts.length - 1;
-                const title = isEnglish ? post.title.en : post.title.zh;
-                const excerpt = isEnglish ? post.excerpt.en : post.excerpt.zh;
-                const category = isEnglish ? post.category.en : post.category.zh;
+              {blogs.map((blog, index) => {
+                const isLast = index === blogs.length - 1;
+                const title = isEnglish ? blog.title.en : blog.title.zh;
+                const excerpt = isEnglish ? blog.excerpt.en : blog.excerpt.zh;
+                const category = isEnglish ? blog.category.en : blog.category.zh;
 
                 return (
                   <li
-                    key={post.id}
+                    key={blog.id}
                     className={[
                       isLast ? '' : 'border-b border-gray-100 dark:border-gray-800',
                     ].join(' ')}
                   >
                     <Link
-                      href={`/blog/${post.id}`}
+                      href={`/blog/${blog.id}`}
                       className="group block py-8 px-4 transition-all duration-300 hover:bg-white hover:shadow-md hover:-translate-y-0.5 -mx-4 rounded-lg"
                     >
                       {/* 第一层：标题（hover 时变品牌红） */}
@@ -82,10 +116,10 @@ export default async function BlogListPage({ params }: PageProps) {
                           {category}
                         </span>
                         <time
-                          dateTime={post.date}
+                          dateTime={blog.date}
                           className="text-gray-400 dark:text-gray-500 font-normal tabular-nums"
                         >
-                          {post.date}
+                          {blog.date}
                         </time>
                       </div>
                     </Link>

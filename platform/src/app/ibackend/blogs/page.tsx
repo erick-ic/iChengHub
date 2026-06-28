@@ -12,9 +12,9 @@ import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Plus, Edit, Trash2, Save, Search, Check, RefreshCw, GripVertical, ArrowLeft, ArrowRight } from 'lucide-react';
-import { createPost, updatePost, deletePost, getPosts, updatePostsSortOrder } from '@/app/actions/postActions';
+import { createBlog, updateBlog, deleteBlog, getBlogs, updateBlogsSortOrder } from '@/app/actions/blogActions';
 
-interface Post {
+interface BlogPost {
   id: string;
   titleZh: string;
   titleEn: string;
@@ -30,8 +30,8 @@ interface Post {
   updatedAt: Date;
 }
 
-interface PostCardProps {
-  post: Post;
+interface BlogPostCardProps {
+  blog: BlogPost;
   index: number;
   isDragOver: boolean;
   onDragStart: () => void;
@@ -41,10 +41,10 @@ interface PostCardProps {
   onDelete: () => void;
 }
 
-const PostCard = memo(({ post, index, isDragOver, onDragStart, onDragOver, onDragEnd, onEdit, onDelete }: PostCardProps) => {
+const BlogPostCard = memo(({ blog, index, isDragOver, onDragStart, onDragOver, onDragEnd, onEdit, onDelete }: BlogPostCardProps) => {
   return (
     <Card
-      key={post.id}
+      key={blog.id}
       className={`cursor-move transition-all ${isDragOver ? 'ring-2 ring-primary' : ''}`}
       draggable
       onDragStart={onDragStart}
@@ -57,14 +57,14 @@ const PostCard = memo(({ post, index, isDragOver, onDragStart, onDragOver, onDra
             <GripVertical className="h-5 w-5 text-gray-400 cursor-grab" />
             <div>
               <Badge variant="outline" className="mr-2 font-mono">
-                #{post.sortOrder}
+                #{blog.sortOrder}
               </Badge>
-              <CardTitle className="text-xl inline">{post.titleZh}</CardTitle>
+              <CardTitle className="text-xl inline">{blog.titleZh}</CardTitle>
             </div>
           </div>
           <div className="flex items-center gap-2">
-            <Badge variant={post.status === 1 ? 'default' : 'secondary'}>
-              {post.status === 1 ? '已发布' : '草稿'}
+            <Badge variant={blog.status === 1 ? 'default' : 'secondary'}>
+              {blog.status === 1 ? '已发布' : '草稿'}
             </Badge>
           </div>
         </div>
@@ -74,14 +74,14 @@ const PostCard = memo(({ post, index, isDragOver, onDragStart, onDragOver, onDra
           <div className="space-y-2">
             <p className="text-sm text-gray-600 dark:text-gray-400">
               <span className="font-medium">分类：</span>
-              {post.categoryZh} / {post.categoryEn}
+              {blog.categoryZh} / {blog.categoryEn}
             </p>
             <p className="text-sm text-gray-600 dark:text-gray-400">
               <span className="font-medium">摘要：</span>
-              {post.excerptZh}
+              {blog.excerptZh}
             </p>
             <p className="text-xs text-gray-500 dark:text-gray-500">
-              创建时间：{new Date(post.createdAt).toLocaleString('zh-CN')}
+              创建时间：{new Date(blog.createdAt).toLocaleString('zh-CN')}
             </p>
           </div>
           <div className="flex gap-2">
@@ -110,14 +110,14 @@ const PostCard = memo(({ post, index, isDragOver, onDragStart, onDragOver, onDra
   );
 });
 
-export default function PostsPage() {
+export default function BlogsPage() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
-  const [posts, setPosts] = useState<Post[]>([]);
+  const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
-  const [editingPost, setEditingPost] = useState<Post | null>(null);
+  const [editingBlog, setEditingBlog] = useState<BlogPost | null>(null);
   const [searchQuery, setSearchQuery] = useState(searchParams.get('q') || '');
   const [formData, setFormData] = useState({
     titleZh: '',
@@ -163,14 +163,14 @@ export default function PostsPage() {
   };
 
   useEffect(() => {
-    loadPosts(searchParams.get('q') || undefined, currentPage);
+    loadBlogs(searchParams.get('q') || undefined, currentPage);
   }, [searchParams]);
 
-  const loadPosts = async (query?: string, page: number = 1) => {
+  const loadBlogs = async (query?: string, page: number = 1) => {
     setLoading(true);
-    const result = await getPosts(query || searchQuery, page);
+    const result = await getBlogs(query || searchQuery, page);
     if (result.success) {
-      setPosts(result.posts);
+      setBlogs(result.blogs);
       setPagination({
         total: result.total || 0,
         totalPages: result.totalPages || 1,
@@ -182,7 +182,7 @@ export default function PostsPage() {
   };
 
   const handleCreate = () => {
-    setEditingPost(null);
+    setEditingBlog(null);
     setFormData({
       titleZh: '',
       titleEn: '',
@@ -198,19 +198,19 @@ export default function PostsPage() {
     setIsDialogOpen(true);
   };
 
-  const handleEdit = (post: Post) => {
-    setEditingPost(post);
+  const handleEdit = (blog: BlogPost) => {
+    setEditingBlog(blog);
     setFormData({
-      titleZh: post.titleZh,
-      titleEn: post.titleEn,
-      excerptZh: post.excerptZh,
-      excerptEn: post.excerptEn,
-      categoryZh: post.categoryZh,
-      categoryEn: post.categoryEn,
-      contentZh: post.contentZh,
-      contentEn: post.contentEn,
-      status: post.status.toString(),
-      sortOrder: post.sortOrder.toString(),
+      titleZh: blog.titleZh,
+      titleEn: blog.titleEn,
+      excerptZh: blog.excerptZh,
+      excerptEn: blog.excerptEn,
+      categoryZh: blog.categoryZh,
+      categoryEn: blog.categoryEn,
+      contentZh: blog.contentZh,
+      contentEn: blog.contentEn,
+      status: blog.status.toString(),
+      sortOrder: blog.sortOrder.toString(),
     });
     setIsDialogOpen(true);
   };
@@ -218,11 +218,11 @@ export default function PostsPage() {
   const handleDelete = async (id: string) => {
     if (!confirm('确定要删除这篇文章吗？')) return;
 
-    const result = await deletePost(id);
+    const result = await deleteBlog(id);
     if (result.success) {
       setToastMessage('删除成功');
       setShowToast(true);
-      loadPosts();
+      loadBlogs();
     } else {
       setToastMessage('删除失败');
       setShowToast(true);
@@ -237,23 +237,23 @@ export default function PostsPage() {
     const data = new FormData(e.currentTarget);
     data.set('status', formData.status);
     
-    if (editingPost) {
-      data.set('id', editingPost.id);
+    if (editingBlog) {
+      data.set('id', editingBlog.id);
     }
 
     let result;
-    if (editingPost) {
-      result = await updatePost(data);
+    if (editingBlog) {
+      result = await updateBlog(data);
     } else {
-      result = await createPost(data);
+      result = await createBlog(data);
     }
 
     setSaving(false);
     if (result.success) {
-      setToastMessage(editingPost ? '更新成功' : '创建成功');
+      setToastMessage(editingBlog ? '更新成功' : '创建成功');
       setShowToast(true);
       setIsDialogOpen(false);
-      loadPosts();
+      loadBlogs();
     } else {
       setToastMessage(result.error || '操作失败');
       setShowToast(true);
@@ -302,7 +302,7 @@ export default function PostsPage() {
             <p className="text-gray-500">加载中...</p>
           </div>
         </div>
-      ) : posts.length === 0 ? (
+      ) : blogs.length === 0 ? (
         <Card>
           <CardContent className="py-12 text-center">
             <p className="text-gray-600 dark:text-gray-400 mb-4">还没有发布任何文章</p>
@@ -311,35 +311,35 @@ export default function PostsPage() {
         </Card>
       ) : (
         <div className="space-y-4">
-          {posts.map((post, index) => (
-            <PostCard
-              key={post.id}
-              post={post}
+          {blogs.map((blog, index) => (
+            <BlogPostCard
+              key={blog.id}
+              blog={blog}
               index={index}
               isDragOver={dragOverIndex === index}
               onDragStart={() => setDraggedIndex(index)}
-              onDragOver={(e) => {
+              onDragOver={(e: React.DragEvent) => {
                 e.preventDefault();
                 setDragOverIndex(index);
               }}
               onDragEnd={() => {
                 if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
-                  const newPosts = [...posts];
-                  const [movedItem] = newPosts.splice(draggedIndex, 1);
-                  newPosts.splice(dragOverIndex, 0, movedItem);
-                  setPosts(newPosts);
+                  const newBlogs = [...blogs];
+                  const [movedItem] = newBlogs.splice(draggedIndex, 1);
+                  newBlogs.splice(dragOverIndex, 0, movedItem);
+                  setBlogs(newBlogs);
                   setToastMessage('拖拽成功，排序已更新');
                   setShowToast(true);
 
-                  const updates = newPosts.map((p, i) => ({ id: p.id, sortOrder: i }));
-                  updatePostsSortOrder(updates);
+                  const updates = newBlogs.map((b, i) => ({ id: b.id, sortOrder: i }));
+                  updateBlogsSortOrder(updates);
                   setTimeout(() => setShowToast(false), 2000);
                 }
                 setDraggedIndex(null);
                 setDragOverIndex(null);
               }}
-              onEdit={() => handleEdit(post)}
-              onDelete={() => handleDelete(post.id)}
+              onEdit={() => handleEdit(blog)}
+              onDelete={() => handleDelete(blog.id)}
             />
           ))}
 
@@ -398,7 +398,7 @@ export default function PostsPage() {
       <Dialog open={isDialogOpen} onOpenChange={setIsDialogOpen}>
         <DialogContent className="max-w-4xl">
           <DialogHeader>
-            <DialogTitle>{editingPost ? '编辑文章' : '新建文章'}</DialogTitle>
+            <DialogTitle>{editingBlog ? '编辑文章' : '新建文章'}</DialogTitle>
             <DialogDescription>
               填写文章信息，支持中英文双语内容。正文内容使用 Markdown 格式。
             </DialogDescription>
@@ -548,7 +548,7 @@ export default function PostsPage() {
                 ) : (
                   <>
                     <Save className="h-4 w-4" />
-                    {editingPost ? '更新' : '创建'}
+                    {editingBlog ? '更新' : '创建'}
                   </>
                 )}
               </Button>

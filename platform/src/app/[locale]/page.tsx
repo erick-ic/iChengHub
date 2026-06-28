@@ -43,11 +43,11 @@ export default async function Home({ params }: { params: Promise<{ locale: strin
       <PageViewTracker path={`/${locale}`} />
       <section className="container mx-auto px-4 py-16">
       <div className="mb-12 text-center">
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
-          {t('title')}
+        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 dark:text-zinc-100 mb-4">
+          {t('heroTitle')}
         </h1>
-        <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
-          {t('description')}
+        <p className="text-base md:text-lg tracking-wide text-gray-500 dark:text-gray-400 max-w-4xl mx-auto leading-relaxed">
+          {t('heroSubtitle')}
         </p>
       </div>
 

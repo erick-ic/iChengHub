@@ -14,6 +14,8 @@
     "description": "发现和使用优质 AI 工具的卡片式导航平台"
   },
   "HomePage": {
+    "heroTitle": "探索全方位 AI 工具与前沿技术洞察",
+    "heroSubtitle": "精选爆款 AI 提示词、自研效率工具、全网热门导航与深度技术博客，全方位赋能您的数字化创造成长。",
     "title": "免费在线创建令人惊叹的图像",
     "description": "透過先進的 AI、強大的編輯工具和無縫轉換器，將影像編輯效率提高 10 倍。",
     "aiImageGenerator": "AI 图像生成器",

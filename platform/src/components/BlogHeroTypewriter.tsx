@@ -81,9 +81,9 @@ export default function BlogHeroTypewriter({ phrases }: BlogHeroTypewriterProps)
 
       <div className="relative z-10 flex flex-col items-center">
         <div className="mb-6 flex items-center space-x-3 text-xs md:text-sm font-mono tracking-[0.2em] text-gray-500 dark:text-gray-400 select-none">
-          <span className="text-[#e52129]/80 animate-pulse">///</span>
+          <span className="text-[#e52129]/80 animate-pulse">• •</span>
           <span className="uppercase">Engineering_Insights</span>
-          <span className="text-[#e52129]/80 animate-pulse">///</span>
+          <span className="text-[#e52129]/80 animate-pulse">• •</span>
         </div>
 
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-6 transition-all">

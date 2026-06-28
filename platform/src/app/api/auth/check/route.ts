@@ -1,6 +1,7 @@
 import { NextRequest, NextResponse } from 'next/server'
+import { withMetrics } from '@/app/actions/withMetrics';
 
-export async function GET(request: NextRequest) {
+const GET = withMetrics(async function GET(request: NextRequest) {
   const adminSession = request.cookies.get('admin_session')
 
   if (adminSession) {
@@ -8,4 +9,5 @@ export async function GET(request: NextRequest) {
   } else {
     return NextResponse.json({ authenticated: false }, { status: 401 })
   }
-}
+});
+export { GET };

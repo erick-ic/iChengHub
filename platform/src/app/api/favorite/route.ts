@@ -1,7 +1,8 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { withMetrics } from '@/app/actions/withMetrics';
 
-export async function POST(request: Request) {
+const POST = withMetrics(async function POST(request: Request) {
   try {
     const body = await request.json();
     const { promptId } = body;
@@ -35,4 +36,6 @@ export async function POST(request: Request) {
     console.error('收藏操作失败:', error);
     return NextResponse.json({ success: false, message: '服务器错误' }, { status: 500 });
   }
-}
+  });
+
+export { POST };

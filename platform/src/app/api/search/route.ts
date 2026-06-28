@@ -1,44 +1,27 @@
 import { NextResponse } from 'next/server';
 import prisma from '@/lib/prisma';
+import { withMetrics } from '@/app/actions/withMetrics';
 
-// 强制动态渲染，每次请求都执行
 export const dynamic = 'force-dynamic';
 
-export async function GET() {
+const handler = async function GET() {
   try {
-    // 获取工具数据
     const tools = await prisma.toolCard.findMany({
       where: { status: 1 },
       select: {
-        id: true,
-        name: true,
-        nameEn: true,
-        desc: true,
-        descEn: true,
-        url: true,
-        logoUrl: true,
-        category: true,
-        categoryEn: true,
+        id: true, name: true, nameEn: true, desc: true, descEn: true,
+        url: true, logoUrl: true, category: true, categoryEn: true,
       },
     });
 
-    // 获取导航链接数据（使用 NavLink 模型）
     const links = await prisma.navLink.findMany({
       where: { status: 1 },
       select: {
-        id: true,
-        name: true,
-        nameEn: true,
-        desc: true,
-        descEn: true,
-        url: true,
-        iconUrl: true,
-        category: true,
-        categoryEn: true,
+        id: true, name: true, nameEn: true, desc: true, descEn: true,
+        url: true, iconUrl: true, category: true, categoryEn: true,
       },
     });
 
-    // 转换为统一格式 - 工具
     const toolItems = tools.map((tool) => ({
       id: tool.id,
       title: tool.name,
@@ -52,7 +35,6 @@ export async function GET() {
       type: 'tool' as const,
     }));
 
-    // 转换为统一格式 - 链接
     const linkItems = links.map((link) => ({
       id: link.id,
       title: link.name,
@@ -66,10 +48,8 @@ export async function GET() {
       type: 'link' as const,
     }));
 
-    // 合并并返回（仅工具和导航链接）
     const allItems = [...toolItems, ...linkItems];
 
-    // 企业级缓存策略：1分钟缓存 + 5分钟后台刷新
     return NextResponse.json(allItems, {
       headers: {
         'Cache-Control': 'public, max-age=60, stale-while-revalidate=300',
@@ -82,4 +62,6 @@ export async function GET() {
     console.error('Search API error:', error);
     return NextResponse.json([], { status: 500 });
   }
-}
+};
+
+export { handler as GET };

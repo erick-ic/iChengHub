@@ -1,5 +1,6 @@
 import Link from "next/link"
 import prisma from "@/lib/prisma"
+import { getSystemMetrics } from "@/app/actions/metricsActions"
 
 export const dynamic = 'force-dynamic'
 import {
@@ -59,6 +60,7 @@ export default async function AdminDashboard() {
     viewsLastMonth,
     likesLastMonth,
     favoritesLastMonth,
+    systemMetrics,
   ] = await Promise.all([
     prisma.toolCard.count(),
     prisma.prompt.count(),
@@ -156,6 +158,7 @@ export default async function AdminDashboard() {
         },
       },
     }),
+    getSystemMetrics(),
   ])
 
   const views = totalViews._sum.views || 0
@@ -433,25 +436,53 @@ export default async function AdminDashboard() {
             <CardHeader>
               <CardTitle>系统状态</CardTitle>
             </CardHeader>
-            <CardContent className="space-y-2">
-              <div className="flex items-center justify-between">
-                <span className="text-sm">数据库</span>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  正常
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">API 服务</span>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  正常
-                </Badge>
-              </div>
-              <div className="flex items-center justify-between">
-                <span className="text-sm">缓存</span>
-                <Badge variant="outline" className="bg-green-50 text-green-700 border-green-200">
-                  正常
-                </Badge>
-              </div>
+            <CardContent className="space-y-3">
+              {(() => {
+                const total = (systemMetrics?.apiSuccess ?? 0) + (systemMetrics?.apiFailed ?? 0)
+                const successRate = total === 0 ? 100 : Math.round(((systemMetrics?.apiSuccess ?? 0) / total) * 10000) / 100
+                const failed = systemMetrics?.apiFailed ?? 0
+                const aiErrors = systemMetrics?.aiErrors ?? 0
+                return (
+                  <>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">API 成功率</span>
+                      <span
+                        className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
+                          successRate >= 95
+                            ? 'bg-green-50 text-green-600'
+                            : 'bg-amber-50 text-amber-600'
+                        }`}
+                      >
+                        {successRate}%
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">核心请求失败</span>
+                      <span
+                        className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
+                          failed === 0
+                            ? 'bg-slate-50 text-slate-500'
+                            : 'bg-pink-50 text-pink-600'
+                        }`}
+                      >
+                        {failed > 0 ? `${failed} 次失败` : '无异常'}
+                      </span>
+                    </div>
+                    <div className="flex items-center justify-between">
+                      <span className="text-sm">AI 服务异常</span>
+                      <span
+                        className={`text-sm font-semibold px-2 py-0.5 rounded-full ${
+                          aiErrors === 0
+                            ? 'bg-slate-50 text-slate-500'
+                            : 'bg-pink-50 text-pink-600'
+                        }`}
+                      >
+                        {aiErrors > 0 ? `${aiErrors} 次异常` : '无异常'}
+                      </span>
+                    </div>
+                  </>
+                )
+              })()}
             </CardContent>
           </Card>
         </div>

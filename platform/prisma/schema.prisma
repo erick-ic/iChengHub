@@ -116,3 +116,12 @@ model Blog {
   @@index([status])
   @@index([createdAt])
 }
+model SystemMetrics {
+  id          String   @id @default("current")
+  apiSuccess  Int      @default(0)
+  apiFailed   Int      @default(0)
+  aiErrors    Int      @default(0)
+  dbLatency   Float    @default(0.0)
+  resetAt     DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt   DateTime @updatedAt
+}

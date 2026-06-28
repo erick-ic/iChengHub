@@ -133,7 +133,17 @@
     "backToHome": "Back to Home"
   },
   "blog": {
-    "backToList": "Back to List"
+    "backToList": "Back to List",
+    "hero": {
+      "title": "Tech Horizons",
+      "subtitle": "Exploring and sharing cutting-edge tech: ",
+      "dynamicPhrases": [
+        "Exploring Go Full-Stack",
+        "Deep Dive into Next.js 14",
+        "Decoding AI Prompt Engineering",
+        "Building High-Concurrency Services"
+      ]
+    }
   },
   "footer": {
     "icp": "ICP License: 2025085990-1",

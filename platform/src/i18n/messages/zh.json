@@ -133,7 +133,17 @@
     "backToHome": "返回首页"
   },
   "blog": {
-    "backToList": "回到列表"
+    "backToList": "回到列表",
+    "hero": {
+      "title": "技术视界",
+      "subtitle": "探索与分享前沿技术：",
+      "dynamicPhrases": [
+        "探索 Go 全栈架构",
+        "深入 Next.js 14 最佳实践",
+        "解密 AI 提示词工程",
+        "构建高并发微服务"
+      ]
+    }
   },
   "footer": {
     "icp": "皖ICP备{number}号-1",

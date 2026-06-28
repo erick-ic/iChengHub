@@ -91,13 +91,21 @@ export default async function BlogDetailPage({ params }: PageProps) {
                 {blogPost.title}
               </h1>
               <div className="mt-4 flex flex-wrap items-center gap-x-3 text-xs">
-                <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#e52129]/10 text-[#e52129] font-semibold tracking-wider text-[10px] uppercase">
+                <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium tracking-wide bg-gray-50/70 dark:bg-gray-800/60 text-gray-600 dark:text-gray-300 ring-1 ring-inset ring-gray-200/80 dark:ring-gray-700/70 transition-all duration-200 hover:bg-white hover:ring-[#e52129]/30 hover:text-[#e52129] dark:hover:bg-gray-800">
+                  <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0 opacity-70" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M11.778 2.066H5.722A2.222 2.222 0 0 0 3.5 4.288v6.056a2.222 2.222 0 0 0 .654 1.576l7.412 7.412a2.222 2.222 0 0 0 3.143 0l4.426-4.426a2.222 2.222 0 0 0 0-3.143L13.35 2.72a2.222 2.222 0 0 0-1.572-.654Z"/>
+                    <circle cx="7.556" cy="7.556" r="1.333"/>
+                  </svg>
                   {blogPost.category}
                 </span>
                 <time
                   dateTime={blogPost.date}
-                  className="text-gray-400 dark:text-gray-500 font-normal tabular-nums"
+                  className="inline-flex items-center gap-1 text-gray-400 dark:text-gray-500 font-normal tabular-nums"
                 >
+                  <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <rect x="3" y="4.5" width="18" height="15" rx="2"/>
+                    <path d="M8 3v4M16 3v4M3 10.5h18"/>
+                  </svg>
                   {blogPost.date}
                 </time>
               </div>

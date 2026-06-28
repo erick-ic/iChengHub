@@ -1,6 +1,7 @@
 import { Metadata } from 'next';
 import { Link } from '@/navigation';
 import PageViewTracker from '@/components/PageViewTracker';
+import BlogHeroTypewriter from '@/components/BlogHeroTypewriter';
 import { BlogPost, getAllBlogs } from '@/data/blogs';
 
 interface PageProps {
@@ -44,33 +45,34 @@ export default async function BlogListPage({ params }: PageProps) {
   const { locale } = await params;
   const isEnglish = locale === 'en';
 
-  // 防御性：未来切到 Prisma 时，单点失败不应击穿整页。
   let blogs: BlogPost[] = [];
   try {
     blogs = await getAllBlogs();
   } catch (error) {
     console.error('[blog] failed to load blogs:', error);
-    blogs = [];
   }
+
+  const phrases = isEnglish
+    ? [
+        'Exploring Go Full-Stack',
+        'Deep Dive into Next.js 14',
+        'Decoding AI Prompt Engineering',
+        'Building High-Concurrency Services',
+      ]
+    : [
+        '探索 Go 全栈架构',
+        '深入 Next.js 14 最佳实践',
+        '解密 AI 提示词工程',
+        '构建高并发微服务',
+      ];
 
   return (
     <>
       <PageViewTracker path={`/${locale}/blog`} />
-      {/* 外层背景沿用全站 HSL 苹果灰 bg-background (#f5f5f7) */}
       <main className="bg-background min-h-[calc(100vh-4rem)]">
-        <div className="max-w-4xl mx-auto px-6 py-12 md:py-16">
-          {/* 页面标题区：克制、不抢戏 */}
-          <header className="mb-10 md:mb-14">
-            <h1 className="text-3xl md:text-4xl font-bold tracking-tight text-foreground">
-              {isEnglish ? 'Tech Blog' : '技术博客'}
-            </h1>
-            <p className="mt-3 text-sm md:text-base text-gray-500 dark:text-gray-400 max-w-2xl leading-relaxed">
-              {isEnglish
-                ? 'Notes on AI, full-stack development, and engineering practices.'
-                : '关于 AI、全栈开发与工程实践的一些思考与沉淀。'}
-            </p>
-          </header>
+        <BlogHeroTypewriter phrases={phrases} />
 
+        <div className="max-w-4xl mx-auto px-6">
           {blogs.length === 0 ? (
             <div className="flex flex-col items-center justify-center min-h-[40vh] text-center">
               <p className="text-2xl font-semibold text-foreground mb-2">
@@ -112,13 +114,21 @@ export default async function BlogListPage({ params }: PageProps) {
 
                       {/* 第三层：元数据行（分类 + 日期） */}
                       <div className="flex flex-wrap items-center gap-x-3 text-xs mt-3">
-                        <span className="inline-flex items-center px-2 py-0.5 rounded-full bg-[#e52129]/10 text-[#e52129] font-semibold tracking-wider text-[10px] uppercase transition-all duration-300 group-hover:bg-[#e52129]/20">
+                        <span className="inline-flex items-center gap-1.5 px-2 py-1 rounded-md text-[11px] font-medium tracking-wide bg-gray-50/70 dark:bg-gray-800/60 text-gray-600 dark:text-gray-300 ring-1 ring-inset ring-gray-200/80 dark:ring-gray-700/70 transition-all duration-200 hover:bg-white hover:ring-[#e52129]/30 hover:text-[#e52129] dark:hover:bg-gray-800">
+                          <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0 opacity-70" fill="none" stroke="currentColor" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M11.778 2.066H5.722A2.222 2.222 0 0 0 3.5 4.288v6.056a2.222 2.222 0 0 0 .654 1.576l7.412 7.412a2.222 2.222 0 0 0 3.143 0l4.426-4.426a2.222 2.222 0 0 0 0-3.143L13.35 2.72a2.222 2.222 0 0 0-1.572-.654Z"/>
+                            <circle cx="7.556" cy="7.556" r="1.333"/>
+                          </svg>
                           {category}
                         </span>
                         <time
                           dateTime={blog.date}
-                          className="text-gray-400 dark:text-gray-500 font-normal tabular-nums"
+                          className="inline-flex items-center gap-1 text-gray-400 dark:text-gray-500 font-normal tabular-nums"
                         >
+                          <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                            <rect x="3" y="4.5" width="18" height="15" rx="2"/>
+                            <path d="M8 3v4M16 3v4M3 10.5h18"/>
+                          </svg>
                           {blog.date}
                         </time>
                       </div>

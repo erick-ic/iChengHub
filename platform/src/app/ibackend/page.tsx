@@ -28,7 +28,8 @@ import {
   Plus,
   ArrowUpRight,
   Star,
-  MessageSquare
+  MessageSquare,
+  FileText
 } from "lucide-react"
 
 export default async function AdminDashboard() {
@@ -44,6 +45,7 @@ export default async function AdminDashboard() {
     linkCount,
     submissionCount,
     demandCount,
+    blogCount,
     totalViews,
     totalLikes,
     totalFavorites,
@@ -53,6 +55,7 @@ export default async function AdminDashboard() {
     linkCountLastMonth,
     submissionCountLastMonth,
     demandCountLastMonth,
+    blogCountLastMonth,
     viewsLastMonth,
     likesLastMonth,
     favoritesLastMonth,
@@ -62,6 +65,7 @@ export default async function AdminDashboard() {
     prisma.navLink.count(),
     prisma.toolSubmission.count(),
     prisma.toolDemand.count(),
+    prisma.blog.count(),
     prisma.prompt.aggregate({ _sum: { views: true } }),
     prisma.prompt.aggregate({ _sum: { likes: true } }),
     prisma.prompt.aggregate({ _sum: { favorites: true } }),
@@ -117,6 +121,14 @@ export default async function AdminDashboard() {
         },
       },
     }),
+    prisma.blog.count({
+      where: {
+        createdAt: {
+          gte: lastMonthStart,
+          lte: lastMonthEnd,
+        },
+      },
+    }),
     prisma.prompt.aggregate({
       _sum: { views: true },
       where: {
@@ -159,6 +171,7 @@ export default async function AdminDashboard() {
   const linkChange = linkCount - linkCountLastMonth
   const submissionChange = submissionCount - submissionCountLastMonth
   const demandChange = demandCount - demandCountLastMonth
+  const blogChange = blogCount - blogCountLastMonth
   const viewsChangePercent = viewsLast > 0 ? ((views - viewsLast) / viewsLast * 100).toFixed(1) : '0'
   const likesChangePercent = likesLast > 0 ? ((likes - likesLast) / likesLast * 100).toFixed(1) : '0'
   const favoritesChangePercent = favoritesLast > 0 ? ((favorites - favoritesLast) / favoritesLast * 100).toFixed(1) : '0'
@@ -201,8 +214,8 @@ export default async function AdminDashboard() {
             <span className="w-1.5 h-1.5 rounded-full" style={{ backgroundColor: '#e52129' }}></span>
             内容数据
           </h3>
-          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-5">
-            <Card>
+          <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-6">
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">总工具数</CardTitle>
                 <Wrench className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -215,7 +228,20 @@ export default async function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
+              <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                <CardTitle className="text-sm font-medium">博客总数</CardTitle>
+                <FileText className="h-4 w-4" style={{ color: '#e52129' }} />
+              </CardHeader>
+              <CardContent>
+                <div className="text-3xl font-bold">{blogCount}</div>
+                <p className={`text-[10px] mt-1 ${blogChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {formatChange(blogChange)}
+                </p>
+              </CardContent>
+            </Card>
+
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">导航总数</CardTitle>
                 <Link2 className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -228,7 +254,7 @@ export default async function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">提示词总数</CardTitle>
                 <Lightbulb className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -241,7 +267,7 @@ export default async function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">推荐总数</CardTitle>
                 <Star className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -254,7 +280,7 @@ export default async function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">心愿总数</CardTitle>
                 <MessageSquare className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -276,7 +302,7 @@ export default async function AdminDashboard() {
             互动数据
           </h3>
           <div className="grid gap-4 md:grid-cols-3">
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">总浏览量</CardTitle>
                 <Eye className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -289,7 +315,7 @@ export default async function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">点赞数</CardTitle>
                 <Heart className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -302,7 +328,7 @@ export default async function AdminDashboard() {
               </CardContent>
             </Card>
 
-            <Card>
+            <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
               <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
                 <CardTitle className="text-sm font-medium">收藏数</CardTitle>
                 <Star className="h-4 w-4" style={{ color: '#e52129' }} />
@@ -322,7 +348,7 @@ export default async function AdminDashboard() {
       <div className="grid gap-4 lg:grid-cols-3">
         {/* 左侧：最近提示词 */}
         <div className="lg:col-span-2">
-          <Card>
+          <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle>最近添加的提示词</CardTitle>
@@ -376,7 +402,7 @@ export default async function AdminDashboard() {
 
         {/* 右侧：快捷操作 */}
         <div className="space-y-4">
-          <Card>
+          <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
             <CardHeader>
               <CardTitle>快捷操作</CardTitle>
               <CardDescription>快速执行常用操作</CardDescription>
@@ -394,10 +420,16 @@ export default async function AdminDashboard() {
                   发布提示词
                 </Link>
               </Button>
+              <Button className="w-full justify-start" asChild variant="outline">
+                <Link href="/ibackend/blogs">
+                  <Plus className="mr-2 h-4 w-4" />
+                  创作新文章
+                </Link>
+              </Button>
             </CardContent>
           </Card>
 
-          <Card>
+          <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
             <CardHeader>
               <CardTitle>系统状态</CardTitle>
             </CardHeader>

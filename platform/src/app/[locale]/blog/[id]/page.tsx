@@ -66,8 +66,8 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
   return (
     <>
-      <CodeCopyHandler />
-      <PageViewTracker path={`/${locale}/blog/${id}`} />
+      <CodeCopyHandler blogId={id} locale={locale} />
+      <PageViewTracker path={`/${locale}/blog/${id}`} resourceId={id} resourceType="BLOG" />
       <main className="bg-background min-h-[calc(100vh-4rem)]">
         <article className="max-w-7xl mx-auto px-4 md:px-8 py-12 grid grid-cols-1 lg:grid-cols-4 gap-10">
           {/* 左侧正文区：占 lg:col-span-3 */}

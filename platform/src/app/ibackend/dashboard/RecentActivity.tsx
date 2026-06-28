@@ -36,6 +36,9 @@ function getActionLabel(actionType: string, resourceType: string) {
   if (resourceType === 'PROMPT') {
     return actionType === 'COPY' ? '复制提示词' : actionType === 'VIEW' ? '浏览提示词' : actionType
   }
+  if (resourceType === 'BLOG') {
+    return actionType === 'COPY' ? '复制代码' : actionType === 'VIEW' ? '访问博客' : actionType
+  }
   if (resourceType === 'PAGE') {
     return actionType === 'VIEW' ? '访问页面' : actionType
   }

@@ -1,5 +1,5 @@
 import prisma from '@/lib/prisma'
-import { Eye, Users, MousePointerClick, Copy, Activity, Wrench, Lightbulb, Globe, Clock, FolderOpen, Smartphone, Monitor, Link2 } from 'lucide-react'
+import { Eye, Users, MousePointerClick, Copy, Activity, Wrench, Lightbulb, Globe, Clock, FolderOpen, Smartphone, Monitor, Link2, FileText, Code } from 'lucide-react'
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card'
 import { Badge } from '@/components/ui/badge'
 import RefreshButton from './RefreshButton'
@@ -17,9 +17,12 @@ interface AnalyticsData {
   uniqueUV: number
   toolClicks: number
   promptCopies: number
+  blogViews: number
+  blogCopies: number
   chartData: { date: string; pv: number; uv: number; clicks: number; copies: number }[]
   topTools: { id: string; name: string; clicks: number; views: number }[]
   topPrompts: { id: string; title: string; copies: number; views: number }[]
+  topBlogs: { id: string; title: string; views: number; copies: number }[]
   topLinks: { id: string; name: string; clicks: number }[]
   languageDistribution: { name: string; value: number; percent: number }[]
   topPaths: { path: string; count: number; percent: number }[]
@@ -73,18 +76,22 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
   const uniqueUV = new Set(logs.map(l => l.ipHash).filter(Boolean)).size
   const toolClicks = logs.filter(l => l.actionType === 'CLICK' && l.resourceType === 'TOOL').length
   const promptCopies = logs.filter(l => l.actionType === 'COPY' && l.resourceType === 'PROMPT').length
+  const blogViews = logs.filter(l => l.actionType === 'VIEW' && l.resourceType === 'BLOG').length
+  const blogCopies = logs.filter(l => l.actionType === 'COPY' && l.resourceType === 'BLOG').length
 
-  const dailyStats = new Map<string, { pv: number; uv: Set<string>; clicks: number; copies: number }>()
+  const dailyStats = new Map<string, { pv: number; uv: Set<string>; clicks: number; copies: number; blogViews: number; blogCopies: number }>()
   logs.forEach(log => {
     const date = log.timestamp.toISOString().split('T')[0]
     if (!dailyStats.has(date)) {
-      dailyStats.set(date, { pv: 0, uv: new Set(), clicks: 0, copies: 0 })
+      dailyStats.set(date, { pv: 0, uv: new Set(), clicks: 0, copies: 0, blogViews: 0, blogCopies: 0 })
     }
     const stat = dailyStats.get(date)!
     stat.pv++
     if (log.ipHash) stat.uv.add(log.ipHash)
     if (log.actionType === 'CLICK' && log.resourceType === 'TOOL') stat.clicks++
     if (log.actionType === 'COPY' && log.resourceType === 'PROMPT') stat.copies++
+    if (log.actionType === 'VIEW' && log.resourceType === 'BLOG') stat.blogViews++
+    if (log.actionType === 'COPY' && log.resourceType === 'BLOG') stat.blogCopies++
   })
 
   const chartData = Array.from(dailyStats.entries())
@@ -102,6 +109,8 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
   const promptCopyMap = new Map<string, number>()
   const promptViewMap = new Map<string, number>()
   const linkClickMap = new Map<string, number>()
+  const blogViewMap = new Map<string, number>()
+  const blogCopyMap = new Map<string, number>()
 
   logs.forEach(log => {
     if (!log.resourceId) return
@@ -126,6 +135,14 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
         linkClickMap.set(log.resourceId, (linkClickMap.get(log.resourceId) || 0) + 1)
       }
     }
+    if (log.resourceType === 'BLOG') {
+      if (log.actionType === 'VIEW') {
+        blogViewMap.set(log.resourceId, (blogViewMap.get(log.resourceId) || 0) + 1)
+      }
+      if (log.actionType === 'COPY') {
+        blogCopyMap.set(log.resourceId, (blogCopyMap.get(log.resourceId) || 0) + 1)
+      }
+    }
   })
 
   const tools = await prisma.toolCard.findMany({
@@ -139,6 +156,32 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
     select: { id: true, title: true }
   })
   const promptMap = new Map(prompts.map(p => [p.id, p.title]))
+
+  const blogIds = logs
+    .filter(l => l.resourceType === 'BLOG' && l.resourceId)
+    .map(l => l.resourceId as string)
+  const blogs = await prisma.blog.findMany({
+    where: { id: { in: Array.from(new Set([...blogViewMap.keys(), ...blogCopyMap.keys(), ...blogIds])) } },
+    select: { id: true, titleZh: true, titleEn: true }
+  })
+  const blogMap = new Map(blogs.map(b => [b.id, b.titleZh || b.titleEn]))
+
+  const blogPopularityMap = new Map<string, number>()
+  blogs.forEach(blog => {
+    const views = blogViewMap.get(blog.id) || 0
+    const copies = blogCopyMap.get(blog.id) || 0
+    blogPopularityMap.set(blog.id, views + copies)
+  })
+
+  const topBlogs = Array.from(blogPopularityMap.entries())
+    .sort((a, b) => b[1] - a[1])
+    .slice(0, 5)
+    .map(([id, total]) => ({
+      id,
+      title: blogMap.get(id) || 'Unknown Blog',
+      views: blogViewMap.get(id) || 0,
+      copies: blogCopyMap.get(id) || 0
+    }))
 
   const toolPopularityMap = new Map<string, number>()
   tools.forEach(tool => {
@@ -261,6 +304,8 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
       resourceName = toolMap.get(log.resourceId || '') || 'Unknown Tool'
     } else if (log.resourceType === 'PROMPT') {
       resourceName = promptMap.get(log.resourceId || '') || 'Unknown Prompt'
+    } else if (log.resourceType === 'BLOG') {
+      resourceName = blogMap.get(log.resourceId || '') || 'Unknown Blog'
     } else if (log.resourceType === 'LINK') {
       resourceName = linkMap.get(log.resourceId || '') || 'Unknown Link'
     } else if (log.resourceType === 'PAGE') {
@@ -277,16 +322,16 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
     }
   })
 
-  return { totalPV, uniqueUV, toolClicks, promptCopies, chartData, topTools, topPrompts, topLinks, languageDistribution, topPaths, deviceDistribution, hourlyData, recentActivity: recentLogs }
+  return { totalPV, uniqueUV, toolClicks, promptCopies, blogViews, blogCopies, chartData, topTools, topPrompts, topBlogs, topLinks, languageDistribution, topPaths, deviceDistribution, hourlyData, recentActivity: recentLogs }
 }
 
-function StatCard({ title, value, icon, color }: { title: string; value: number; icon: React.ReactNode; color: string }) {
+function StatCard({ title, value, icon, color, hint }: { title: string; value: number; icon: React.ReactNode; color: string; hint?: string }) {
   return (
-    <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+    <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
       <CardContent className="p-6">
         <div className="flex items-center justify-between">
           <div>
-            <p className="text-sm font-medium text-slate-500 mb-1">{title}</p>
+            <p className="text-sm font-medium text-slate-500 mb-1" title={hint}>{title}</p>
             <p className="text-3xl font-bold" style={{ color }}>{value.toLocaleString()}</p>
           </div>
           <div className="w-12 h-12 rounded-full flex items-center justify-center transition-transform hover:scale-110" style={{ backgroundColor: color + '15' }}>
@@ -320,35 +365,53 @@ export default async function DashboardPage() {
         <RefreshButton />
       </div>
 
-      <div className="grid gap-4 grid-cols-2 lg:grid-cols-4">
+      <div className="grid gap-4 grid-cols-2 lg:grid-cols-6">
         <StatCard
           title="总访问量 (PV)"
           value={data.totalPV}
           icon={<Eye className="w-6 h-6" />}
           color="#e52129"
+          hint="所有页面浏览次数累计，同一用户多次访问重复记录"
         />
         <StatCard
           title="独立访客 (UV)"
           value={data.uniqueUV}
           icon={<Users className="w-6 h-6" />}
           color="#e52129"
+          hint="按 IP 哈希去重后的独立访客数"
         />
         <StatCard
           title="工具点击"
           value={data.toolClicks}
           icon={<MousePointerClick className="w-6 h-6" />}
           color="#e52129"
+          hint="统计对工具卡片的点击次数"
         />
         <StatCard
           title="提示词复制"
           value={data.promptCopies}
           icon={<Copy className="w-6 h-6" />}
           color="#e52129"
+          hint="统计提示词详情页的复制次数"
+        />
+        <StatCard
+          title="博客访问"
+          value={data.blogViews}
+          icon={<FileText className="w-6 h-6" />}
+          color="#e52129"
+          hint="统计博客详情页的访问次数"
+        />
+        <StatCard
+          title="代码复制"
+          value={data.blogCopies}
+          icon={<Code className="w-6 h-6" />}
+          color="#e52129"
+          hint="统计博客代码块右上角复制按钮被点击的次数"
         />
       </div>
 
       {data.chartData.length === 0 ? (
-        <Card className="bg-white border-0 shadow-sm">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardContent className="py-12">
             <EmptyState message="暂无访问数据" />
           </CardContent>
@@ -358,11 +421,11 @@ export default async function DashboardPage() {
       )}
 
       {/* 最近动态 - 单独一行 */}
-      <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+      <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
         <CardHeader className="pb-2">
           <CardTitle className="text-lg flex items-center gap-2">
             <Activity className="w-5 h-5" style={{ color: '#e52129' }} />
-            最近动态
+            <span title="最近 5 条用户行为日志">最近动态</span>
           </CardTitle>
           <p className="text-xs text-slate-400 mt-1">规则：展示最近5条用户行为记录</p>
         </CardHeader>
@@ -372,11 +435,11 @@ export default async function DashboardPage() {
       </Card>
 
       <div className="grid gap-4 lg:grid-cols-4">
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Globe className="w-5 h-5" style={{ color: '#e52129' }} />
-              语种分布
+              <span title="统计访问请求中 Accept-Language 对应的语言偏好">语种分布</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：路径含 /zh 或根路径为中文，/en 为英文</p>
           </CardHeader>
@@ -410,11 +473,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Smartphone className="w-5 h-5" style={{ color: '#e52129' }} />
-              设备分布
+              <span title="按 User-Agent 判断移动端或 PC 端">设备分布</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：通过 User-Agent 识别移动端/PC端</p>
           </CardHeader>
@@ -423,11 +486,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300 lg:col-span-2">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out lg:col-span-2">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Clock className="w-5 h-5" style={{ color: '#e52129' }} />
-              活跃时段
+              <span title="统计一天 24 个小时各自的访问次数">活跃时段</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：按访问时间的小时分组统计</p>
           </CardHeader>
@@ -438,11 +501,11 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <FolderOpen className="w-5 h-5" style={{ color: '#e52129' }} />
-              热门路径 TOP5
+              <span title="统计所有用户访问的页面路径">热门路径 TOP5</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：统计所有用户访问的页面路径</p>
           </CardHeader>
@@ -451,11 +514,11 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Lightbulb className="w-5 h-5" style={{ color: '#e52129' }} />
-              热门提示词 TOP5
+              <span title="统计提示词的复制次数，同一用户同一提示词当日内只记1次">热门提示词 TOP5</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：统计提示词的复制次数，同一用户同一提示词当日内只记1次</p>
           </CardHeader>
@@ -486,11 +549,11 @@ export default async function DashboardPage() {
       </div>
 
       <div className="grid gap-4 lg:grid-cols-2">
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Wrench className="w-5 h-5" style={{ color: '#e52129' }} />
-              热门工具 TOP5
+              <span title="统计工具的点击+浏览，同一用户同一工具当日内只记1次">热门工具 TOP5</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：统计工具的点击+浏览，同一用户同一工具当日内只记1次</p>
           </CardHeader>
@@ -519,11 +582,46 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
 
-        <Card className="bg-white border-0 shadow-sm hover:shadow-lg transition-all duration-300">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
+          <CardHeader className="pb-2">
+            <CardTitle className="text-lg flex items-center gap-2">
+              <FileText className="w-5 h-5" style={{ color: '#e52129' }} />
+              <span title="统计博客的浏览+代码复制，同一用户同一博客当日内只记1次">热门博客 TOP5</span>
+            </CardTitle>
+            <p className="text-xs text-slate-400 mt-1">规则：统计博客的浏览+代码复制，同一用户同一博客当日内只记1次</p>
+          </CardHeader>
+          <CardContent>
+            {data.topBlogs.length === 0 ? (
+              <EmptyState message="暂无博客数据" />
+            ) : (
+              <div className="space-y-3">
+                {data.topBlogs.map((blog, index) => {
+                  return (
+                    <div key={blog.id} className="flex items-center justify-between p-3 bg-slate-50 rounded-xl hover:bg-slate-100 transition-colors">
+                      <div className="flex items-center gap-3 flex-[0.9] min-w-0">
+                        <span className="w-6 h-6 rounded-full flex items-center justify-center text-white text-xs font-bold flex-shrink-0" style={{ backgroundColor: index === 0 ? '#e52129' : '#f97316' }}>
+                          {index + 1}
+                        </span>
+                        <span className="text-sm font-medium text-slate-700 truncate block min-w-0" title={blog.title}>{blog.title}</span>
+                      </div>
+                      <Badge variant="secondary" className="bg-red-50 text-red-600 hover:bg-red-50 flex-shrink-0">
+                        浏览 {blog.views} · 复制 {blog.copies}
+                      </Badge>
+                    </div>
+                  )
+                })}
+              </div>
+            )}
+          </CardContent>
+        </Card>
+      </div>
+
+      <div className="grid gap-4 lg:grid-cols-2">
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardHeader className="pb-2">
             <CardTitle className="text-lg flex items-center gap-2">
               <Link2 className="w-5 h-5" style={{ color: '#e52129' }} />
-              热门导航 TOP5
+              <span title="统计导航链接的点击次数，同一用户同一链接当日内只记1次">热门导航 TOP5</span>
             </CardTitle>
             <p className="text-xs text-slate-400 mt-1">规则：统计导航链接的点击次数，同一用户同一链接当日内只记1次</p>
           </CardHeader>
@@ -550,6 +648,6 @@ export default async function DashboardPage() {
           </CardContent>
         </Card>
       </div>
-    </div>
+      </div>
   )
 }

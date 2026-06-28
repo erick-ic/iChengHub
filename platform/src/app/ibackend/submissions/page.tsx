@@ -195,7 +195,7 @@ export default function AdminSubmissionsPage() {
       </div>
 
       {/* 搜索和筛选 */}
-      <div className="bg-white rounded-xl p-4 shadow-sm flex flex-col sm:flex-row gap-4">
+      <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out flex flex-col sm:flex-row gap-4">
         <div className="relative flex-1">
           <Search className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-gray-400" />
           <Input
@@ -230,23 +230,23 @@ export default function AdminSubmissionsPage() {
 
       {/* 数据统计 */}
       <div className="grid grid-cols-4 gap-4">
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <div className="text-2xl font-bold text-gray-900">{filteredData.length}</div>
           <div className="text-sm text-gray-500">总记录数</div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <div className="text-2xl font-bold text-yellow-600">
             {filteredData.filter(item => item.status === 'PENDING').length}
           </div>
           <div className="text-sm text-gray-500">待审核</div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <div className="text-2xl font-bold text-green-600">
             {filteredData.filter(item => item.status === 'APPROVED').length}
           </div>
           <div className="text-sm text-gray-500">已通过</div>
         </div>
-        <div className="bg-white rounded-xl p-4 shadow-sm">
+        <div className="bg-white rounded-xl p-4 shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <div className="text-2xl font-bold text-red-600">
             {filteredData.filter(item => item.status === 'REJECTED').length}
           </div>
@@ -255,7 +255,7 @@ export default function AdminSubmissionsPage() {
       </div>
 
       {/* 数据表格 */}
-      <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+      <div className="bg-white rounded-xl shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out overflow-hidden">
         <div className="overflow-x-auto">
           <table className="w-full">
             <thead className="bg-gray-50 border-b">

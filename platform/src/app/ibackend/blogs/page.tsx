@@ -296,14 +296,14 @@ export default function BlogsPage() {
       </div>
 
       {loading ? (
-        <div className="bg-white rounded-xl shadow-sm overflow-hidden">
+        <div className="bg-white rounded-xl shadow-sm border border-slate-100 hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out overflow-hidden">
           <div className="text-center py-12">
             <RefreshCw className="h-8 w-8 text-gray-400 animate-spin mx-auto mb-2" />
             <p className="text-gray-500">加载中...</p>
           </div>
         </div>
       ) : blogs.length === 0 ? (
-        <Card>
+        <Card className="bg-white border border-slate-100 shadow-sm hover:-translate-y-0.5 hover:shadow-xl hover:border-[#e52129]/20 transition-all duration-300 ease-out">
           <CardContent className="py-12 text-center">
             <p className="text-gray-600 dark:text-gray-400 mb-4">还没有发布任何文章</p>
             <Button onClick={handleCreate}>创建第一篇文章</Button>

@@ -1,8 +1,14 @@
 'use client';
 
 import { useEffect } from 'react';
+import { trackResourceAction } from '@/app/actions/statsActions';
 
-export default function CodeCopyHandler() {
+interface CodeCopyHandlerProps {
+  blogId?: string;
+  locale?: string;
+}
+
+export default function CodeCopyHandler({ blogId, locale }: CodeCopyHandlerProps) {
   useEffect(() => {
     const handleCopyClick = (e: MouseEvent) => {
       const button = (e.target as HTMLElement).closest('.copy-button');
@@ -20,10 +26,15 @@ export default function CodeCopyHandler() {
 
       navigator.clipboard.writeText(codeText.trim()).then(() => {
         button.classList.add('copied');
-        
+
         setTimeout(() => {
           button.classList.remove('copied');
         }, 2000);
+
+        if (blogId) {
+          let fullPath = locale ? `/${locale}/blog/${blogId}` : `/blog/${blogId}`;
+          trackResourceAction(blogId, 'BLOG', 'COPY', fullPath).catch(() => {});
+        }
       }).catch((err) => {
         console.error('Failed to copy:', err);
       });
@@ -31,7 +42,7 @@ export default function CodeCopyHandler() {
 
     document.addEventListener('click', handleCopyClick, { passive: true });
     return () => document.removeEventListener('click', handleCopyClick);
-  }, []);
+  }, [blogId, locale]);
 
   return null;
 }

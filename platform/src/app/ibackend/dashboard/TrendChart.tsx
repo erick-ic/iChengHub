@@ -22,7 +22,7 @@ export function TrendChart({ data }: TrendChartProps) {
       <CardHeader className="pb-2">
         <CardTitle className="text-lg flex items-center gap-2">
           <TrendingUp className="w-5 h-5" style={{ color: '#e52129' }} />
-          7日访问趋势
+          <span title="最近7天按小时聚合的 PV 变化曲线">7日访问趋势</span>
         </CardTitle>
       </CardHeader>
       <CardContent>

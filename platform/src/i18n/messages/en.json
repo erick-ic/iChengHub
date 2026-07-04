@@ -154,8 +154,8 @@
     "copiedEmail": "Email copied:"
   },
   "ImageCompressor": {
-    "title": "Image Compressor",
-    "description": "Compress images locally in your browser. Privacy-safe, no upload to server. Supports drag & drop, paste, and file selection.",
+    "title": "Local Image Compressor",
+    "description": "Browser-native processing, zero server interaction. Pixel-perfect compression with total privacy.",
     "dropZone": "Drag image here",
     "dropZoneDragging": "Release to upload",
     "orClick": "or click to select file",

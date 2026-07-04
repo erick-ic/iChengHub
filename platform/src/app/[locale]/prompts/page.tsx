@@ -36,10 +36,10 @@ export default async function PromptsPage({ params }: PageProps) {
       <section className="container mx-auto px-4 py-16">
       <div className="mb-12 text-center">
         <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
-          {isEnglish ? 'Sharing Tips for Viral Keywords Prompts Library' : '爆款提示词分享提示词词库'}
+          {isEnglish ? 'AI Prompt Architect' : 'AI 提示词构建器'}
         </h1>
-        <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
-          {isEnglish ? 'Explore carefully curated prompts to help you unleash the full power of AI tools' : '探索精心策划的提示词，帮助你充分发挥 AI 工具的强大能力'}
+        <p className="text-lg text-zinc-500 max-w-4xl mx-auto">
+          {isEnglish ? 'Deconstruct vague intent into precision AI instructions. Chain your logic and master model output with zero latency.' : '将模糊需求解构为精准的 AI 指令。支持逻辑链式拆解，让复杂模型的输出可控且高效。'}
         </p>
       </div>
 

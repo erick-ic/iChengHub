@@ -154,8 +154,8 @@
     "copiedEmail": "邮箱已复制:"
   },
   "ImageCompressor": {
-    "title": "图片压缩工具",
-    "description": "在浏览器本地压缩图片，隐私安全，不上传服务器。支持拖拽、粘贴和文件选择。",
+    "title": "极速图片压缩器",
+    "description": "基于浏览器本地算力处理，图片零上传。像素级压缩，绝对隐私保护，极速体积优化。",
     "dropZone": "拖拽图片到此处",
     "dropZoneDragging": "释放以上传图片",
     "orClick": "或点击选择文件",

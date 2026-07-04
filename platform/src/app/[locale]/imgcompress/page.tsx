@@ -27,7 +27,7 @@ export default async function ImageCompressorPage({ params }: { params: Promise<
           <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-zinc-900 mb-4">
             {t('title')}
           </h1>
-          <p className="text-lg text-zinc-500 max-w-2xl mx-auto">
+          <p className="text-lg text-zinc-500 max-w-4xl mx-auto">
             {t('description')}
           </p>
         </div>

@@ -97,7 +97,6 @@ export default async function AdminDashboard() {
     prisma.toolCard.count({
       where: {
         createdAt: {
-          gte: lastMonthStart,
           lte: lastMonthEnd,
         },
       },
@@ -105,7 +104,6 @@ export default async function AdminDashboard() {
     prisma.prompt.count({
       where: {
         createdAt: {
-          gte: lastMonthStart,
           lte: lastMonthEnd,
         },
       },
@@ -113,7 +111,6 @@ export default async function AdminDashboard() {
     prisma.navLink.count({
       where: {
         createdAt: {
-          gte: lastMonthStart,
           lte: lastMonthEnd,
         },
       },
@@ -121,7 +118,6 @@ export default async function AdminDashboard() {
     prisma.toolSubmission.count({
       where: {
         createdAt: {
-          gte: lastMonthStart,
           lte: lastMonthEnd,
         },
       },
@@ -129,7 +125,6 @@ export default async function AdminDashboard() {
     prisma.toolDemand.count({
       where: {
         createdAt: {
-          gte: lastMonthStart,
           lte: lastMonthEnd,
         },
       },
@@ -137,7 +132,6 @@ export default async function AdminDashboard() {
     prisma.blog.count({
       where: {
         createdAt: {
-          gte: lastMonthStart,
           lte: lastMonthEnd,
         },
       },

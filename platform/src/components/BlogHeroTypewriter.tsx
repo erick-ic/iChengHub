@@ -62,7 +62,7 @@ export default function BlogHeroTypewriter({ phrases }: BlogHeroTypewriterProps)
     <div
       onMouseMove={handleMouseMove}
       onMouseLeave={handleMouseLeave}
-      className="group relative w-full flex flex-col items-center justify-center text-center py-20 md:py-24 bg-[#f5f5f7] dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 overflow-hidden"
+      className="group relative w-full flex flex-col items-center justify-center text-center py-16 md:py-10 bg-[#f5f5f7] dark:bg-gray-900 border-b border-gray-200 dark:border-gray-800 overflow-hidden"
     >
       <div className="absolute inset-0 z-0 pointer-events-none">
         <div className="absolute inset-0 bg-[radial-gradient(#d1d5db_1px,transparent_1px)] dark:bg-[radial-gradient(#374151_1px,transparent_1px)] [background-size:24px_24px] opacity-20 dark:opacity-[0.08] [mask-image:linear-gradient(to_bottom,black_40%,transparent_100%)]"></div>
@@ -80,21 +80,21 @@ export default function BlogHeroTypewriter({ phrases }: BlogHeroTypewriterProps)
       </div>
 
       <div className="relative z-10 flex flex-col items-center">
-        <div className="mb-6 flex items-center space-x-3 text-xs md:text-sm font-mono tracking-[0.2em] text-gray-500 dark:text-gray-400 select-none">
+        <div className="mb-2 flex items-center space-x-3 text-xs font-mono tracking-[0.2em] text-gray-500 dark:text-gray-400 select-none">
           <span className="text-[#e52129]/80 animate-pulse">• •</span>
           <span className="uppercase">Engineering_Insights</span>
           <span className="text-[#e52129]/80 animate-pulse">• •</span>
         </div>
 
-        <h1 className="text-4xl md:text-5xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-6 transition-all">
+        <h1 className="text-2xl md:text-3xl font-extrabold tracking-tight text-gray-900 dark:text-gray-100 mb-3 transition-all">
           {t('hero.title')}
         </h1>
 
-        <div className="flex flex-col items-center gap-1 px-4 h-16">
-          <span className="text-base md:text-xl text-gray-600 dark:text-gray-400 font-medium">
+        <div className="flex flex-col md:flex-row items-center justify-center gap-1 md:gap-2 px-4 h-auto md:h-10">
+          <span className="text-base md:text-xl text-gray-600 dark:text-gray-400 font-medium flex-shrink-0">
             {t('hero.subtitle')}
           </span>
-          <div className="flex items-center gap-1 text-base md:text-xl font-medium text-gray-900 dark:text-gray-100">
+          <div className="flex items-center gap-1 text-base md:text-xl font-medium text-gray-900 dark:text-gray-100 h-[1.5em] md:h-auto flex-shrink-0">
             <span>{text}</span>
             <span
               className="inline-block w-[2px] h-[1em] bg-[#e52129] shadow-[0_0_8px_#e52129]"

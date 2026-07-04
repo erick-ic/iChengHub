@@ -1,5 +1,5 @@
 generator client {
-  provider = "prisma-client-js"
+  provider      = "prisma-client-js"
   binaryTargets = ["native", "debian-openssl-1.1.x"]
 }
 
@@ -17,11 +17,11 @@ model ToolCard {
   url        String?
   logoUrl    String
   category   String
-  categoryEn String?
   status     Int      @default(0)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now()) @db.Timestamptz(0)
   updatedAt  DateTime @updatedAt @db.Timestamptz(0)
+  categoryEn String?
 }
 
 model NavLink {
@@ -31,34 +31,34 @@ model NavLink {
   desc       String
   descEn     String?
   url        String
-  iconUrl    String?
   category   String
-  categoryEn String?
   status     Int      @default(1)
   sortOrder  Int      @default(0)
   createdAt  DateTime @default(now()) @db.Timestamptz(0)
+  iconUrl    String?
   updatedAt  DateTime @updatedAt @db.Timestamptz(0)
+  categoryEn String?
 }
 
 model Prompt {
   id          String   @id @default(cuid())
   title       String
-  titleEn     String?
   category    String
-  categoryEn  String?
-  platform     String
-  platformEn   String?
-  platformUrl  String?
   imageUrl    String
   promptText  String
   views       Int      @default(0)
   likes       Int      @default(0)
-  favorites   Int      @default(0)
   comments    Int      @default(0)
   status      Int      @default(0)
   sortOrder   Int      @default(0)
   createdAt   DateTime @default(now()) @db.Timestamptz(0)
+  categoryEn  String?
+  titleEn     String?
   updatedAt   DateTime @updatedAt @db.Timestamptz(0)
+  platform    String
+  platformUrl String?
+  favorites   Int      @default(0)
+  platformEn  String?
 }
 
 model ToolSubmission {
@@ -116,13 +116,14 @@ model Blog {
   @@index([status])
   @@index([createdAt])
 }
+
 model SystemMetrics {
-  id          String   @id @default("current")
-  apiSuccess  Int      @default(0)
-  apiFailed   Int      @default(0)
-  aiErrors    Int      @default(0)
-  dbLatency   Float    @default(0.0)
-  resetAt     DateTime @default(now()) @db.Timestamptz(0)
-  errorLogs   Json?
-  updatedAt   DateTime @updatedAt @db.Timestamptz(3)
+  id         String   @id @default("current")
+  apiSuccess Int      @default(0)
+  apiFailed  Int      @default(0)
+  aiErrors   Int      @default(0)
+  dbLatency  Float    @default(0.0)
+  resetAt    DateTime @default(now()) @db.Timestamptz(0)
+  updatedAt  DateTime @default(now()) @updatedAt @db.Timestamptz(6)
+  errorLogs  Json?
 }

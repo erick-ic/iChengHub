@@ -172,8 +172,9 @@
     "clickToPreview": "Click to preview full size",
     "downloadButton": "Download Compressed Image",
     "resetButton": "Select Another Image",
-    "errorInvalidImage": "Please select a valid image file",
+    "errorInvalidImage": "Unsupported format. Please upload JPG, PNG, WebP or BMP",
     "errorCompression": "Compression failed, please try again",
+    "errorHeicConversionFailed": "Image parsing failed (possibly corrupted or special format). Suggest enabling 'Camera - Format - Most Compatible' in iPhone Settings.",
     "errorFileTooLarge": "Image size exceeds 20MB limit",
     "privacyNotice": "Privacy Notice: All image compression operations are performed locally in your browser and will not be uploaded to any server. Your image data is absolutely safe."
   },

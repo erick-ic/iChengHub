@@ -2,6 +2,7 @@
 
 import { useEffect } from 'react';
 import { trackResourceAction } from '@/app/actions/statsActions';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 interface CodeCopyHandlerProps {
   blogId?: string;
@@ -24,16 +25,18 @@ export default function CodeCopyHandler({ blogId, locale }: CodeCopyHandlerProps
 
       if (!codeText) return;
 
-      navigator.clipboard.writeText(codeText.trim()).then(() => {
-        button.classList.add('copied');
+      copyToClipboard(codeText.trim()).then((success) => {
+        if (success) {
+          button.classList.add('copied');
 
-        setTimeout(() => {
-          button.classList.remove('copied');
-        }, 2000);
+          setTimeout(() => {
+            button.classList.remove('copied');
+          }, 2000);
 
-        if (blogId) {
-          let fullPath = locale ? `/${locale}/blog/${blogId}` : `/blog/${blogId}`;
-          trackResourceAction(blogId, 'BLOG', 'COPY', fullPath).catch(() => {});
+          if (blogId) {
+            let fullPath = locale ? `/${locale}/blog/${blogId}` : `/blog/${blogId}`;
+            trackResourceAction(blogId, 'BLOG', 'COPY', fullPath).catch(() => {});
+          }
         }
       }).catch((err) => {
         console.error('Failed to copy:', err);

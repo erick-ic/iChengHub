@@ -5,16 +5,19 @@ import { Link } from '@/navigation';
 import QRCode from 'react-qr-code';
 import { useTranslations } from 'next-intl';
 import { Sparkles, ShieldCheck, Wand2, MessageCircle, BookOpen, Mail, Check } from 'lucide-react';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 export default function AboutView() {
   const t = useTranslations('AboutPage');
   const [showToast, setShowToast] = useState(false);
 
-  const handleCopyEmail = () => {
+  const handleCopyEmail = async () => {
     const email = 'ckstarlit@gmail.com';
-    navigator.clipboard.writeText(email);
-    setShowToast(true);
-    setTimeout(() => setShowToast(false), 2000);
+    const success = await copyToClipboard(email);
+    if (success) {
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 2000);
+    }
   };
 
   return (

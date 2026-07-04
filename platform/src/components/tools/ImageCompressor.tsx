@@ -41,6 +41,18 @@ const ImagePreview = memo<ImagePreviewProps>(({ url, title, size, formatFileSize
 ));
 ImagePreview.displayName = 'ImagePreview';
 
+/**
+ * 兼容性调度器：在支持的环境下使用 requestIdleCallback，
+ * 在 iOS 等不支持的环境下回退到 setTimeout
+ */
+const runInIdle = (callback: () => void) => {
+  if (typeof window !== 'undefined' && 'requestIdleCallback' in window) {
+    (window as any).requestIdleCallback(callback);
+  } else {
+    setTimeout(callback, 0);
+  }
+};
+
 export default function ImageCompressor() {
   const t = useTranslations('ImageCompressor');
   const [isCompressing, setIsCompressing] = useState(false);
@@ -67,7 +79,7 @@ export default function ImageCompressor() {
     try {
       const options = {
         maxSizeMB: 20,
-        maxWidthOrHeight: 1920,
+        maxWidthOrHeight: 1024,
         useWebWorker: true,
         initialQuality: qualityValue / 100,
         signal,
@@ -111,7 +123,7 @@ export default function ImageCompressor() {
 
       setIsCompressing(true);
 
-      window.requestIdleCallback(async () => {
+      runInIdle(async () => {
         await compressImage(file, qualityValue, abortController.signal);
 
         if (!abortController.signal.aborted) {
@@ -136,7 +148,16 @@ export default function ImageCompressor() {
 
   const handleFileSelect = useCallback(async (file: File) => {
     if (isProcessing.current) return;
-    if (!file.type.startsWith('image/')) {
+    
+    const supportedTypes = [
+      'image/jpeg', 'image/jpg', 'image/png', 'image/webp', 'image/bmp',
+      'image/heic', 'image/heif'
+    ];
+    
+    const fileExt = file.name.toLowerCase().split('.').pop();
+    const isTypeSupported = supportedTypes.includes(file.type) || ['heic', 'heif'].includes(fileExt || '');
+    
+    if (!isTypeSupported) {
       setError(t('errorInvalidImage'));
       return;
     }
@@ -162,19 +183,46 @@ export default function ImageCompressor() {
     });
     pendingQualityRef.current = null;
 
-    const originalUrl = URL.createObjectURL(file);
+    let fileToProcess = file;
+    const isHeic = file.type === 'image/heic' || file.type === 'image/heif' || fileExt === 'heic' || fileExt === 'heif';
+    
+    if (isHeic) {
+      setIsCompressing(true);
+      try {
+        const heic2any = (await import('heic2any')).default;
+        const convertedBlob = await heic2any({
+          blob: file,
+          toType: 'image/jpeg',
+          quality: 0.8,
+        });
+        
+        const blob = Array.isArray(convertedBlob) ? convertedBlob[0] : convertedBlob;
+        
+        fileToProcess = new File([blob], file.name.replace(/\.[^/.]+$/, '.jpg'), {
+          type: 'image/jpeg',
+        });
+      } catch (err) {
+        console.error('HEIC Conversion failed:', err);
+        setError(t('errorHeicConversionFailed'));
+        setIsCompressing(false);
+        isProcessing.current = false;
+        return;
+      }
+    }
+
+    const originalUrl = URL.createObjectURL(fileToProcess);
     setOriginalImage(prev => {
       if (prev?.url) {
         URL.revokeObjectURL(prev.url);
       }
       return {
-        file,
+        file: fileToProcess,
         url: originalUrl,
-        size: file.size,
+        size: fileToProcess.size,
       };
     });
 
-    await startCompression(file, quality);
+    await startCompression(fileToProcess, quality);
 
     isProcessing.current = false;
   }, [t, quality, startCompression]);
@@ -436,12 +484,6 @@ export default function ImageCompressor() {
             </div>
           )}
 
-          {error && (
-            <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
-              {error}
-            </div>
-          )}
-
           <button
             onClick={handleReset}
             disabled={isCompressing}
@@ -449,6 +491,12 @@ export default function ImageCompressor() {
           >
             {t('resetButton')}
           </button>
+        </div>
+      )}
+
+      {error && (
+        <div className="p-4 bg-red-50 border border-red-100 rounded-xl text-red-600 text-sm">
+          {error}
         </div>
       )}
 

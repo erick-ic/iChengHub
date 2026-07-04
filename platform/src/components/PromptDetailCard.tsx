@@ -5,6 +5,7 @@ import { Copy, Check } from 'lucide-react';
 import { useLocale } from 'next-intl';
 import { usePathname } from '@/navigation';
 import { trackResourceAction } from '@/app/actions/statsActions';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 export interface PromptDetailData {
   id: string;
@@ -30,11 +31,12 @@ export default function PromptDetailCard({ data, isEnglish = false, isPortrait =
   const pathname = usePathname();
   const commentsCount = data.commentsCount || 0;
 
-  const handleCopy = () => {
-    navigator.clipboard.writeText(data.promptText).then(() => {
+  const handleCopy = async () => {
+    const success = await copyToClipboard(data.promptText);
+    if (success) {
       setCopied(true);
       setTimeout(() => setCopied(false), 2000);
-    }).catch(() => {});
+    }
 
     const fullPath = `/${locale}${pathname}`;
     trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath).catch(() => {});

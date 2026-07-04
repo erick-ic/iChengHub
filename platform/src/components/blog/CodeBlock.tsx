@@ -2,6 +2,7 @@
 
 import { useState } from 'react';
 import { Copy, Check } from 'lucide-react';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 interface CodeBlockProps {
   code: string;
@@ -12,9 +13,11 @@ export default function CodeBlock({ code }: CodeBlockProps) {
 
   const handleCopy = async () => {
     try {
-      await navigator.clipboard.writeText(code.trim());
-      setCopied(true);
-      setTimeout(() => setCopied(false), 2000);
+      const success = await copyToClipboard(code.trim());
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 2000);
+      }
     } catch (error) {
       console.error('Failed to copy:', error);
     }

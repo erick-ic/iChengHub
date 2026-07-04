@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useTranslations } from 'next-intl';
 import { Check } from 'lucide-react';
 import Footer, { EMAIL } from '@/components/layout/Footer';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 interface ClientLayoutProps {
   children: React.ReactNode;
@@ -13,10 +14,12 @@ export default function ClientLayout({ children }: ClientLayoutProps) {
   const t = useTranslations('footer');
   const [copied, setCopied] = useState(false);
 
-  const handleCopyEmail = () => {
-    navigator.clipboard.writeText(EMAIL);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+  const handleCopyEmail = async () => {
+    const success = await copyToClipboard(EMAIL);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
   };
 
   return (

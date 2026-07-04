@@ -4,6 +4,7 @@ import { useState } from 'react';
 import { useLocale } from 'next-intl';
 import { usePathname } from '@/navigation';
 import { trackResourceAction } from '@/app/actions/statsActions';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 interface CopyGenerateButtonProps {
   promptText: string;
@@ -22,11 +23,12 @@ export default function CopyGenerateButton({
   const locale = useLocale();
   const pathname = usePathname();
 
-  const handleClick = () => {
-    navigator.clipboard.writeText(promptText).then(() => {
+  const handleClick = async () => {
+    const success = await copyToClipboard(promptText);
+    if (success) {
       setIsCopied(true);
       setTimeout(() => setIsCopied(false), 2000);
-    }).catch(() => {});
+    }
 
     const fullPath = `/${locale}${pathname}`;
     window.open(platformUrl, '_blank', 'noopener,noreferrer');

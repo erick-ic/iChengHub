@@ -3,6 +3,7 @@
 import { useState, useEffect } from 'react';
 import { AlertTriangle, Download, RefreshCw, ChevronDown, ChevronUp, Copy, Check, X, Trash2 } from 'lucide-react';
 import { createPortal } from 'react-dom';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 interface ErrorLog {
   ts: string;
@@ -97,9 +98,11 @@ export function SystemStatusCard({
       )
       .join('\n\n');
     try {
-      await navigator.clipboard.writeText(text);
-      setCopied(true);
-      setTimeout(() => setCopied(false), 1500);
+      const success = await copyToClipboard(text);
+      if (success) {
+        setCopied(true);
+        setTimeout(() => setCopied(false), 1500);
+      }
     } catch {}
   }
 

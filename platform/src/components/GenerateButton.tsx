@@ -2,6 +2,7 @@
 
 import { Sparkles } from 'lucide-react';
 import { useState } from 'react';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 interface GenerateButtonProps {
   promptText: string;
@@ -14,9 +15,11 @@ export default function GenerateButton({ promptText, toolUrl, isEnglish = false 
 
   const handleGenerate = async () => {
     try {
-      await navigator.clipboard.writeText(promptText);
-      setIsCopied(true);
-      setTimeout(() => setIsCopied(false), 2000);
+      const success = await copyToClipboard(promptText);
+      if (success) {
+        setIsCopied(true);
+        setTimeout(() => setIsCopied(false), 2000);
+      }
       window.open(toolUrl, '_blank');
     } catch (err) {
       console.error('复制失败', err);

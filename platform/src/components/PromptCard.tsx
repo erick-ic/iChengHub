@@ -6,6 +6,7 @@ import { useState } from 'react';
 import { useRouter, usePathname } from '@/navigation';
 import { useLocale } from 'next-intl';
 import { trackResourceAction } from '@/app/actions/statsActions';
+import { copyToClipboard } from '@/lib/copyUtils';
 
 export interface PromptData {
   id: string;
@@ -29,11 +30,13 @@ export default function PromptCard({ data }: PromptCardProps) {
   const pathname = usePathname();
   const locale = useLocale();
 
-  const handleCopy = (e: React.MouseEvent) => {
+  const handleCopy = async (e: React.MouseEvent) => {
     e.stopPropagation();
-    navigator.clipboard.writeText(data.promptText);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
+    const success = await copyToClipboard(data.promptText);
+    if (success) {
+      setCopied(true);
+      setTimeout(() => setCopied(false), 2000);
+    }
 
     const fullPath = `/${locale}${pathname}`;
     trackResourceAction(data.id, 'PROMPT', 'COPY', fullPath).catch(() => {});

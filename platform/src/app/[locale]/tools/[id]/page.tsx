@@ -81,7 +81,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
 
       <div className="min-h-screen bg-background">
         <section className="container mx-auto px-4 py-16 max-w-4xl">
-          {/* 面包屑导航 */}
           <nav className="flex items-center gap-2 mb-12 text-sm text-zinc-500">
             <Link href="/" className="hover:text-zinc-800 transition-colors font-medium">
               {isEnglish ? 'Home' : '首页'}
@@ -94,9 +93,7 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
             <span className="text-zinc-800 font-semibold">{title}</span>
           </nav>
 
-          {/* 工具头部 */}
           <div className="flex items-start gap-6 mb-8">
-            {/* Logo */}
             <div className="flex-shrink-0 w-20 h-20 rounded-2xl bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center overflow-hidden">
               {tool.logoUrl ? (
                 <Image 
@@ -113,7 +110,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
               )}
             </div>
 
-            {/* 工具信息 */}
             <div className="flex-1">
               <h1 className="text-3xl md:text-4xl font-bold text-zinc-900 mb-3">
                 {title}
@@ -122,7 +118,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
                 {description}
               </p>
               
-              {/* 分类标签 */}
               {category && (
                 <span className="inline-flex items-center gap-2 bg-gradient-to-r from-blue-50 to-indigo-50 border border-blue-100 rounded-full px-4 py-2">
                   <div className="w-5 h-5 rounded-full bg-gradient-to-br from-blue-400 to-indigo-500 flex items-center justify-center">
@@ -134,7 +129,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
             </div>
           </div>
 
-          {/* 操作按钮 */}
           <div className="flex flex-wrap gap-4 mb-12">
             {tool.url && (
               <a
@@ -156,7 +150,6 @@ export default async function ToolDetailPage({ params }: { params: { id: string;
             </Link>
           </div>
 
-          {/* 工具详情卡片 */}
           <div className="bg-white border border-gray-100 rounded-2xl p-8 shadow-sm">
             <h2 className="text-xl font-bold text-zinc-900 mb-4">
               {isEnglish ? 'Tool Details' : '工具详情'}

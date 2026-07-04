@@ -13,6 +13,9 @@ import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } f
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Plus, Edit, Trash2, Save, Search, Check, RefreshCw, GripVertical, ArrowLeft, ArrowRight } from 'lucide-react';
 import { createBlog, updateBlog, deleteBlog, getBlogs, updateBlogsSortOrder } from '@/app/actions/blogActions';
+import BlogContent from '@/components/blog/BlogContent';
+import CodeCopyHandler from '@/components/blog/CodeCopyHandler';
+import { extractHeadings } from '@/lib/headingUtils';
 
 interface BlogPost {
   id: string;
@@ -138,6 +141,8 @@ function BlogsPageContent() {
   const [saving, setSaving] = useState(false);
   const [showToast, setShowToast] = useState(false);
   const [toastMessage, setToastMessage] = useState('');
+  const [previewZh, setPreviewZh] = useState(false);
+  const [previewEn, setPreviewEn] = useState(false);
   const [pagination, setPagination] = useState({
     total: 0,
     totalPages: 1,
@@ -481,30 +486,112 @@ function BlogsPageContent() {
 
             <div className="space-y-2">
               <Label htmlFor="contentZh">中文正文 (Markdown) *</Label>
-              <Textarea
-                id="contentZh"
-                name="contentZh"
-                value={formData.contentZh}
-                onChange={(e) => setFormData({ ...formData, contentZh: e.target.value })}
-                placeholder="请输入中文正文，支持 Markdown 格式"
-                rows={15}
-                className="font-mono text-sm"
-                required
-              />
+              <div className="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+                <div className="flex items-center bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 px-3 py-2 space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZh(false)}
+                    className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                      !previewZh
+                        ? 'bg-white dark:bg-gray-700 text-[#e52129] shadow-sm ring-1 ring-gray-200 dark:ring-gray-600'
+                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    编写
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewZh(true)}
+                    className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                      previewZh
+                        ? 'bg-white dark:bg-gray-700 text-[#e52129] shadow-sm ring-1 ring-gray-200 dark:ring-gray-600'
+                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    预览
+                  </button>
+                </div>
+                <div className="p-0">
+                  {!previewZh ? (
+                    <Textarea
+                      id="contentZh"
+                      name="contentZh"
+                      value={formData.contentZh}
+                      onChange={(e) => setFormData({ ...formData, contentZh: e.target.value })}
+                      placeholder="请输入中文正文，支持 Markdown 格式"
+                      rows={15}
+                      className="font-mono text-sm border-0 focus:ring-0 resize-y"
+                      required
+                    />
+                  ) : (
+                    <div className="min-h-[480px] max-h-[600px] overflow-y-auto px-6 py-4 bg-[#f5f5f7] dark:bg-gray-900/50">
+                      <CodeCopyHandler blogId="" locale="zh" />
+                      <div className="prose prose-slate dark:prose-invert max-w-3xl prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">
+                        {formData.contentZh ? (
+                          <BlogContent content={formData.contentZh} headings={extractHeadings(formData.contentZh)} />
+                        ) : (
+                          <p className="text-gray-400 italic">暂无内容预览</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="contentEn">英文正文 (Markdown) *</Label>
-              <Textarea
-                id="contentEn"
-                name="contentEn"
-                value={formData.contentEn}
-                onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
-                placeholder="Please enter English content, Markdown format supported"
-                rows={15}
-                className="font-mono text-sm"
-                required
-              />
+              <div className="border border-gray-200 dark:border-gray-700 rounded-md overflow-hidden bg-white dark:bg-gray-900 shadow-sm">
+                <div className="flex items-center bg-gray-50 dark:bg-gray-800/50 border-b border-gray-200 dark:border-gray-700 px-3 py-2 space-x-4">
+                  <button
+                    type="button"
+                    onClick={() => setPreviewEn(false)}
+                    className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                      !previewEn
+                        ? 'bg-white dark:bg-gray-700 text-[#e52129] shadow-sm ring-1 ring-gray-200 dark:ring-gray-600'
+                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    Write
+                  </button>
+                  <button
+                    type="button"
+                    onClick={() => setPreviewEn(true)}
+                    className={`text-sm font-medium px-2 py-1 rounded transition-colors ${
+                      previewEn
+                        ? 'bg-white dark:bg-gray-700 text-[#e52129] shadow-sm ring-1 ring-gray-200 dark:ring-gray-600'
+                        : 'text-gray-500 hover:text-gray-700 dark:hover:text-gray-300'
+                    }`}
+                  >
+                    Preview
+                  </button>
+                </div>
+                <div className="p-0">
+                  {!previewEn ? (
+                    <Textarea
+                      id="contentEn"
+                      name="contentEn"
+                      value={formData.contentEn}
+                      onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
+                      placeholder="Please enter English content, Markdown format supported"
+                      rows={15}
+                      className="font-mono text-sm border-0 focus:ring-0 resize-y"
+                      required
+                    />
+                  ) : (
+                    <div className="min-h-[480px] max-h-[600px] overflow-y-auto px-6 py-4 bg-[#f5f5f7] dark:bg-gray-900/50">
+                      <CodeCopyHandler blogId="" locale="en" />
+                      <div className="prose prose-slate dark:prose-invert max-w-3xl prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">
+                        {formData.contentEn ? (
+                          <BlogContent content={formData.contentEn} headings={extractHeadings(formData.contentEn)} />
+                        ) : (
+                          <p className="text-gray-400 italic">Nothing to preview</p>
+                        )}
+                      </div>
+                    </div>
+                  )}
+                </div>
+              </div>
             </div>
 
             <div className="grid grid-cols-2 gap-4">

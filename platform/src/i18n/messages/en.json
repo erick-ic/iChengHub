@@ -5,7 +5,7 @@
     "tools": "Tools",
     "links": "Links",
     "about": "About",
-    "blog": "Blog",
+    "blog": "Blogs",
     "searchPlaceholder": "Start searching",
     "submitButton": "Submit / Wish"
   },
@@ -147,7 +147,11 @@
   },
   "footer": {
     "icp": "ICP License: 2025085990-1",
-    "copyright": "© {year} iChengHub. All rights reserved."
+    "copyright": "© {year} iChengHub. All rights reserved.",
+    "emailTooltip": "Click to copy email",
+    "contact": "Contact Us",
+    "copied": "Copied",
+    "copiedEmail": "Email copied:"
   },
   "AboutPage": {
     "badge": "About iChengHub",
@@ -168,8 +172,9 @@
     "xiaohongshuName": "Hot Recommend Workshop",
     "xiaohongshuDesc": "AI productivity hacks and indie developer stories",
     "ctaText": "Alone we go fast, together we go far. If you've found great tools or have efficiency challenges, feel free to connect with us.",
-    "ctaButton": "⚡️ Submit Pain Point / Wish for Tool",
+    "ctaButton": "⚡️ Submit Pain Points / Request Tools",
     "contact": "Contact Us",
+    "copiedEmail": "Email copied:",
     "copiedToast": "Email copied: ckstarlit@gmail.com"
   }
 }

@@ -90,13 +90,17 @@ export default function BlogHeroTypewriter({ phrases }: BlogHeroTypewriterProps)
           {t('hero.title')}
         </h1>
 
-        <div className="text-lg md:text-xl text-gray-600 dark:text-gray-400 font-medium h-8 flex items-center justify-center space-x-1">
-          <span>{t('hero.subtitle')}</span>
-          <span className="text-gray-900 dark:text-gray-100 ml-1">{text}</span>
-          <span
-            className="inline-block w-[2px] h-[1em] bg-[#e52129] shadow-[0_0_8px_#e52129]"
-            style={{ animation: 'blink 0.8s steps(2, start) infinite' }}
-          />
+        <div className="flex flex-col items-center gap-1 px-4 h-16">
+          <span className="text-base md:text-xl text-gray-600 dark:text-gray-400 font-medium">
+            {t('hero.subtitle')}
+          </span>
+          <div className="flex items-center gap-1 text-base md:text-xl font-medium text-gray-900 dark:text-gray-100">
+            <span>{text}</span>
+            <span
+              className="inline-block w-[2px] h-[1em] bg-[#e52129] shadow-[0_0_8px_#e52129]"
+              style={{ animation: 'blink 0.8s steps(2, start) infinite' }}
+            />
+          </div>
         </div>
       </div>
 

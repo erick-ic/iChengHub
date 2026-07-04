@@ -147,7 +147,11 @@
   },
   "footer": {
     "icp": "皖ICP备{number}号-1",
-    "copyright": "© {year} iChengHub 热荐工坊 · 和光工作室 · 保留所有权利"
+    "copyright": "© {year} iChengHub 热荐工坊 · 和光工作室 · 保留所有权利",
+    "emailTooltip": "点击复制邮箱",
+    "contact": "联系我们",
+    "copied": "已复制",
+    "copiedEmail": "邮箱已复制:"
   },
   "AboutPage": {
     "badge": "关于 iChengHub",
@@ -170,6 +174,7 @@
     "ctaText": "一个人走得快，一群人走得远。如果你有发现好工具，或者遇到了效率难题，欢迎找我们聊聊。",
     "ctaButton": "⚡️ 提交痛点 / 许愿工具",
     "contact": "联系我们",
+    "copiedEmail": "邮箱已复制:",
     "copiedToast": "邮箱已复制：ckstarlit@gmail.com"
   }
 }

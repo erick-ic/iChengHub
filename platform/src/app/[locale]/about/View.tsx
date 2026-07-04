@@ -151,9 +151,11 @@ export default function AboutView() {
 
         {/* Toast 弹窗 */}
         {showToast && (
-          <div className="fixed bottom-8 left-1/2 -translate-x-1/2 bg-gray-900 text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg animate-bounce">
-            <Check className="w-5 h-5 text-green-400" />
-            <span>{t('copiedToast')}</span>
+          <div className="fixed inset-0 flex items-center justify-center z-[100] pointer-events-none">
+            <div className="bg-gray-900 text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg animate-bounce pointer-events-auto">
+              <Check className="w-5 h-5 text-green-400" />
+              <span>{t('copiedEmail')} <span className="text-gray-300 font-mono">ckstarlit@gmail.com</span></span>
+            </div>
           </div>
         )}
       </div>

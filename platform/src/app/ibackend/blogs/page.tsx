@@ -171,7 +171,7 @@ function BlogsPageContent() {
 
   useEffect(() => {
     loadBlogs(searchParams.get('q') || undefined, currentPage);
-  }, [searchParams]);
+  }, [searchParams, currentPage]);
 
   const loadBlogs = async (query?: string, page: number = 1) => {
     setLoading(true);

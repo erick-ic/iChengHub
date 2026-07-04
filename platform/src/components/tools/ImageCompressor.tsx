@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, memo, startTransition } from 'react';
 import { Upload, Download, Loader2, ZoomIn, ZoomOut, ChevronLeft, ChevronRight } from 'lucide-react';
 import { useTranslations } from 'next-intl';
+import Image from 'next/image';
 import imageCompression from 'browser-image-compression';
 import { trackResourceAction } from '@/app/actions/statsActions';
 
@@ -22,10 +23,13 @@ interface ImagePreviewProps {
 
 const ImagePreview = memo<ImagePreviewProps>(({ url, title, size, formatFileSize, onPreview }) => (
   <div className="aspect-video bg-gray-50 rounded-xl overflow-hidden flex items-center justify-center relative cursor-pointer group">
-    <img
+    <Image
       src={url}
       alt={title}
+      width={400}
+      height={225}
       className="max-w-full max-h-full object-contain"
+      unoptimized
     />
     <button
       onClick={onPreview}
@@ -35,6 +39,7 @@ const ImagePreview = memo<ImagePreviewProps>(({ url, title, size, formatFileSize
     </button>
   </div>
 ));
+ImagePreview.displayName = 'ImagePreview';
 
 export default function ImageCompressor() {
   const t = useTranslations('ImageCompressor');
@@ -479,10 +484,13 @@ export default function ImageCompressor() {
             <ChevronRight className="w-6 h-6" />
           </button>
 
-          <img
-            src={previewMode === 'original' ? originalImage?.url : compressedImage?.url}
+          <Image
+            src={(previewMode === 'original' ? originalImage?.url : compressedImage?.url) || ''}
             alt={previewMode === 'original' ? t('originalImage') : t('compressedImage')}
+            width={1200}
+            height={800}
             className="max-w-full max-h-full object-contain"
+            unoptimized
             onClick={(e) => e.stopPropagation()}
           />
 

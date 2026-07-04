@@ -333,7 +333,7 @@ function BlogContentComponent({ content, headings }: BlogContentProps) {
     img({ src, alt, ...props }: any) {
       return <LazyImage src={src} alt={alt} onClick={() => handleImageClick(src, alt)} {...props} />;
     },
-  }), [h2List, h3List, handleImageClick]);
+  }), [handleImageClick]);
 
   return (
     <div className="max-w-none">

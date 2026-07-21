@@ -33,8 +33,9 @@ export async function createBlog(formData: FormData) {
       return { success: false, error: `Missing required fields: ${missing.join(', ')}` };
     }
 
-    const count = await prisma.blog.count();
-    const nextOrder = count + 1;
+    await prisma.$executeRawUnsafe(
+      `UPDATE "Blog" SET "sortOrder" = "sortOrder" + 1 WHERE "sortOrder" > 0`
+    );
 
     const blog = await prisma.blog.create({
       data: {
@@ -47,7 +48,7 @@ export async function createBlog(formData: FormData) {
         contentZh,
         contentEn,
         status,
-        sortOrder: nextOrder,
+        sortOrder: 1,
       },
     });
 

@@ -1,6 +1,6 @@
 'use client';
 
-import { useState, useEffect, memo, Suspense } from 'react';
+import { useState, useEffect, memo, Suspense, useRef } from 'react';
 import { useDebouncedCallback } from 'use-debounce';
 import { useSearchParams, usePathname, useRouter } from 'next/navigation';
 import { Button } from '@/components/ui/button';
@@ -11,11 +11,12 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
 import { Dialog, DialogContent, DialogDescription, DialogHeader, DialogTitle } from '@/components/ui/dialog';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
-import { Plus, Edit, Trash2, Save, Search, Check, RefreshCw, GripVertical, ArrowLeft, ArrowRight } from 'lucide-react';
+import { Plus, Edit, Trash2, Save, Search, Check, RefreshCw, GripVertical, ArrowLeft, ArrowRight, Download } from 'lucide-react';
 import { createBlog, updateBlog, deleteBlog, getBlogs, updateBlogsSortOrder } from '@/app/actions/blogActions';
 import BlogContent from '@/components/blog/BlogContent';
 import CodeCopyHandler from '@/components/blog/CodeCopyHandler';
 import { extractHeadings } from '@/lib/headingUtils';
+import { exportBlogAsJson, parseBlogJsonFile } from '@/lib/blog-io';
 
 interface BlogPost {
   id: string;
@@ -42,9 +43,10 @@ interface BlogPostCardProps {
   onDragEnd: () => void;
   onEdit: () => void;
   onDelete: () => void;
+  onExport: () => void;
 }
 
-const BlogPostCard = memo(({ blog, index, isDragOver, onDragStart, onDragOver, onDragEnd, onEdit, onDelete }: BlogPostCardProps) => {
+const BlogPostCard = memo(({ blog, index, isDragOver, onDragStart, onDragOver, onDragEnd, onEdit, onDelete, onExport }: BlogPostCardProps) => {
   return (
     <Card
       key={blog.id}
@@ -91,6 +93,15 @@ const BlogPostCard = memo(({ blog, index, isDragOver, onDragStart, onDragOver, o
             <Button
               variant="outline"
               size="sm"
+              onClick={onExport}
+              className="flex items-center gap-1"
+            >
+              <Download className="h-4 w-4" />
+              导出
+            </Button>
+            <Button
+              variant="outline"
+              size="sm"
               onClick={onEdit}
               className="flex items-center gap-1"
             >
@@ -119,6 +130,7 @@ function BlogsPageContent() {
   const searchParams = useSearchParams();
   const pathname = usePathname();
   const router = useRouter();
+  const fileInputRef = useRef<HTMLInputElement>(null);
   const [blogs, setBlogs] = useState<BlogPost[]>([]);
   const [loading, setLoading] = useState(true);
   const [isDialogOpen, setIsDialogOpen] = useState(false);
@@ -268,6 +280,31 @@ function BlogsPageContent() {
     setTimeout(() => setShowToast(false), 3000);
   };
 
+  const handleFileImport = async (file: File) => {
+    try {
+      const data = await parseBlogJsonFile(file);
+      setFormData({
+        titleZh: data.titleZh || '',
+        titleEn: data.titleEn || '',
+        excerptZh: data.summaryZh || '',
+        excerptEn: data.summaryEn || '',
+        categoryZh: data.categoryZh || '',
+        categoryEn: data.categoryEn || '',
+        contentZh: data.contentZh || '',
+        contentEn: data.contentEn || '',
+        status: '0',
+        sortOrder: '1',
+      });
+      setToastMessage(`已成功导入文章：${data.titleZh || '无标题'}`);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    } catch (error) {
+      setToastMessage((error as Error).message);
+      setShowToast(true);
+      setTimeout(() => setShowToast(false), 3000);
+    }
+  };
+
   return (
     <div className="space-y-6">
       {showToast && (
@@ -329,7 +366,7 @@ function BlogsPageContent() {
                 e.preventDefault();
                 setDragOverIndex(index);
               }}
-              onDragEnd={() => {
+              onDragEnd={async () => {
                 if (draggedIndex !== null && dragOverIndex !== null && draggedIndex !== dragOverIndex) {
                   const newBlogs = [...blogs];
                   const [movedItem] = newBlogs.splice(draggedIndex, 1);
@@ -339,7 +376,8 @@ function BlogsPageContent() {
                   setShowToast(true);
 
                   const updates = newBlogs.map((b, i) => ({ id: b.id, sortOrder: i + 1 }));
-                  updateBlogsSortOrder(updates);
+                  await updateBlogsSortOrder(updates);
+                  loadBlogs();
                   setTimeout(() => setShowToast(false), 2000);
                 }
                 setDraggedIndex(null);
@@ -347,6 +385,7 @@ function BlogsPageContent() {
               }}
               onEdit={() => handleEdit(blog)}
               onDelete={() => handleDelete(blog.id)}
+              onExport={() => exportBlogAsJson(blog)}
             />
           ))}
 
@@ -411,6 +450,33 @@ function BlogsPageContent() {
             </DialogDescription>
           </DialogHeader>
           <form onSubmit={handleSubmit} className="space-y-6">
+            <div
+              onDragOver={(e) => e.preventDefault()}
+              onDrop={async (e) => {
+                e.preventDefault();
+                const file = e.dataTransfer.files?.[0];
+                if (file) handleFileImport(file);
+              }}
+              onClick={() => fileInputRef.current?.click()}
+              className="mb-6 p-6 rounded-2xl bg-[#f5f5f7] border-2 border-dashed border-[#e52129]/40 hover:border-[#e52129] transition-all cursor-pointer text-center"
+            >
+              <input
+                type="file"
+                ref={fileInputRef}
+                className="hidden"
+                accept=".json"
+                onChange={(e) => {
+                  const file = e.target.files?.[0];
+                  if (file) handleFileImport(file);
+                }}
+              />
+              <p className="text-sm font-medium text-gray-700">
+                将博客 JSON 备份文件拖拽至此，或{' '}
+                <span className="text-[#e52129] underline">点击上传</span> 智能回填
+              </p>
+              <p className="text-xs text-gray-400 mt-1">仅用于表单快捷填充，发布前仍需人工确认</p>
+            </div>
+
             <div className="grid grid-cols-2 gap-4">
               <div className="space-y-2">
                 <Label htmlFor="titleZh">中文标题 *</Label>

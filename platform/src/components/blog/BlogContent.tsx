@@ -73,7 +73,7 @@ function InlineCode({ children, ...props }: { children: React.ReactNode; [key: s
 
 function Heading1({ children }: { children: React.ReactNode }) {
   return (
-    <h1 className="font-bold !text-gray-900 dark:!text-white mt-10 mb-6 !text-3xl md:!text-4xl leading-tight">
+    <h1 className="font-bold !text-gray-900 dark:!text-white mt-10 mb-6 !text-2xl md:!text-[32px] leading-tight">
       {children}
     </h1>
   );
@@ -83,7 +83,7 @@ function Heading2({ children, id }: { children: React.ReactNode; id: string }) {
   return (
     <h2
       id={id}
-      className="border-l-4 border-[#e52129] pl-3 font-bold !text-gray-900 dark:!text-white mt-8 mb-4 !text-2xl md:!text-3xl leading-tight"
+      className="border-l-4 border-[#e52129] pl-3 font-bold !text-gray-900 dark:!text-white mt-8 mb-4 !text-lg md:!text-xl leading-tight"
     >
       {children}
     </h2>
@@ -94,7 +94,7 @@ function Heading3({ children, id }: { children: React.ReactNode; id: string }) {
   return (
     <h3
       id={id}
-      className="font-bold !text-gray-900 dark:!text-white mt-6 mb-3 !text-xl md:!text-2xl leading-tight"
+      className="font-bold !text-gray-900 dark:!text-white mt-6 mb-3 !text-base md:!text-lg leading-tight"
     >
       {children}
     </h3>

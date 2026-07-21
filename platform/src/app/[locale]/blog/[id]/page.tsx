@@ -94,7 +94,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
 
             {/* 标题 + 元数据 */}
             <header className="mb-10">
-              <h1 className="text-4xl md:text-5xl font-bold text-zinc-900 tracking-tight mb-6">
+              <h1 className="text-3xl md:text-[32px] font-bold text-zinc-900 tracking-tight mb-6">
                 {blogPost.title}
               </h1>
               <div className="mt-4 flex flex-wrap items-center gap-x-3 text-xs">

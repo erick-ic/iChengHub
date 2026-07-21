@@ -12,7 +12,7 @@ export default function AboutView() {
   const [showToast, setShowToast] = useState(false);
 
   const handleCopyEmail = async () => {
-    const email = 'ckstarlit@gmail.com';
+    const email = 'ichenghub@gmail.com';
     const success = await copyToClipboard(email);
     if (success) {
       setShowToast(true);
@@ -157,7 +157,7 @@ export default function AboutView() {
           <div className="fixed inset-0 flex items-center justify-center z-[100] pointer-events-none">
             <div className="bg-gray-900 text-white px-6 py-3 rounded-full flex items-center gap-2 shadow-lg animate-bounce pointer-events-auto">
               <Check className="w-5 h-5 text-green-400" />
-              <span>{t('copiedEmail')} <span className="text-gray-300 font-mono">ckstarlit@gmail.com</span></span>
+              <span>{t('copiedEmail')} <span className="text-gray-300 font-mono">ichenghub@gmail.com</span></span>
             </div>
           </div>
         )}

@@ -168,6 +168,8 @@ import { extractHeadings as extractHeadingsUtil } from '@/lib/headingUtils';
 
 /**
  * 按 id 获取单篇博客的原始内容（用于 react-markdown 渲染）。
+ * 服务端只添加 language- 类名，不进行语法高亮转换（避免 SSR 兼容性问题）。
+ * 代码高亮通过静态 Prism CSS 实现。
  */
 export async function getBlogContentById(id: string, locale: string): Promise<{
   title: string;
@@ -188,13 +190,12 @@ export async function getBlogContentById(id: string, locale: string): Promise<{
 
     const isEnglish = locale === 'en';
     const rawContent = isEnglish ? blog.contentEn : blog.contentZh;
-    const highlightedContent = await highlightMarkdown(rawContent);
 
     return {
       title: isEnglish ? blog.titleEn : blog.titleZh,
       excerpt: isEnglish ? blog.excerptEn : blog.excerptZh,
       category: isEnglish ? blog.categoryEn : blog.categoryZh,
-      content: highlightedContent,
+      content: rawContent,
       date: blog.createdAt.toISOString().split('T')[0],
       updatedAt: blog.updatedAt.toISOString().split('T')[0],
     };

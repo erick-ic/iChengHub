@@ -308,7 +308,7 @@ function BlogsPageContent() {
   return (
     <div className="space-y-6">
       {showToast && (
-        <div className="fixed top-20 right-8 px-4 py-2 rounded-lg shadow-lg z-50 flex items-center gap-2 bg-green-100 text-green-700">
+        <div className="fixed top-20 right-8 px-4 py-2 rounded-lg shadow-lg z-[200] flex items-center gap-2 bg-green-100 text-green-700">
           <Check className="h-4 w-4" />
           {toastMessage}
         </div>
@@ -578,18 +578,17 @@ function BlogsPageContent() {
                   </button>
                 </div>
                 <div className="p-0">
-                  {!previewZh ? (
-                    <Textarea
-                      id="contentZh"
-                      name="contentZh"
-                      value={formData.contentZh}
-                      onChange={(e) => setFormData({ ...formData, contentZh: e.target.value })}
-                      placeholder="请输入中文正文，支持 Markdown 格式"
-                      rows={15}
-                      className="font-mono text-sm border-0 focus:ring-0 resize-y"
-                      required
-                    />
-                  ) : (
+                  <Textarea
+                    id="contentZh"
+                    name="contentZh"
+                    value={formData.contentZh}
+                    onChange={(e) => setFormData({ ...formData, contentZh: e.target.value })}
+                    placeholder="请输入中文正文，支持 Markdown 格式"
+                    rows={15}
+                    className={`font-mono text-sm border-0 focus:ring-0 resize-y ${previewZh ? 'hidden' : ''}`}
+                    required
+                  />
+                  {previewZh && (
                     <div className="min-h-[480px] max-h-[600px] overflow-y-auto px-6 py-4 bg-[#f5f5f7] dark:bg-gray-900/50">
                       <CodeCopyHandler blogId="" locale="zh" />
                       <div className="prose prose-slate dark:prose-invert max-w-3xl prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">
@@ -633,18 +632,17 @@ function BlogsPageContent() {
                   </button>
                 </div>
                 <div className="p-0">
-                  {!previewEn ? (
-                    <Textarea
-                      id="contentEn"
-                      name="contentEn"
-                      value={formData.contentEn}
-                      onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
-                      placeholder="Please enter English content, Markdown format supported"
-                      rows={15}
-                      className="font-mono text-sm border-0 focus:ring-0 resize-y"
-                      required
-                    />
-                  ) : (
+                  <Textarea
+                    id="contentEn"
+                    name="contentEn"
+                    value={formData.contentEn}
+                    onChange={(e) => setFormData({ ...formData, contentEn: e.target.value })}
+                    placeholder="Please enter English content, Markdown format supported"
+                    rows={15}
+                    className={`font-mono text-sm border-0 focus:ring-0 resize-y ${previewEn ? 'hidden' : ''}`}
+                    required
+                  />
+                  {previewEn && (
                     <div className="min-h-[480px] max-h-[600px] overflow-y-auto px-6 py-4 bg-[#f5f5f7] dark:bg-gray-900/50">
                       <CodeCopyHandler blogId="" locale="en" />
                       <div className="prose prose-slate dark:prose-invert max-w-3xl prose-pre:bg-transparent prose-pre:p-0 prose-code:before:hidden prose-code:after:hidden">

@@ -2,7 +2,7 @@ import { Metadata } from 'next';
 import './../globals.css';
 import Navbar from '@/components/Navbar';
 import { NextIntlClientProvider } from 'next-intl';
-import { getMessages } from 'next-intl/server';
+import { getMessages, setRequestLocale } from 'next-intl/server';
 import ClientLayout from './ClientLayout';
 
 type Props = {
@@ -79,6 +79,7 @@ export default async function LocaleLayout({
   children: React.ReactNode;
   params: { locale: string };
 }) {
+  setRequestLocale(params.locale);
   const messages = await getMessages({ locale: params.locale });
 
   return (

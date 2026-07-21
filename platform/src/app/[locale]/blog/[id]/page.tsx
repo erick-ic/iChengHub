@@ -15,7 +15,14 @@ interface PageProps {
 export async function generateStaticParams() {
   try {
     const blogs = await getAllBlogs();
-    return blogs.map((b) => ({ id: b.id }));
+    const locales = ['zh', 'en'] as const;
+    const params = [];
+    for (const blog of blogs) {
+      for (const locale of locales) {
+        params.push({ id: blog.id, locale });
+      }
+    }
+    return params;
   } catch (error) {
     console.error('[blog] generateStaticParams failed:', error);
     return [];

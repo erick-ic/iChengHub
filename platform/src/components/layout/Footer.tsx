@@ -5,7 +5,7 @@ import { useTranslations } from 'next-intl';
 import { Mail } from 'lucide-react';
 
 const ICP_NUMBER = '2025085990';
-export const EMAIL = 'ckstarlit@gmail.com';
+export const EMAIL = 'ichenghub@gmail.com';
 
 interface FooterProps {
   onCopyEmail: () => void;

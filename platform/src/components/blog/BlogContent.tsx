@@ -4,8 +4,56 @@ import React, { useMemo, useRef } from 'react';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import rehypeRaw from 'rehype-raw';
+import rehypePrism from 'rehype-prism-plus';
 import { Copy } from 'lucide-react';
 import type { HeadingItem } from '@/lib/headingUtils';
+
+function generateSlug(text: string): string {
+  return text
+    .toLowerCase()
+    .replace(/[^\p{L}\p{N}\s-]/gu, '')
+    .replace(/\s+/g, '-')
+    .replace(/-+/g, '-')
+    .trim();
+}
+
+function rehypeHeadingIds() {
+  const idCount: Record<string, number> = {};
+  
+  function getTextContent(node: any): string {
+    if (node.type === 'text') {
+      return node.value || '';
+    }
+    if (node.type === 'element' && node.children) {
+      return node.children.map((child: any) => getTextContent(child)).join('');
+    }
+    return '';
+  }
+  
+  return function (tree: any) {
+    function visit(node: any) {
+      if (node.type === 'element' && ['h2', 'h3'].includes(node.tagName)) {
+        const text = getTextContent(node);
+        let slug = generateSlug(text);
+        if (!slug && text) {
+          slug = generateSlug(text.replace(/[^\p{L}\p{N}]/gu, ''));
+        }
+        if (idCount[slug]) {
+          idCount[slug]++;
+          slug = `${slug}-${idCount[slug]}`;
+        } else {
+          idCount[slug] = 1;
+        }
+        node.properties = node.properties || {};
+        node.properties.id = slug;
+      }
+      if (node.children) {
+        node.children.forEach(visit);
+      }
+    }
+    visit(tree);
+  };
+}
 
 interface BlogContentProps {
   content: string;
@@ -337,7 +385,7 @@ function BlogContentComponent({ content, headings }: BlogContentProps) {
 
   return (
     <div className="max-w-none">
-      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw]} components={components}>
+      <ReactMarkdown remarkPlugins={[remarkGfm]} rehypePlugins={[rehypeRaw, rehypeHeadingIds, rehypePrism]} components={components}>
         {content}
       </ReactMarkdown>
       {previewImage && (

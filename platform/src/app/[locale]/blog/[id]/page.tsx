@@ -7,6 +7,7 @@ import TableOfContents from '@/components/blog/TableOfContents';
 import CodeCopyHandler from '@/components/blog/CodeCopyHandler';
 import { getAllBlogs, getBlogContentById, extractHeadings, getPrevAndNextBlogs } from '@/data/blogs';
 import BlogNavigation from '@/components/blog/BlogNavigation';
+import ViewCounter from '@/components/blog/ViewCounter';
 
 interface PageProps {
   params: Promise<{ locale: string; id: string }>;
@@ -75,6 +76,7 @@ export default async function BlogDetailPage({ params }: PageProps) {
     <>
       <CodeCopyHandler blogId={id} locale={locale} />
       <PageViewTracker path={`/${locale}/blog/${id}`} resourceId={id} resourceType="BLOG" />
+      <ViewCounter id={blogPost.slug} />
       <main className="bg-background min-h-[calc(100vh-4rem)]">
         <article className="max-w-7xl mx-auto px-4 md:px-8 py-12 grid grid-cols-1 lg:grid-cols-4 gap-10">
           {/* 左侧正文区：占 lg:col-span-3 */}
@@ -115,6 +117,13 @@ export default async function BlogDetailPage({ params }: PageProps) {
                   </svg>
                   {blogPost.date}
                 </time>
+                <span className="inline-flex items-center gap-1 text-gray-400 dark:text-gray-500 font-normal tabular-nums">
+                  <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                    <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  {blogPost.views}
+                </span>
               </div>
             </header>
 

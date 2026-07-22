@@ -131,6 +131,13 @@ export default async function BlogListPage({ params }: PageProps) {
                           </svg>
                           {blog.date}
                         </time>
+                        <span className="inline-flex items-center gap-1 text-gray-400 dark:text-gray-500 font-normal tabular-nums">
+                          <svg viewBox="0 0 24 24" className="w-3 h-3 shrink-0" fill="none" stroke="currentColor" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round">
+                            <path d="M2 12s3-7 10-7 10 7 10 7-3 7-10 7-10-7-10-7Z"/>
+                            <circle cx="12" cy="12" r="3"/>
+                          </svg>
+                          {blog.views}
+                        </span>
                       </div>
                     </Link>
                   </li>

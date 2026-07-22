@@ -110,6 +110,7 @@ model Blog {
   contentEn  String
   status     Int      @default(0)
   sortOrder  Int      @default(0)
+  views      Int      @default(0)
   createdAt  DateTime @default(now()) @db.Timestamptz(0)
   updatedAt  DateTime @updatedAt @db.Timestamptz(0)
 

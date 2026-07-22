@@ -18,6 +18,7 @@ export interface BlogPost {
   category: LocalizedString;
   date: string;
   content: string;
+  views: number;
 }
 
 function generateSlug(text: string): string {
@@ -130,6 +131,7 @@ export async function getAllBlogs(): Promise<BlogPost[]> {
       category: { zh: blog.categoryZh, en: blog.categoryEn },
       date: blog.updatedAt.toISOString().split('T')[0],
       content: blog.contentZh,
+      views: blog.views || 0,
     }));
   } catch (error) {
     console.error('[blog] getAllBlogs failed:', error);
@@ -157,6 +159,7 @@ export async function getBlogById(id: string): Promise<BlogPost | null> {
       category: { zh: blog.categoryZh, en: blog.categoryEn },
       date: blog.updatedAt.toISOString().split('T')[0],
       content: blog.contentZh,
+      views: (blog as any).views || 0,
     };
   } catch (error) {
     console.error('[blog] getBlogById failed for id:', id, error);
@@ -178,6 +181,8 @@ export async function getBlogContentById(id: string, locale: string): Promise<{
   content: string;
   date: string;
   updatedAt: string;
+  slug: string;
+  views: number;
 } | null> {
   try {
     const blog = await prisma.blog.findUnique({
@@ -198,6 +203,8 @@ export async function getBlogContentById(id: string, locale: string): Promise<{
       content: rawContent,
       date: blog.createdAt.toISOString().split('T')[0],
       updatedAt: blog.updatedAt.toISOString().split('T')[0],
+      slug: blog.id,
+      views: (blog as any).views || 0,
     };
   } catch (error) {
     console.error('[blog] getBlogContentById failed for id:', id, error);

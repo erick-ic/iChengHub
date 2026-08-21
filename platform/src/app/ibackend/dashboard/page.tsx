@@ -63,6 +63,30 @@ function isMobile(userAgent: string | null): boolean {
   return /Mobile|Android|iPhone|iPad|iPod|BlackBerry|Windows Phone/i.test(userAgent)
 }
 
+// 自研静态工具名称映射（不经过 toolCard 表，通过 path 推断）
+const STATIC_TOOL_NAME_MAP: Record<string, string> = {
+  '/qrcode': '二维码生成器',
+  '/tools/image-compressor': '图片压缩器',
+  '/imgcompress': '图片压缩器',
+}
+
+function resolveStaticToolName(path: string | null): string {
+  if (!path) return '自研工具'
+  // 先精确匹配
+  if (STATIC_TOOL_NAME_MAP[path]) return STATIC_TOOL_NAME_MAP[path]
+  // 再前缀匹配（兼容带 locale 前缀的路径，如 /zh/qrcode）
+  for (const [key, name] of Object.entries(STATIC_TOOL_NAME_MAP)) {
+    if (path.endsWith(key) || path.includes(key)) return name
+  }
+  // 兜底：提取路径末段
+  const segments = path.split('/').filter(Boolean)
+  if (segments.length > 0) {
+    const last = segments[segments.length - 1]
+    return last.charAt(0).toUpperCase() + last.slice(1)
+  }
+  return '自研工具'
+}
+
 async function getAnalyticsData(): Promise<AnalyticsData> {
   const sevenDaysAgo = new Date()
   sevenDaysAgo.setDate(sevenDaysAgo.getDate() - 7)
@@ -301,7 +325,12 @@ async function getAnalyticsData(): Promise<AnalyticsData> {
   const recentLogs = logs.slice(0, 5).map(log => {
     let resourceName = 'Unknown'
     if (log.resourceType === 'TOOL') {
-      resourceName = toolMap.get(log.resourceId || '') || 'Unknown Tool'
+      if (log.resourceId && toolMap.has(log.resourceId)) {
+        resourceName = toolMap.get(log.resourceId)!
+      } else {
+        // 自研静态工具：从 path 推断名称
+        resourceName = resolveStaticToolName(log.path)
+      }
     } else if (log.resourceType === 'PROMPT') {
       resourceName = promptMap.get(log.resourceId || '') || 'Unknown Prompt'
     } else if (log.resourceType === 'BLOG') {

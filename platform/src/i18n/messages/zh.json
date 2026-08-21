@@ -178,6 +178,31 @@
     "errorFileTooLarge": "图片大小超过 20MB 限制",
     "privacyNotice": "隐私声明：本工具所有图片压缩操作均在浏览器本地完成，不会上传至任何服务器，您的图片数据绝对安全。"
   },
+  "QrCode": {
+    "title": "极简二维码生成器",
+    "description": "纯浏览器本地生成，内容零上传。支持文本与链接，一键导出高清 SVG / PNG。",
+    "tabs": {
+      "text": "文本",
+      "url": "链接"
+    },
+    "placeholder": {
+      "text": "输入任意文本，支持中文与 Emoji",
+      "url": "输入链接，如 https://ichenghub.cn"
+    },
+    "actions": {
+      "generate": "生成二维码",
+      "downloadSvg": "下载 SVG",
+      "downloadPng": "下载 PNG"
+    },
+    "preview": {
+      "empty": "输入内容后点击「生成二维码」"
+    },
+    "errors": {
+      "contentTooLong": "内容过长，请减少文本长度后重试。"
+    },
+    "privacy": "隐私声明：本工具所有二维码生成、预览与导出均在浏览器本地完成，二维码内容不会上传至服务器。",
+    "generating": "生成中..."
+  },
   "AboutPage": {
     "badge": "关于 iChengHub",
     "title": "探索 AI 的边界，做你的专属效率罗盘。",

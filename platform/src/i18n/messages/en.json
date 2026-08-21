@@ -178,6 +178,31 @@
     "errorFileTooLarge": "Image size exceeds 20MB limit",
     "privacyNotice": "Privacy Notice: All image compression operations are performed locally in your browser and will not be uploaded to any server. Your image data is absolutely safe."
   },
+  "QrCode": {
+    "title": "Minimal QR Code Generator",
+    "description": "100% browser-local generation, zero content upload. Supports text and URLs, one-click high-resolution SVG / PNG export.",
+    "tabs": {
+      "text": "Text",
+      "url": "URL"
+    },
+    "placeholder": {
+      "text": "Enter any text, supports Chinese and emoji",
+      "url": "Enter a URL, e.g. https://ichenghub.cn"
+    },
+    "actions": {
+      "generate": "Generate QR Code",
+      "downloadSvg": "Download SVG",
+      "downloadPng": "Download PNG"
+    },
+    "preview": {
+      "empty": "Enter content and click \"Generate QR Code\""
+    },
+    "errors": {
+      "contentTooLong": "The content is too long. Please shorten it and try again."
+    },
+    "privacy": "Privacy: All QR generation, preview and export happen locally in your browser. QR content is never uploaded to servers.",
+    "generating": "Generating..."
+  },
   "AboutPage": {
     "badge": "About iChengHub",
     "title": "Explore the Boundaries of AI, Be Your Exclusive Productivity Compass.",
